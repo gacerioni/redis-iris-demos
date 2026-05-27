@@ -13,14 +13,19 @@ from backend.app.core.domain_contract import (
     BrandingConfig,
     DomainManifest,
     GeneratedDataset,
+    GuardrailConfig,
+    GuardrailRouteConfig,
     IdentityConfig,
     InternalToolDefinition,
     NamespaceConfig,
     PromptCard,
     RagConfig,
+    SeedLangCacheEntry,
+    SeedMemory,
     ThemeConfig,
 )
 from backend.app.core.domain_schema import EntitySpec, validate_entity_specs
+from backend.app.memory_service import MemoryService
 from backend.app.redis_connection import create_redis_client
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -119,26 +124,37 @@ class RadishBankDomain:
             hero_title="Welcome to Radish Bank — how can we help today?",
             placeholder_text="Ask about accounts, cards, FDs, insurance, branches, or fee waivers…",
             logo_path="domains/radish-bank/assets/logo.svg",
+            demo_steps=[
+                "What are my current account balances?",
+                "Please remember that I prefer paperless statements and am interested in fixed deposits.",
+                "Click Memory",
+                "Given what you know about my preferences, what banking products would you recommend for me?",
+            ],
             starter_prompts=[
                 PromptCard(
-                    eyebrow="Accounts",
-                    title="What are my savings and current balances?",
-                    prompt="What accounts do I have and what are my balances?",
+                    eyebrow="Context",
+                    title="What are my account balances?",
+                    prompt="What accounts do I have and what are my current balances?",
                 ),
                 PromptCard(
-                    eyebrow="Fixed deposit",
-                    title="Place 2000 SGD in the 6-month FD",
-                    prompt="Place 2000 SGD into the 6-month fixed deposit from my savings account.",
+                    eyebrow="Context",
+                    title="Recent service requests",
+                    prompt="Show me my recent service requests",
                 ),
                 PromptCard(
-                    eyebrow="Branch",
-                    title="Is Bishan a full branch?",
-                    prompt="Is the Bishan location a full branch or only an auto-lobby?",
+                    eyebrow="Memory",
+                    title="Save banking preferences",
+                    prompt="Please remember that I prefer mobile banking and contactless payments",
                 ),
                 PromptCard(
-                    eyebrow="Policy",
-                    title="Early FD withdrawal",
-                    prompt="What happens if I withdraw my fixed deposit early?",
+                    eyebrow="Memory",
+                    title="Product recommendations",
+                    prompt="What are my banking preferences and savings interests?",
+                ),
+                PromptCard(
+                    eyebrow="Cached",
+                    title="Fixed deposit rates",
+                    prompt="What are your current fixed deposit interest rates?",
                 ),
             ],
             theme=ThemeConfig(
@@ -155,6 +171,7 @@ class RadishBankDomain:
                 soft="#cfe8dc",
                 accent="#2ecc71",
                 user="#0d1f18",
+                landing_bg="#E8F8EE",
             ),
         ),
         namespace=NamespaceConfig(
@@ -190,10 +207,92 @@ class RadishBankDomain:
                 "filter_*_by_customer_id or similar MCP tool (never shorten to C001). Call before account, card, or balance lookups."
             ),
         ),
+        guardrail=GuardrailConfig(
+            router_name="radish-guardrails",
+            allowed_route_name="banking",
+            routes=[
+                GuardrailRouteConfig(
+                    name="banking",
+                    references=[
+                        "Check my savings balance",
+                        "What are my account balances?",
+                        "Fixed deposit rate FD6",
+                        "Waive annual card fee",
+                        "Branch hours Tampines",
+                        "Auto lobby and branch services",
+                        "Accident insurance premium",
+                        "Transfer between my accounts",
+                        "Hello I need help with my account",
+                        "What accounts do I have?",
+                        "Early withdrawal penalty fixed deposit",
+                        "What FD products are available?",
+                        "What is the interest rate?",
+                        "I want to invest in a fixed deposit",
+                        "How do I open a new account?",
+                        "What are the card fee charges?",
+                        "Show me my service request history",
+                        "Is Bishan a full branch?",
+                        "What insurance plans do you offer?",
+                        "Place 2000 SGD in the 6-month FD",
+                        "Yes",
+                        "No",
+                        "Sure",
+                        "Thanks",
+                        "Hello",
+                        "Can you help me?",
+                    ],
+                    distance_threshold=0.7,
+                ),
+                GuardrailRouteConfig(
+                    name="off_topic",
+                    references=[
+                        "Why is the sky blue?",
+                        "Who is the current US president?",
+                        "Recipe for chocolate cake",
+                        "Capital of Mongolia",
+                        "Write me a Python sorting algorithm",
+                        "What is the weather tomorrow?",
+                        "Tell me a joke",
+                        "History of the Roman Empire",
+                        "Write a poem about love",
+                        "What's the latest news?",
+                        "Translate this to Spanish",
+                        "Help me debug my code",
+                        "What's the meaning of life?",
+                        "Play a game with me",
+                        "What's the stock market doing?",
+                    ],
+                    distance_threshold=0.5,
+                ),
+            ],
+        ),
+        seed_memories=[
+            SeedMemory(text="Prefers paperless statements and online banking", topics=["banking", "preferences"]),
+            SeedMemory(text="Interested in fixed deposit products for savings growth", topics=["products", "interests"]),
+        ],
+        seed_langcache=[
+            SeedLangCacheEntry(
+                prompt="What are your current fixed deposit interest rates?",
+                response=(
+                    "We currently offer two fixed deposit plans:\n\n"
+                    "- **FD6** (6-month term): **2.8% p.a.** — minimum deposit SGD 1,000\n"
+                    "- **FD12** (12-month term): **3.1% p.a.** — minimum deposit SGD 1,000\n\n"
+                    "Interest is calculated daily and paid at maturity. Early withdrawal forfeits all accrued interest. "
+                    "You can open an FD through your account portal or visit any Radish Bank branch."
+                ),
+                attributes={"domain": "radish-bank"},
+            ),
+        ],
     )
 
     def get_entity_specs(self) -> tuple[EntitySpec, ...]:
         return ENTITY_SPECS
+
+    def get_runtime_config(self, settings: Any) -> dict[str, Any]:
+        memory_enabled = MemoryService(settings).is_configured() if settings else False
+        return {
+            "memory_enabled": memory_enabled,
+        }
 
     def build_system_prompt(
         self,
@@ -201,8 +300,10 @@ class RadishBankDomain:
         mcp_tools: Sequence[dict[str, Any]],
         runtime_config: dict[str, Any] | None = None,
     ) -> str:
-        del runtime_config
-        return build_system_prompt(mcp_tools=mcp_tools)
+        return build_system_prompt(
+            mcp_tools=mcp_tools,
+            memory_enabled=bool((runtime_config or {}).get("memory_enabled")),
+        )
 
     def build_answer_verifier_prompt(self, *, runtime_config: dict[str, Any] | None = None) -> str:
         del runtime_config
@@ -227,6 +328,10 @@ class RadishBankDomain:
             return "Check existing insurance holdings for duplicate coverage."
         if tool_name == "request_annual_card_fee_waiver":
             return "Check 12-month waiver history for this card fee category."
+        if tool_name == "search_customer_memory":
+            return "Search durable customer memory for preferences, past issues, or stored context."
+        if tool_name == "remember_customer_detail":
+            return "Store a durable customer fact or preference for future conversations."
         return None
 
     def get_internal_tool_definitions(
@@ -234,8 +339,7 @@ class RadishBankDomain:
         *,
         runtime_config: dict[str, Any] | None = None,
     ) -> Sequence[InternalToolDefinition]:
-        del runtime_config
-        return (
+        tools: list[InternalToolDefinition] = [
             InternalToolDefinition(
                 name=self.manifest.identity.tool_name,
                 description=self.manifest.identity.description,
@@ -282,7 +386,52 @@ class RadishBankDomain:
                     "required": ["card_id"],
                 },
             ),
-        )
+        ]
+        if (runtime_config or {}).get("memory_enabled"):
+            tools.extend(
+                [
+                    InternalToolDefinition(
+                        name="search_customer_memory",
+                        description=(
+                            "Search durable customer memory for preferences, prior incidents, or facts from previous sessions. "
+                            "Use this when the user asks what you remember, refers to preferences, or wants continuity across conversations."
+                        ),
+                        input_schema={
+                            "type": "object",
+                            "properties": {
+                                "query": {"type": "string", "description": "What to look up in customer memory."},
+                                "limit": {"type": "integer", "description": "Optional max number of memories to return.", "default": 5},
+                            },
+                            "required": ["query"],
+                        },
+                    ),
+                    InternalToolDefinition(
+                        name="remember_customer_detail",
+                        description=(
+                            "Save a durable customer preference or fact into long-term memory. "
+                            "Only use this when the user explicitly asks you to remember something or states a lasting preference."
+                        ),
+                        input_schema={
+                            "type": "object",
+                            "properties": {
+                                "text": {"type": "string", "description": "The exact customer preference or durable fact to remember."},
+                                "memory_type": {
+                                    "type": "string",
+                                    "description": "Memory type: semantic for preferences/facts, episodic for a notable event, message for a verbatim note.",
+                                    "default": "semantic",
+                                },
+                                "topics": {
+                                    "type": "array",
+                                    "items": {"type": "string"},
+                                    "description": "Optional topic tags like banking, preferences, products, insurance.",
+                                },
+                            },
+                            "required": ["text"],
+                        },
+                    ),
+                ]
+            )
+        return tuple(tools)
 
     def execute_internal_tool(self, tool_name: str, arguments: dict[str, Any], settings: Any) -> dict[str, Any]:
         if tool_name == self.manifest.identity.tool_name:
@@ -312,6 +461,61 @@ class RadishBankDomain:
         if tool_name == "request_annual_card_fee_waiver":
             return self._request_fee_waiver(arguments, settings)
         return {"error": f"Unknown tool: {tool_name}"}
+
+    async def aexecute_internal_tool(self, tool_name: str, arguments: dict[str, Any], settings: Any) -> dict[str, Any]:
+        if tool_name not in {"search_customer_memory", "remember_customer_detail"}:
+            return await asyncio.to_thread(self.execute_internal_tool, tool_name, arguments, settings)
+
+        identity = self.manifest.identity
+        owner_id = os.getenv(identity.id_env_var, identity.default_id)
+        memory_service = MemoryService(settings)
+        if not memory_service.is_configured():
+            return {"error": "Memory service is not configured for this demo."}
+
+        if tool_name == "search_customer_memory":
+            query = str(arguments.get("query", "")).strip()
+            if not query:
+                return {"error": "query is required"}
+            limit = arguments.get("limit")
+            memories = await memory_service.asearch_long_term_memory(
+                text=query,
+                owner_id=owner_id,
+                limit=int(limit) if limit is not None else None,
+            )
+            return {
+                "owner_id": owner_id,
+                "query": query,
+                "memory_count": len(memories),
+                "memories": [
+                    {
+                        "id": memory.get("id"),
+                        "text": memory.get("text"),
+                        "memory_type": memory.get("memoryType"),
+                        "topics": memory.get("topics", []),
+                        "session_id": memory.get("sessionId"),
+                        "created_at": memory.get("createdAt"),
+                    }
+                    for memory in memories
+                ],
+            }
+
+        text = str(arguments.get("text", "")).strip()
+        if not text:
+            return {"error": "text is required"}
+        memory_type = str(arguments.get("memory_type", "semantic")).strip() or "semantic"
+        if memory_type not in {"semantic", "episodic", "message"}:
+            memory_type = "semantic"
+        topics = arguments.get("topics") or []
+        if not isinstance(topics, list):
+            topics = []
+        return {
+            "owner_id": owner_id,
+            "saved_text": text,
+            "memory_type": memory_type,
+            "topics": [str(t).strip() for t in topics if str(t).strip()],
+            "demo_blocked": True,
+            "response": {"acknowledged": True},
+        }
 
     def _place_fixed_deposit(self, arguments: dict[str, Any], settings: Any) -> dict[str, Any]:
         gm = _load_generated_models()
@@ -523,7 +727,7 @@ class RadishBankDomain:
         *,
         output_dir: Path,
         seed: int | None = None,
-        update_env_file: bool = True,
+        update_env_file: bool = False,
     ) -> GeneratedDataset:
         return generate_demo_data(output_dir=output_dir, seed=seed, update_env_file=update_env_file)
 

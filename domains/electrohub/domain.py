@@ -10,14 +10,19 @@ from backend.app.core.domain_contract import (
     BrandingConfig,
     DomainManifest,
     GeneratedDataset,
+    GuardrailConfig,
+    GuardrailRouteConfig,
     IdentityConfig,
     InternalToolDefinition,
     NamespaceConfig,
     PromptCard,
     RagConfig,
+    SeedLangCacheEntry,
+    SeedMemory,
     ThemeConfig,
 )
 from backend.app.core.domain_schema import EntitySpec, validate_entity_specs
+from backend.app.memory_service import MemoryService
 from backend.app.redis_connection import create_redis_client
 from domains.electrohub.data_generator import DEMO_CUSTOMER, generate_demo_data
 from domains.electrohub.prompt import build_system_prompt
@@ -47,26 +52,37 @@ class ElectrohubDomain:
             hero_title="Shop hardware, pickup, and order support in one place.",
             placeholder_text="Ask about products, store pickup, or your shipment...",
             logo_path="domains/electrohub/assets/logo.png",
+            demo_steps=[
+                "I am looking for a MacMini to run OpenClaw on, what machines do you have in stock that would help?",
+                "Please remember that I prefer curbside pickup at Cherry Creek and I'm interested in gaming laptops.",
+                "Click Memory",
+                "Given what you know about me, what should I check out next time I visit?",
+            ],
             starter_prompts=[
                 PromptCard(
-                    eyebrow="Product Fit",
+                    eyebrow="Context",
                     title="Find me something for OpenClaw",
                     prompt="I am looking for a MacMini to run OpenClaw on, what machines do you have in stock that would help?",
                 ),
                 PromptCard(
-                    eyebrow="Local Pickup",
-                    title="Check my local store",
-                    prompt="Can I pick that up at my local store?",
-                ),
-                PromptCard(
-                    eyebrow="Shipment Help",
+                    eyebrow="Context",
                     title="Track my missing shipment",
                     prompt="I haven't received my shipment yet.",
                 ),
                 PromptCard(
-                    eyebrow="Order History",
-                    title="Show my recent orders",
-                    prompt="Show me my recent ElectroHub orders.",
+                    eyebrow="Memory",
+                    title="Save shopping preferences",
+                    prompt="Please remember that I prefer same-day delivery and I'm interested in home theater setups.",
+                ),
+                PromptCard(
+                    eyebrow="Memory",
+                    title="Product recommendations",
+                    prompt="What are my shopping preferences and product interests?",
+                ),
+                PromptCard(
+                    eyebrow="Cached",
+                    title="Return policy",
+                    prompt="What's your return policy for electronics?",
                 ),
             ],
             theme=ThemeConfig(
@@ -83,6 +99,7 @@ class ElectrohubDomain:
                 soft="#d5e5fb",
                 accent="#31c7ff",
                 user="#12345b",
+                landing_bg="#E8F4FE",
             ),
         ),
         namespace=NamespaceConfig(
@@ -117,14 +134,95 @@ class ElectrohubDomain:
                 "Call this first for account, pickup, shipment, or order-history questions."
             ),
         ),
+        guardrail=GuardrailConfig(
+            router_name="electrohub-guardrails",
+            allowed_route_name="electronics_retail",
+            routes=[
+                GuardrailRouteConfig(
+                    name="electronics_retail",
+                    references=[
+                        "What laptops do you have in stock?",
+                        "I'm looking for a gaming PC",
+                        "Do you carry any smart home devices?",
+                        "What's the price of this TV?",
+                        "Can I pick that up at my local store?",
+                        "When will my order arrive?",
+                        "I haven't received my shipment yet",
+                        "Track my order",
+                        "What's your return policy?",
+                        "I want to return this product",
+                        "Is this item covered under warranty?",
+                        "Do you have this in stock at Cherry Creek?",
+                        "Compare these two laptops for me",
+                        "What are the specs on this MacBook?",
+                        "Show me my recent orders",
+                        "I need a computer for video editing",
+                        "What accessories go with this?",
+                        "How long is the warranty on this?",
+                        "Can I get a price match?",
+                        "What stores are near me?",
+                        "Yes",
+                        "No",
+                        "Sure",
+                        "Thanks",
+                        "Tell me more",
+                        "Go ahead",
+                        "Hello",
+                        "Hi there",
+                        "Can you help me?",
+                        "That's all, thanks",
+                    ],
+                    distance_threshold=0.7,
+                ),
+                GuardrailRouteConfig(
+                    name="off_topic",
+                    references=[
+                        "What's the weather like today?",
+                        "Tell me a joke",
+                        "Write me a Python script",
+                        "Help me with my homework",
+                        "Who won the Super Bowl?",
+                        "Explain quantum physics",
+                        "What's the latest news?",
+                        "Translate this to Spanish",
+                        "What's the capital of France?",
+                        "How do I cook pasta?",
+                        "What's the stock market doing?",
+                        "Tell me about World War 2",
+                        "Play a game with me",
+                        "Who is the president?",
+                        "Solve this math equation",
+                    ],
+                    distance_threshold=0.5,
+                ),
+            ],
+        ),
+        seed_memories=[
+            SeedMemory(text="Prefers curbside pickup at Cherry Creek store", topics=["shopping", "preferences"]),
+            SeedMemory(text="Interested in gaming laptops and smart home devices", topics=["products", "interests"]),
+        ],
+        seed_langcache=[
+            SeedLangCacheEntry(
+                prompt="What's your return policy for electronics?",
+                response=(
+                    "Our return policy allows returns within **30 days** of purchase for most electronics. "
+                    "Items must be in original packaging with all accessories. **Opened items** may be subject "
+                    "to a **15% restocking fee**. Defective products can be exchanged at no cost within the "
+                    "warranty period. Bring your receipt or order confirmation to any ElectroHub store, or "
+                    "start a return online through your order history."
+                ),
+                attributes={"domain": "electrohub"},
+            ),
+        ],
     )
 
     def get_entity_specs(self) -> tuple[EntitySpec, ...]:
         return ENTITY_SPECS
 
     def get_runtime_config(self, *, settings: Any) -> dict[str, Any]:
-        del settings
+        memory_enabled = MemoryService(settings).is_configured() if settings else False
         return {
+            "memory_enabled": memory_enabled,
             "enable_shopping_analyzer": _env_bool(
                 "ELECTROHUB_ENABLE_SHOPPING_ANALYZER",
                 "ENABLE_DOMAIN_SHOPPING_ANALYZER",
@@ -151,6 +249,7 @@ class ElectrohubDomain:
         return build_system_prompt(
             mcp_tools=mcp_tools,
             shopping_analyzer_enabled=bool((runtime_config or {}).get("enable_shopping_analyzer", False)),
+            memory_enabled=bool((runtime_config or {}).get("memory_enabled")),
         )
 
     def build_answer_verifier_prompt(self, *, runtime_config: dict[str, Any] | None = None) -> str:
@@ -198,6 +297,10 @@ class ElectrohubDomain:
             return "Inspect the customer's local store inventory before promising pickup."
         if tool_name.startswith("search_guide_by_text"):
             return f"Pull generic guidance or policy to support the final recommendation: {detail or 'guide search'}."
+        if tool_name == "search_customer_memory":
+            return "Search durable customer memory for preferences, past issues, or stored context."
+        if tool_name == "remember_customer_detail":
+            return "Store a durable customer fact or preference for future conversations."
         return None
 
     def get_internal_tool_definitions(
@@ -245,6 +348,50 @@ class ElectrohubDomain:
                     "required": ["request"],
                 },
             ))
+        if (runtime_config or {}).get("memory_enabled"):
+            definitions.extend(
+                [
+                    InternalToolDefinition(
+                        name="search_customer_memory",
+                        description=(
+                            "Search durable customer memory for preferences, prior incidents, or facts from previous sessions. "
+                            "Use this when the user asks what you remember, refers to preferences, or wants continuity across conversations."
+                        ),
+                        input_schema={
+                            "type": "object",
+                            "properties": {
+                                "query": {"type": "string", "description": "What to look up in customer memory."},
+                                "limit": {"type": "integer", "description": "Optional max number of memories to return.", "default": 5},
+                            },
+                            "required": ["query"],
+                        },
+                    ),
+                    InternalToolDefinition(
+                        name="remember_customer_detail",
+                        description=(
+                            "Save a durable customer preference or fact into long-term memory. "
+                            "Only use this when the user explicitly asks you to remember something or states a lasting preference."
+                        ),
+                        input_schema={
+                            "type": "object",
+                            "properties": {
+                                "text": {"type": "string", "description": "The exact customer preference or durable fact to remember."},
+                                "memory_type": {
+                                    "type": "string",
+                                    "description": "Memory type: semantic for preferences/facts, episodic for a notable event, message for a verbatim note.",
+                                    "default": "semantic",
+                                },
+                                "topics": {
+                                    "type": "array",
+                                    "items": {"type": "string"},
+                                    "description": "Optional topic tags like shopping, products, preferences, warranty.",
+                                },
+                            },
+                            "required": ["text"],
+                        },
+                    ),
+                ]
+            )
         return tuple(definitions)
 
     def execute_internal_tool(self, tool_name: str, arguments: dict[str, Any], settings: Any) -> dict[str, Any]:
@@ -278,6 +425,62 @@ class ElectrohubDomain:
                 return {"error": "Missing request"}
             return self._analyze_shopping_request(request=request, settings=settings)
         return {"error": f"Unknown tool: {tool_name}"}
+
+    async def aexecute_internal_tool(self, tool_name: str, arguments: dict[str, Any], settings: Any) -> dict[str, Any]:
+        if tool_name not in {"search_customer_memory", "remember_customer_detail"}:
+            return self.execute_internal_tool(tool_name, arguments, settings)
+
+        identity = self.manifest.identity
+        owner_id = os.getenv(identity.id_env_var, identity.default_id)
+        memory_service = MemoryService(settings)
+        if not memory_service.is_configured():
+            return {"error": "Memory service is not configured for this demo."}
+
+        if tool_name == "search_customer_memory":
+            query = str(arguments.get("query", "")).strip()
+            if not query:
+                return {"error": "query is required"}
+            limit = arguments.get("limit")
+            memories = await memory_service.asearch_long_term_memory(
+                text=query,
+                owner_id=owner_id,
+                limit=int(limit) if limit is not None else None,
+            )
+            return {
+                "owner_id": owner_id,
+                "query": query,
+                "memory_count": len(memories),
+                "memories": [
+                    {
+                        "id": memory.get("id"),
+                        "text": memory.get("text"),
+                        "memory_type": memory.get("memoryType"),
+                        "topics": memory.get("topics", []),
+                        "session_id": memory.get("sessionId"),
+                        "created_at": memory.get("createdAt"),
+                    }
+                    for memory in memories
+                ],
+            }
+
+        # remember_customer_detail — blocked in demo mode
+        text = str(arguments.get("text", "")).strip()
+        if not text:
+            return {"error": "text is required"}
+        memory_type = str(arguments.get("memory_type", "semantic")).strip() or "semantic"
+        if memory_type not in {"semantic", "episodic", "message"}:
+            memory_type = "semantic"
+        topics = arguments.get("topics") or []
+        if not isinstance(topics, list):
+            topics = []
+        return {
+            "owner_id": owner_id,
+            "saved_text": text,
+            "memory_type": memory_type,
+            "topics": [str(t).strip() for t in topics if str(t).strip()],
+            "demo_blocked": True,
+            "response": {"acknowledged": True},
+        }
 
     def _analyze_shopping_request(self, *, request: str, settings: Any) -> dict[str, Any]:
         from openai import OpenAI

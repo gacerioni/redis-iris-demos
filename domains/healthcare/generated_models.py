@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 from context_surfaces.context_model import ContextField, ContextModel, ContextRelationship
 
 
@@ -88,8 +90,9 @@ class Provider(ContextModel):
         index="text",
     )
 
-    location: Location = ContextRelationship(
+    location: Any = ContextRelationship(
         description="Primary location",
+        target="Location",
         source_field="location_id",
     )
 
@@ -141,8 +144,9 @@ class Patient(ContextModel):
         index="tag",
     )
 
-    primary_provider: Provider = ContextRelationship(
+    primary_provider: Any = ContextRelationship(
         description="Primary care provider",
+        target="Provider",
         source_field="primary_provider_id",
     )
 
@@ -192,18 +196,21 @@ class Appointment(ContextModel):
         index="text",
     )
 
-    patient: Patient = ContextRelationship(
+    patient: Any = ContextRelationship(
         description="Patient",
+        target="Patient",
         source_field="patient_id",
     )
 
-    provider: Provider = ContextRelationship(
+    provider: Any = ContextRelationship(
         description="Provider",
+        target="Provider",
         source_field="provider_id",
     )
 
-    location: Location = ContextRelationship(
+    location: Any = ContextRelationship(
         description="Location",
+        target="Location",
         source_field="location_id",
     )
 
@@ -258,13 +265,15 @@ class Referral(ContextModel):
         index="tag",
     )
 
-    patient: Patient = ContextRelationship(
+    patient: Any = ContextRelationship(
         description="Patient",
+        target="Patient",
         source_field="patient_id",
     )
 
-    referring_provider: Provider = ContextRelationship(
+    referring_provider: Any = ContextRelationship(
         description="Referring provider",
+        target="Provider",
         source_field="referring_provider_id",
     )
 
@@ -314,12 +323,48 @@ class Waitlist(ContextModel):
         index="text",
     )
 
-    patient: Patient = ContextRelationship(
+    patient: Any = ContextRelationship(
         description="Patient",
+        target="Patient",
         source_field="patient_id",
     )
 
-    preferred_provider: Provider = ContextRelationship(
+    preferred_provider: Any = ContextRelationship(
         description="Preferred provider",
+        target="Provider",
         source_field="preferred_provider_id",
+    )
+
+
+class HealthDoc(ContextModel):
+    """HealthDoc entity for the RedHealthConnect domain."""
+
+    __redis_key_template__ = "healthcare_healthdoc:{doc_id}"
+
+    doc_id: str = ContextField(
+        description="Document ID",
+        is_key_component=True,
+    )
+
+    title: str = ContextField(
+        description="Document title",
+        index="text",
+        weight=2.0,
+    )
+
+    category: str = ContextField(
+        description="Category: policy, faq, care_guide",
+        index="tag",
+    )
+
+    content: str = ContextField(
+        description="Full document text",
+        index="text",
+    )
+
+    content_embedding: list[float] = ContextField(
+        description="Vector embedding of document content",
+        index="vector",
+        vector_dim=1536,
+        distance_metric="cosine",
     )

@@ -6,14 +6,34 @@ Adapted from healthcare_context_surface_example/healthcare_sample_data.json.
 from __future__ import annotations
 
 import json
+import os
 import sys
+from hashlib import sha256
 from pathlib import Path
+
+import openai
 
 ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from backend.app.core.domain_contract import GeneratedDataset  # noqa: E402
+
+
+def fake_embedding(text: str) -> list[float]:
+    digest = sha256(text.encode("utf-8")).digest()
+    return [digest[i % len(digest)] / 255.0 for i in range(1536)]
+
+
+def embed(texts: list[str]) -> list[list[float]]:
+    if not os.getenv("OPENAI_API_KEY"):
+        return [fake_embedding(text) for text in texts]
+    client = openai.OpenAI()
+    response = client.embeddings.create(
+        input=texts,
+        model=os.getenv("OPENAI_EMBEDDING_MODEL", "text-embedding-3-small"),
+    )
+    return [item.embedding for item in response.data]
 
 OUTPUT_DIR = ROOT / "output" / "healthcare"
 
@@ -412,6 +432,73 @@ WAITLIST = [
 
 
 # ═══════════════════════════════════════════════════════════════════════════
+#  HEALTH DOCS (5) — patient guides, FAQs, policies
+# ═══════════════════════════════════════════════════════════════════════════
+
+HEALTHDOC_TEXT = [
+    {
+        "doc_id": "DOC001",
+        "title": "Appointment Cancellation Policy",
+        "category": "policy",
+        "content": (
+            "Patients must cancel or reschedule appointments at least 24 hours in advance. "
+            "Late cancellations or no-shows may incur a $50 fee. If you miss two consecutive "
+            "appointments without notice, your provider may require a phone consultation before "
+            "scheduling a new in-person visit. Emergency situations are handled on a case-by-case basis."
+        ),
+    },
+    {
+        "doc_id": "DOC002",
+        "title": "Insurance Verification and Coverage",
+        "category": "faq",
+        "content": (
+            "We verify insurance coverage before your first visit. Please bring your insurance card "
+            "and a valid photo ID. If your insurance has expired or changed, contact our front desk "
+            "at least 48 hours before your appointment. We accept most major insurance plans including "
+            "Blue Cross, Aetna, UnitedHealthcare, and Kaiser. Self-pay options are available with a "
+            "10% discount for upfront payment."
+        ),
+    },
+    {
+        "doc_id": "DOC003",
+        "title": "Referral Process Guide",
+        "category": "care_guide",
+        "content": (
+            "When your primary care provider refers you to a specialist, our referral coordinator "
+            "will contact you within 2 business days to schedule the appointment. Urgent referrals "
+            "are processed same-day. You can check the status of your referral by calling our "
+            "referral line at 415-555-3000 or through the patient portal. Referrals are valid for "
+            "90 days from the date of issue."
+        ),
+    },
+    {
+        "doc_id": "DOC004",
+        "title": "Patient Portal and Telehealth Guide",
+        "category": "care_guide",
+        "content": (
+            "Access your medical records, lab results, and appointment history through the patient "
+            "portal at portal.downtownmed.com. Telehealth visits are available for follow-ups and "
+            "non-emergency consultations. To start a telehealth visit, log into the portal and click "
+            "'Start Virtual Visit' at your scheduled appointment time. You'll need a device with a "
+            "camera and stable internet connection."
+        ),
+    },
+    {
+        "doc_id": "DOC005",
+        "title": "Prescription Refill Policy",
+        "category": "policy",
+        "content": (
+            "Prescription refills can be requested through the patient portal, by calling your "
+            "provider's office, or through your pharmacy. Allow 48 hours for refill processing. "
+            "Controlled substances require an in-person or telehealth visit every 3 months. "
+            "If you're running low on medication, contact us at least one week before you run out "
+            "to ensure uninterrupted treatment."
+        ),
+    },
+]
+
+
+# ═══════════════════════════════════════════════════════════════════════════
 #  MAIN — write JSONL files
 # ═══════════════════════════════════════════════════════════════════════════
 
@@ -452,6 +539,10 @@ def generate_demo_data(
     resolved_output_dir = output_dir or OUTPUT_DIR
     resolved_output_dir.mkdir(parents=True, exist_ok=True)
 
+    print("Generating embeddings for health docs...")
+    embeddings = embed([doc["content"] for doc in HEALTHDOC_TEXT])
+    healthdocs = [{**doc, "content_embedding": emb} for doc, emb in zip(HEALTHDOC_TEXT, embeddings)]
+
     print("Writing JSONL files:")
     write_jsonl(resolved_output_dir, "locations.jsonl", LOCATIONS)
     write_jsonl(resolved_output_dir, "providers.jsonl", PROVIDERS)
@@ -459,6 +550,7 @@ def generate_demo_data(
     write_jsonl(resolved_output_dir, "appointments.jsonl", APPOINTMENTS)
     write_jsonl(resolved_output_dir, "referrals.jsonl", REFERRALS)
     write_jsonl(resolved_output_dir, "waitlist.jsonl", WAITLIST)
+    write_jsonl(resolved_output_dir, "healthdocs.jsonl", healthdocs)
 
     demo = PATIENTS[0]
     if update_env_file:
@@ -482,6 +574,7 @@ def generate_demo_data(
             "appointments": len(APPOINTMENTS),
             "referrals": len(REFERRALS),
             "waitlist": len(WAITLIST),
+            "healthdocs": len(healthdocs),
         },
     )
 

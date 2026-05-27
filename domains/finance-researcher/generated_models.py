@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 from context_surfaces.context_model import ContextField, ContextModel, ContextRelationship
 
 
@@ -127,23 +129,27 @@ class Company(ContextModel):
         index="text",
     )
 
-    documents: list[ResearchDocument] = ContextRelationship(
+    documents: Any = ContextRelationship(
         description="Research documents for this company",
+        target="ResearchDocument",
         source_field="company_id",
     )
 
-    metrics: list[FinancialMetricPoint] = ContextRelationship(
+    metrics: Any = ContextRelationship(
         description="Financial metrics for this company",
+        target="FinancialMetricPoint",
         source_field="company_id",
     )
 
-    prices: list[PriceBar] = ContextRelationship(
+    prices: Any = ContextRelationship(
         description="Price history for this company",
+        target="PriceBar",
         source_field="company_id",
     )
 
-    events: list[CoverageEvent] = ContextRelationship(
+    events: Any = ContextRelationship(
         description="Coverage events for this company",
+        target="CoverageEvent",
         source_field="company_id",
     )
 
@@ -221,13 +227,15 @@ class ResearchDocument(ContextModel):
         no_stem=True,
     )
 
-    company: Company = ContextRelationship(
+    company: Any = ContextRelationship(
         description="Owning company",
+        target="Company",
         source_field="company_id",
     )
 
-    chunks: list[ResearchChunk] = ContextRelationship(
+    chunks: Any = ContextRelationship(
         description="Text chunks derived from this document",
+        target="ResearchChunk",
         source_field="document_id",
     )
 
@@ -281,13 +289,15 @@ class ResearchChunk(ContextModel):
         distance_metric="cosine",
     )
 
-    document: ResearchDocument = ContextRelationship(
+    document: Any = ContextRelationship(
         description="Parent research document",
+        target="ResearchDocument",
         source_field="document_id",
     )
 
-    company: Company = ContextRelationship(
+    company: Any = ContextRelationship(
         description="Owning company",
+        target="Company",
         source_field="company_id",
     )
 
@@ -354,8 +364,9 @@ class FinancialMetricPoint(ContextModel):
         index="tag",
     )
 
-    company: Company = ContextRelationship(
+    company: Any = ContextRelationship(
         description="Owning company",
+        target="Company",
         source_field="company_id",
     )
 
@@ -422,8 +433,9 @@ class PriceBar(ContextModel):
         sortable=True,
     )
 
-    company: Company = ContextRelationship(
+    company: Any = ContextRelationship(
         description="Owning company",
+        target="Company",
         source_field="company_id",
     )
 
@@ -480,12 +492,14 @@ class CoverageEvent(ContextModel):
         sortable=True,
     )
 
-    company: Company = ContextRelationship(
+    company: Any = ContextRelationship(
         description="Owning company",
+        target="Company",
         source_field="company_id",
     )
 
-    document: ResearchDocument | None = ContextRelationship(
+    document: Any = ContextRelationship(
         description="Related research document",
+        target="ResearchDocument",
         source_field="document_id",
     )

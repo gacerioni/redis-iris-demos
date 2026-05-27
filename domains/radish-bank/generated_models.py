@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 from context_surfaces.context_model import ContextField, ContextModel, ContextRelationship
 
 
@@ -31,28 +33,33 @@ class Customer(ContextModel):
         index="tag",
     )
 
-    home_branch: Branch = ContextRelationship(
+    home_branch: Any = ContextRelationship(
         description="Home branch profile",
+        target="Branch",
         source_field="home_branch_id",
     )
 
-    accounts: list[Account] = ContextRelationship(
+    accounts: Any = ContextRelationship(
         description="Deposit accounts for this customer",
+        target="Account",
         source_field="customer_id",
     )
 
-    cards: list[Card] = ContextRelationship(
+    cards: Any = ContextRelationship(
         description="Cards for this customer",
+        target="Card",
         source_field="customer_id",
     )
 
-    holdings: list[ProductHolding] = ContextRelationship(
+    holdings: Any = ContextRelationship(
         description="Product holdings",
+        target="ProductHolding",
         source_field="customer_id",
     )
 
-    service_requests: list[ServiceRequest] = ContextRelationship(
+    service_requests: Any = ContextRelationship(
         description="Service request history",
+        target="ServiceRequest",
         source_field="customer_id",
     )
 
@@ -88,8 +95,9 @@ class Account(ContextModel):
         index="tag",
     )
 
-    customer: Customer = ContextRelationship(
+    customer: Any = ContextRelationship(
         description="Account owner",
+        target="Customer",
         source_field="customer_id",
     )
 
@@ -125,8 +133,9 @@ class Card(ContextModel):
         index="tag",
     )
 
-    customer: Customer = ContextRelationship(
+    customer: Any = ContextRelationship(
         description="Cardholder",
+        target="Customer",
         source_field="customer_id",
     )
 
@@ -215,8 +224,9 @@ class Branch(ContextModel):
         index="tag",
     )
 
-    hours: BranchHours = ContextRelationship(
+    hours: Any = ContextRelationship(
         description="Published operating hours",
+        target="BranchHours",
         source_field="branch_id",
     )
 
@@ -267,8 +277,9 @@ class ProductHolding(ContextModel):
         index="tag",
     )
 
-    customer: Customer = ContextRelationship(
+    customer: Any = ContextRelationship(
         description="Holding owner",
+        target="Customer",
         source_field="customer_id",
     )
 
@@ -303,8 +314,9 @@ class ServiceRequest(ContextModel):
         index="tag",
     )
 
-    customer: Customer = ContextRelationship(
+    customer: Any = ContextRelationship(
         description="Requesting customer",
+        target="Customer",
         source_field="customer_id",
     )
 

@@ -3,8 +3,12 @@ from __future__ import annotations
 from typing import Any, Sequence
 
 
-def build_system_prompt(*, mcp_tools: Sequence[dict[str, Any]], runtime_config: dict[str, Any] | None = None) -> str:
-    del runtime_config
+def build_system_prompt(
+    *,
+    mcp_tools: Sequence[dict[str, Any]],
+    runtime_config: dict[str, Any] | None = None,
+    memory_enabled: bool = False,
+) -> str:
     tool_names = {tool.get("name", "") for tool in mcp_tools}
 
     hints: list[str] = []
@@ -31,6 +35,25 @@ def build_system_prompt(*, mcp_tools: Sequence[dict[str, Any]], runtime_config: 
         "price bars, and coverage events."
     )
 
+    memory_block = ""
+    if memory_enabled:
+        memory_block = """
+
+Memory tools (long-term analyst memory):
+  • search_analyst_memory — search durable analyst memory for research preferences, coverage focus, or stored context.
+    Use when the user asks what you remember, refers to preferences, or wants continuity across conversations.
+  • remember_analyst_preference — save a durable analyst preference or research note into long-term memory.
+    Only use when the user explicitly asks you to remember something or states a lasting preference.
+"""
+
+    memory_rule = ""
+    if memory_enabled:
+        memory_rule = """
+6. USE MEMORY FOR CONTINUITY. When the analyst mentions preferences, past research focus, or asks "what do you know
+   about me", search analyst memory first. When they state a lasting preference or ask you to remember something,
+   store it. Memory persists across sessions.
+"""
+
     return f"""\
 You are the Finance Researcher assistant.
 
@@ -45,7 +68,7 @@ Internal tools (instant, local):
   • watchlist_overview — returns the active 14-company watchlist and current coverage state.
   • query_finance_timeseries — queries RedisTimeSeries for watchlist price or fundamentals trends.
     Use this FIRST for trend, price-action, or metric-series questions when the answer depends on time-series data.
-
+{memory_block}
 Context Surface tools (query Redis via MCP):
 {tool_hint_block}
 
@@ -63,7 +86,7 @@ Context Surface tools (query Redis via MCP):
 
 5. DO NOT IMPLY UNAVAILABLE SOURCES. Treat broker research, paywalled transcripts, and non-official commentary as out
    of scope unless they are clearly present in the provided data.
-
+{memory_rule}
 ═══ FLAGSHIP WORKFLOWS ═══
 
 Cross-company narrative comparison:

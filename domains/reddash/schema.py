@@ -106,7 +106,7 @@ ENTITY_SPECS: tuple[EntitySpec, ...] = (
         relationships=(
             RelationshipSpec("customer", "Customer who placed the order", "customer_id", "Customer"),
             RelationshipSpec("restaurant", "Restaurant fulfilling the order", "restaurant_id", "Restaurant"),
-            RelationshipSpec("driver", "Driver delivering the order", "driver_id", "Driver | None"),
+            RelationshipSpec("driver", "Driver delivering the order", "driver_id", "Driver"),
         ),
     ),
     # ── OrderItem ───────────────────────────────────────
@@ -193,7 +193,7 @@ ENTITY_SPECS: tuple[EntitySpec, ...] = (
         ),
         relationships=(
             RelationshipSpec("customer", "Customer who filed the ticket", "customer_id", "Customer"),
-            RelationshipSpec("order", "Related order", "order_id", "Order | None"),
+            RelationshipSpec("order", "Related order", "order_id", "Order"),
         ),
     ),
     # ── Policy ──────────────────────────────────────────

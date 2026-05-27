@@ -468,7 +468,7 @@ def generate_demo_data(
     *,
     output_dir: Path | None = None,
     seed: int | None = None,
-    update_env_file: bool = False,
+    update_env_file: bool = True,
 ) -> GeneratedDataset:
     del seed
     resolved_output_dir = output_dir or OUTPUT_DIR
@@ -520,7 +520,7 @@ def generate_demo_data(
 
 
 def main() -> None:
-    generate_demo_data(output_dir=OUTPUT_DIR, update_env_file=True)
+    generate_demo_data(output_dir=OUTPUT_DIR)
 
 
 if __name__ == "__main__":

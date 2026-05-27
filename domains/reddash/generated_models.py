@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 from context_surfaces.context_model import ContextField, ContextModel, ContextRelationship
 
 
@@ -61,8 +63,9 @@ class Customer(ContextModel):
         description="ISO timestamp of account creation",
     )
 
-    orders: list[Order] = ContextRelationship(
+    orders: Any = ContextRelationship(
         description="Orders placed by this customer",
+        target="Order",
         source_field="customer_id",
     )
 
@@ -113,8 +116,9 @@ class Restaurant(ContextModel):
         index="tag",
     )
 
-    orders: list[Order] = ContextRelationship(
+    orders: Any = ContextRelationship(
         description="Orders from this restaurant",
+        target="Order",
         source_field="restaurant_id",
     )
 
@@ -255,18 +259,21 @@ class Order(ContextModel):
         description="Reason for cancellation",
     )
 
-    customer: Customer = ContextRelationship(
+    customer: Any = ContextRelationship(
         description="Customer who placed the order",
+        target="Customer",
         source_field="customer_id",
     )
 
-    restaurant: Restaurant = ContextRelationship(
+    restaurant: Any = ContextRelationship(
         description="Restaurant fulfilling the order",
+        target="Restaurant",
         source_field="restaurant_id",
     )
 
-    driver: Driver | None = ContextRelationship(
+    driver: Any = ContextRelationship(
         description="Driver delivering the order",
+        target="Driver",
         source_field="driver_id",
     )
 
@@ -309,8 +316,9 @@ class OrderItem(ContextModel):
         description="Special delivery instructions",
     )
 
-    order: Order = ContextRelationship(
+    order: Any = ContextRelationship(
         description="Parent order",
+        target="Order",
         source_field="order_id",
     )
 
@@ -349,8 +357,9 @@ class DeliveryEvent(ContextModel):
         index="tag",
     )
 
-    order: Order = ContextRelationship(
+    order: Any = ContextRelationship(
         description="Associated order",
+        target="Order",
         source_field="order_id",
     )
 
@@ -435,13 +444,15 @@ class Payment(ContextModel):
         description="Reason for refund",
     )
 
-    order: Order = ContextRelationship(
+    order: Any = ContextRelationship(
         description="Associated order",
+        target="Order",
         source_field="order_id",
     )
 
-    customer: Customer = ContextRelationship(
+    customer: Any = ContextRelationship(
         description="Customer who paid",
+        target="Customer",
         source_field="customer_id",
     )
 
@@ -493,13 +504,15 @@ class SupportTicket(ContextModel):
         description="How it was resolved",
     )
 
-    customer: Customer = ContextRelationship(
+    customer: Any = ContextRelationship(
         description="Customer who filed the ticket",
+        target="Customer",
         source_field="customer_id",
     )
 
-    order: Order | None = ContextRelationship(
+    order: Any = ContextRelationship(
         description="Related order",
+        target="Order",
         source_field="order_id",
     )
 

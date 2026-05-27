@@ -167,6 +167,23 @@ ENTITY_SPECS: tuple[EntitySpec, ...] = (
             ),
         ),
     ),
+    # ── HealthDoc ───────────────────────────────────────
+    EntitySpec(
+        class_name="HealthDoc",
+        redis_key_template="healthcare_healthdoc:{doc_id}",
+        file_name="healthdocs.jsonl",
+        id_field="doc_id",
+        fields=(
+            FieldSpec("doc_id", "str", "Document ID", is_key_component=True),
+            FieldSpec("title", "str", "Document title", index="text", weight=2.0),
+            FieldSpec("category", "str", "Category: policy, faq, care_guide", index="tag"),
+            FieldSpec("content", "str", "Full document text", index="text"),
+            FieldSpec(
+                "content_embedding", "list[float]", "Vector embedding of document content",
+                index="vector", vector_dim=1536, distance_metric="cosine",
+            ),
+        ),
+    ),
 )
 
 ENTITY_BY_FILE = entity_by_file(ENTITY_SPECS)

@@ -37,6 +37,20 @@ Use this checklist after scaffolding a domain.
 - updates demo identity env vars when the demo uses a signed-in user
 - creates records that support the documented flagship demo paths
 
+## Iris Features (in `domain.py` manifest)
+
+- `guardrail` has a `GuardrailConfig` with 8-15 route references
+- `seed_memories` has at least 2 entries with relevant `topics`
+- `seed_langcache` has at least 1 entry with a realistic prompt/response pair
+- `branding.theme.landing_bg` is a hex color matching the domain palette
+
+## Landing Page Backgrounds
+
+- `frontend/public/backgrounds/<domain-id>/left.svg` exists
+- `frontend/public/backgrounds/<domain-id>/right.svg` exists
+- SVGs are flat style, under 35KB, domain-relevant illustrations
+- Objects fade toward center to keep focus on the UI
+
 ## `docs/demo_paths.md`
 
 - includes at least two realistic conversation paths

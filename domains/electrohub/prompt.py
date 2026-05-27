@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Any, Sequence
 
 
-def build_system_prompt(*, mcp_tools: Sequence[dict[str, Any]], shopping_analyzer_enabled: bool) -> str:
+def build_system_prompt(*, mcp_tools: Sequence[dict[str, Any]], shopping_analyzer_enabled: bool, memory_enabled: bool = False) -> str:
     tool_names = {tool.get("name", "") for tool in mcp_tools}
 
     hints: list[str] = []
@@ -30,6 +30,24 @@ def build_system_prompt(*, mcp_tools: Sequence[dict[str, Any]], shopping_analyze
     device types, performance level, and short retail search terms.
     Call this before catalog search when the user mentions an unfamiliar app, game, workflow, or compatibility target.
     Pass the full shopping request, not just the niche term, so the analyzer can use the user's buying intent."""
+
+    memory_block = ""
+    memory_rules = ""
+    if memory_enabled:
+        memory_block = """
+Memory tools (durable customer context):
+  • search_customer_memory — searches long-term memory for durable customer preferences, past issues, and facts from previous sessions.
+  • remember_customer_detail — stores a durable customer preference or fact. Use this only when the user explicitly asks you to remember something or clearly states a lasting preference.
+""".rstrip()
+        memory_rules = """
+10. USE MEMORY DELIBERATELY.
+   • Customer memory (short-term session + long-term preferences) is ALREADY
+     pre-loaded into your context automatically. Do NOT call search_customer_memory
+     unless the user explicitly asks "what do you remember about me" or asks
+     about a specific past preference.
+   • Call remember_customer_detail only when the user explicitly says "remember"
+     or clearly states a durable preference or lasting fact worth saving.
+""".rstrip()
 
     niche_software_guidance = """
 4. FOR NICHE SOFTWARE OR APP QUESTIONS, infer likely requirements from general knowledge and context, then search the catalog
@@ -77,7 +95,7 @@ Internal tools (instant, local):
   • get_current_time — returns the current UTC timestamp.
     Call this whenever you need to compare against promised delivery dates, shipment scans, or pickup windows.
   • dataset_overview — returns counts of the current demo dataset.{analyzer_tool_block}
-
+{memory_block if memory_block else ""}
 Context Surface tools (query Redis via MCP):
 {tool_hint_block}
 
@@ -111,7 +129,7 @@ Context Surface tools (query Redis via MCP):
 
 9. FOR ANY QUESTION THAT SAYS "IN STOCK", "AVAILABLE TODAY", OR "CAN I BUY THIS NOW", verify inventory with
    storeinventory tools for the final products you recommend. Do not rely only on the product catalog row.
-
+{memory_rules if memory_rules else ""}
 ═══ COMMON WORKFLOWS ═══
 
 Product fit / compatibility:

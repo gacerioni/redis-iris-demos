@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import importlib.util
+import os
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 import re
@@ -11,16 +12,21 @@ from backend.app.core.domain_contract import (
     BrandingConfig,
     DomainManifest,
     GeneratedDataset,
+    GuardrailConfig,
+    GuardrailRouteConfig,
     IdentityConfig,
     InternalToolDefinition,
     NamespaceConfig,
     PromptCard,
     RagConfig,
+    SeedLangCacheEntry,
+    SeedMemory,
     ThemeConfig,
     UiConfig,
 )
-from backend.app.core.domain_schema import EntitySpec
+from backend.app.core.domain_schema import EntitySpec, validate_entity_specs
 from backend.app.domain_events import build_domain_event, publish_domain_event
+from backend.app.memory_service import MemoryService
 from backend.app.redis_connection import create_redis_client
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -340,26 +346,32 @@ class FinanceResearcherDomain:
             hero_title="ShiftIQ",
             placeholder_text="Compare companies, documents, metrics, or recent events...",
             logo_path="domains/finance-researcher/assets/logo.svg",
+            demo_steps=[
+                "Compare the latest gross profit trends for NVIDIA, AMD, and Broadcom",
+                "Remember that I focus on semiconductor stocks and prefer quarterly earnings data",
+                "Click Memory",
+                "Given what you know about my research focus, what should I look at next across my watchlist?",
+            ],
             starter_prompts=[
                 PromptCard(
-                    eyebrow="Cross-company",
-                    title="Compare NVIDIA, AMD, and Broadcom",
-                    prompt="Compare the latest NVIDIA, AMD, and Broadcom filings and tell me what changed across the three companies.",
-                ),
-                PromptCard(
-                    eyebrow="Company deep dive",
+                    eyebrow="Context",
                     title="Walk me through Oracle",
                     prompt="Walk me through Oracle's latest quarter using both the filing and the structured metrics.",
                 ),
                 PromptCard(
-                    eyebrow="Peer trend",
-                    title="Show the trend for NVIDIA, AMD, and MongoDB",
-                    prompt="Compare stock price and fundamentals trends for NVIDIA, AMD, and MongoDB.",
+                    eyebrow="Memory",
+                    title="Save research preferences",
+                    prompt="Please remember that I prefer visual comparisons with charts when analyzing multi-company trends.",
                 ),
                 PromptCard(
-                    eyebrow="Watchlist update",
-                    title="What's new on my watchlist?",
-                    prompt="What's new in my watchlist this week?",
+                    eyebrow="Memory",
+                    title="Coverage and preferences",
+                    prompt="What is my semiconductor coverage and analysis preferences?",
+                ),
+                PromptCard(
+                    eyebrow="Cached",
+                    title="Gross profit trends",
+                    prompt="Compare the latest gross profit trends for NVIDIA, AMD, and Broadcom",
                 ),
             ],
             theme=ThemeConfig(
@@ -376,6 +388,7 @@ class FinanceResearcherDomain:
                 soft="#d2deeb",
                 accent="#6fd3ff",
                 user="#13263a",
+                landing_bg="#EBF3FA",
             ),
             ui=UiConfig(
                 show_platform_surface=True,
@@ -398,7 +411,7 @@ class FinanceResearcherDomain:
             tool_name="vector_search_research_chunks",
             status_text="Searching research chunks…",
             generating_text="Generating answer…",
-            index_name_contains="research_chunk",
+            index_name_contains="researchchunk",
             vector_field="content_embedding",
             return_fields=["company_id", "ticker", "document_id", "section_heading", "page_label", "chunk_text"],
             title_fields=["section_heading", "headline", "document_id"],
@@ -420,15 +433,102 @@ class FinanceResearcherDomain:
                 "watchlist context."
             ),
         ),
+        guardrail=GuardrailConfig(
+            router_name="shiftiq-guardrails",
+            allowed_route_name="financial_research",
+            routes=[
+                GuardrailRouteConfig(
+                    name="financial_research",
+                    references=[
+                        "Compare the latest NVIDIA and AMD filings",
+                        "What changed in Broadcom's earnings this quarter?",
+                        "Show me NVDA gross profit trends",
+                        "Pull the SEC filing for Microsoft",
+                        "How does Oracle's revenue compare to its peers?",
+                        "What's the operating margin trend for AMD?",
+                        "Walk me through Intel's latest quarterly earnings",
+                        "What's new on my watchlist?",
+                        "Compare stock price trends for NVDA and AVGO",
+                        "Show me the revenue breakdown for Meta",
+                        "What did management say about AI revenue in the latest filing?",
+                        "How has diluted EPS trended for Tesla over the past year?",
+                        "Filter coverage events for Qualcomm",
+                        "Update my watchlist research notes",
+                        "What are the key differences between NVIDIA and AMD this quarter?",
+                        "Show me Micron's net income trend",
+                        "Which semiconductor company had the best gross profit growth?",
+                        "Summarize the latest Amazon earnings document",
+                        "Compare sector fundamentals across my watchlist",
+                        "What's the latest filing date for Alphabet?",
+                        "Yes",
+                        "No",
+                        "Tell me more",
+                        "Go ahead",
+                        "Sure",
+                        "Thanks",
+                        "Hello",
+                        "Can you help me?",
+                    ],
+                    distance_threshold=0.7,
+                ),
+                GuardrailRouteConfig(
+                    name="off_topic",
+                    references=[
+                        "What's the weather like today?",
+                        "Tell me a joke",
+                        "Write me a Python script",
+                        "Help me with a cooking recipe",
+                        "Who won the game last night?",
+                        "Should I buy this stock?",
+                        "Give me crypto trading tips",
+                        "What's the best savings account rate?",
+                        "Help me with my personal budget",
+                        "Explain quantum physics",
+                        "Translate this to French",
+                        "Write a poem",
+                        "What's the capital of Japan?",
+                        "Generate an image of a chart",
+                        "How do I fix my car?",
+                    ],
+                    distance_threshold=0.5,
+                ),
+            ],
+        ),
+        seed_memories=[
+            SeedMemory(
+                text="Focuses on semiconductor sector — NVDA, AMD, AVGO are primary coverage",
+                topics=["watchlist", "preferences"],
+            ),
+            SeedMemory(
+                text="Prefers quarterly earnings over annual filings for recent momentum analysis",
+                topics=["research", "methodology"],
+            ),
+        ],
+        seed_langcache=[
+            SeedLangCacheEntry(
+                prompt="Compare the latest gross profit trends for NVIDIA, AMD, and Broadcom",
+                response=(
+                    "Based on the most recent quarterly filings:\n\n"
+                    "- **NVIDIA (NVDA)**: Gross profit continues to accelerate, driven by AI accelerator demand. "
+                    "Quarter-over-quarter growth remains the strongest among semiconductor peers.\n"
+                    "- **AMD**: Gross profit has been relatively flat, reflecting competitive pressure in both CPU "
+                    "and GPU segments.\n"
+                    "- **Broadcom (AVGO)**: Steady gross profit growth driven by infrastructure and networking demand.\n\n"
+                    "For detailed numbers, I can pull the exact quarterly metrics from the research database."
+                ),
+                attributes={"domain": "finance-researcher"},
+            ),
+        ],
     )
 
     def get_entity_specs(self) -> tuple[EntitySpec, ...]:
         return ENTITY_SPECS
 
     def get_runtime_config(self, *, settings: Any) -> dict[str, Any]:
-        del settings
+        memory_enabled = MemoryService(settings).is_configured() if settings else False
         return {
             "watchlist_size": len(WATCHLIST),
+            "memory_enabled": memory_enabled,
         }
 
     def build_system_prompt(
@@ -437,7 +537,11 @@ class FinanceResearcherDomain:
         mcp_tools: Sequence[dict[str, Any]],
         runtime_config: dict[str, Any] | None = None,
     ) -> str:
-        return build_system_prompt(mcp_tools=mcp_tools, runtime_config=runtime_config)
+        return build_system_prompt(
+            mcp_tools=mcp_tools,
+            runtime_config=runtime_config,
+            memory_enabled=bool((runtime_config or {}).get("memory_enabled")),
+        )
 
     def build_answer_verifier_prompt(self, *, runtime_config: dict[str, Any] | None = None) -> str:
         del runtime_config
@@ -477,6 +581,10 @@ class FinanceResearcherDomain:
             return "Query RedisTimeSeries for finance trend data and inspect the exact command output."
         if tool_name == "vector_search_research_chunks":
             return f"Search the research corpus for narrative evidence: {detail or 'research query'}."
+        if tool_name == "search_analyst_memory":
+            return "Search durable analyst memory for research preferences, coverage focus, or stored context."
+        if tool_name == "remember_analyst_preference":
+            return "Store a durable analyst preference or research note for future sessions."
         return None
 
     def get_internal_tool_definitions(
@@ -484,8 +592,7 @@ class FinanceResearcherDomain:
         *,
         runtime_config: dict[str, Any] | None = None,
     ) -> Sequence[InternalToolDefinition]:
-        del runtime_config
-        return (
+        tools: list[InternalToolDefinition] = [
             InternalToolDefinition(
                 name=self.manifest.identity.tool_name,
                 description=self.manifest.identity.description,
@@ -545,11 +652,55 @@ class FinanceResearcherDomain:
                     "required": ["tickers"],
                 },
             ),
-        )
+        ]
+        if (runtime_config or {}).get("memory_enabled"):
+            tools.extend(
+                [
+                    InternalToolDefinition(
+                        name="search_analyst_memory",
+                        description=(
+                            "Search durable analyst memory for research preferences, coverage focus, methodology notes, "
+                            "or facts from previous sessions. Use this when the user asks what you remember, refers to "
+                            "preferences, or wants continuity across conversations."
+                        ),
+                        input_schema={
+                            "type": "object",
+                            "properties": {
+                                "query": {"type": "string", "description": "What to look up in analyst memory."},
+                                "limit": {"type": "integer", "description": "Optional max number of memories to return.", "default": 5},
+                            },
+                            "required": ["query"],
+                        },
+                    ),
+                    InternalToolDefinition(
+                        name="remember_analyst_preference",
+                        description=(
+                            "Save a durable analyst preference or research note into long-term memory. "
+                            "Only use this when the user explicitly asks you to remember something or states a lasting preference."
+                        ),
+                        input_schema={
+                            "type": "object",
+                            "properties": {
+                                "text": {"type": "string", "description": "The exact analyst preference or research note to remember."},
+                                "memory_type": {
+                                    "type": "string",
+                                    "description": "Memory type: semantic for preferences/facts, episodic for a notable event, message for a verbatim note.",
+                                    "default": "semantic",
+                                },
+                                "topics": {
+                                    "type": "array",
+                                    "items": {"type": "string"},
+                                    "description": "Optional topic tags like watchlist, research, methodology, sector, preferences.",
+                                },
+                            },
+                            "required": ["text"],
+                        },
+                    ),
+                ]
+            )
+        return tuple(tools)
 
     def execute_internal_tool(self, tool_name: str, arguments: dict[str, Any], settings: Any) -> dict[str, Any]:
-        import os
-
         if tool_name == self.manifest.identity.tool_name:
             identity = self.manifest.identity
             return {
@@ -680,6 +831,62 @@ class FinanceResearcherDomain:
             }
         return {"error": f"Unknown tool: {tool_name}"}
 
+    async def aexecute_internal_tool(self, tool_name: str, arguments: dict[str, Any], settings: Any) -> dict[str, Any]:
+        if tool_name not in {"search_analyst_memory", "remember_analyst_preference"}:
+            return self.execute_internal_tool(tool_name, arguments, settings)
+
+        identity = self.manifest.identity
+        owner_id = os.getenv(identity.id_env_var, identity.default_id)
+        memory_service = MemoryService(settings)
+        if not memory_service.is_configured():
+            return {"error": "Memory service is not configured for this demo."}
+
+        if tool_name == "search_analyst_memory":
+            query = str(arguments.get("query", "")).strip()
+            if not query:
+                return {"error": "query is required"}
+            limit = arguments.get("limit")
+            memories = await memory_service.asearch_long_term_memory(
+                text=query,
+                owner_id=owner_id,
+                limit=int(limit) if limit is not None else None,
+            )
+            return {
+                "owner_id": owner_id,
+                "query": query,
+                "memory_count": len(memories),
+                "memories": [
+                    {
+                        "id": memory.get("id"),
+                        "text": memory.get("text"),
+                        "memory_type": memory.get("memoryType"),
+                        "topics": memory.get("topics", []),
+                        "session_id": memory.get("sessionId"),
+                        "created_at": memory.get("createdAt"),
+                    }
+                    for memory in memories
+                ],
+            }
+
+        # remember_analyst_preference — blocked in demo mode
+        text = str(arguments.get("text", "")).strip()
+        if not text:
+            return {"error": "text is required"}
+        memory_type = str(arguments.get("memory_type", "semantic")).strip() or "semantic"
+        if memory_type not in {"semantic", "episodic", "message"}:
+            memory_type = "semantic"
+        topics = arguments.get("topics") or []
+        if not isinstance(topics, list):
+            topics = []
+        return {
+            "owner_id": owner_id,
+            "saved_text": text,
+            "memory_type": memory_type,
+            "topics": [str(t).strip() for t in topics if str(t).strip()],
+            "demo_blocked": True,
+            "response": {"acknowledged": True},
+        }
+
     def publish_coverage_event(
         self,
         *,
@@ -765,21 +972,12 @@ class FinanceResearcherDomain:
         *,
         output_dir: Path,
         seed: int | None = None,
-        update_env_file: bool = True,
+        update_env_file: bool = False,
     ) -> GeneratedDataset:
         return generate_demo_data(output_dir=output_dir, seed=seed, update_env_file=update_env_file)
 
     def validate(self) -> list[str]:
-        errors: list[str] = []
-        seen_classes: set[str] = set()
-        seen_files: set[str] = set()
-        for spec in self.get_entity_specs():
-            if spec.class_name in seen_classes:
-                errors.append(f"Duplicate entity class name: {spec.class_name}")
-            if spec.file_name in seen_files:
-                errors.append(f"Duplicate entity file name: {spec.file_name}")
-            seen_classes.add(spec.class_name)
-            seen_files.add(spec.file_name)
+        errors = validate_entity_specs(self.get_entity_specs())
         if not (ROOT / self.manifest.branding.logo_path).exists():
             errors.append(f"Logo file not found: {self.manifest.branding.logo_path}")
         if not self.manifest.branding.starter_prompts:

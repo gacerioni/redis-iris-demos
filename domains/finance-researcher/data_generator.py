@@ -265,8 +265,8 @@ def now_utc() -> datetime:
 
 def slugify(text: str) -> str:
     text = text.lower()
-    text = re.sub(r"[^a-z0-9]+", "-", text)
-    return text.strip("-") or "item"
+    text = re.sub(r"[^a-z0-9]+", "_", text)
+    return text.strip("_") or "item"
 
 
 def safe_filename(name: str) -> str:

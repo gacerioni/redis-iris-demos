@@ -17,7 +17,16 @@ Use this skill when the task is to add a new business domain, refactor an existi
 6. Implement domain demo-data generation in `domains/<domain-id>/data_generator.py`.
 7. Add or update scripted demo paths in `domains/<domain-id>/docs/demo_paths.md`.
 8. If the domain includes presentation material, keep it under `domains/<domain-id>/presentations/`.
-9. Run validation and smoke tests:
+9. Add Iris-specific configuration to the manifest in `domain.py`:
+   - `guardrail` — a `GuardrailConfig` with 8-15 example route references covering the domain's scope
+   - `seed_memories` — at least 2 `SeedMemory` entries for the demo user (personal preferences the agent can recall)
+   - `seed_langcache` — at least 1 `SeedLangCacheEntry` for a common question (demonstrates cached responses)
+   - `branding.theme.landing_bg` — a hex color for the landing page background matching the domain's visual identity
+10. Create landing page background SVGs under `frontend/public/backgrounds/<domain-id>/`:
+    - `left.svg` (~590×817) and `right.svg` (~632×817)
+    - Flat illustration style, domain-relevant objects, fade toward center
+    - Use the domain's accent color palette, no text, under 35KB each
+11. Run validation and smoke tests:
    `uv run python scripts/validate_domain.py --domain <domain-id>`
    `uv run python scripts/generate_models.py --domain <domain-id>`
    `uv run python scripts/smoke_domain.py --domain <domain-id>`
@@ -36,6 +45,14 @@ domains/<domain-id>/
   data_generator.py
   assets/logo.<svg|png|jpg|jpeg|webp>
   docs/demo_paths.md
+```
+
+Landing page backgrounds:
+
+```text
+frontend/public/backgrounds/<domain-id>/
+  left.svg
+  right.svg
 ```
 
 Generated files:
@@ -57,6 +74,10 @@ domains/<domain-id>/presentations/
 - `DOMAIN` must satisfy the shared contract in `backend/app/core/domain_contract.py`.
 - Keep branding, namespace, RAG config, and identity config declarative in `manifest`.
 - `manifest.branding.logo_path` may point to any supported image asset under `domains/<domain-id>/assets/`.
+- `manifest.guardrail` must define a `GuardrailConfig` with 8-15 route references covering the domain's scope. Routes are example phrases an on-topic user would say.
+- `manifest.seed_memories` must include at least 2 long-term memories for the demo user (preferences, history).
+- `manifest.seed_langcache` must include at least 1 cached response for a frequently asked question.
+- `manifest.branding.theme.landing_bg` must be a hex color that complements the domain's accent palette.
 - Keep code hooks limited to:
   - `build_system_prompt`
   - `get_internal_tool_definitions`
@@ -117,6 +138,11 @@ Do not consider the task complete if any of these remain:
 - system prompt is missing the `value` parameter hint for MCP tools
 - `generate_demo_data` still defaults `update_env_file=True`
 - generated models use `Any` as relationship type annotations (run `make generate-models DOMAIN=<id>` to regenerate)
+- missing guardrail routes (no `GuardrailConfig` in manifest)
+- missing seed memories (empty `seed_memories` list)
+- missing seed langcache entries (empty `seed_langcache` list)
+- missing `landing_bg` in theme config
+- missing landing page background SVGs (`frontend/public/backgrounds/<domain-id>/left.svg` and `right.svg`)
 
 ## References
 

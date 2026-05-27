@@ -1,9 +1,9 @@
 # Environment & secrets
 .env
-.env.local
-.env.shared
-.env.bak
-tinytown.toml
+env.cloud-run.yaml
+
+# AI assistant config (local only)
+CLAUDE.md
 
 # Python
 __pycache__/
@@ -37,5 +37,11 @@ Thumbs.db
 *.swp
 *.swo
 
-# Tinytown runtime artifacts
-.tt
+# Screenshots / design iterations (root only)
+/*.png
+
+# Playwright MCP debug artifacts
+.playwright-mcp/
+
+# Vercel deployment
+.vercel
