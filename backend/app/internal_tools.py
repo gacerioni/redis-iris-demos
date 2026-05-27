@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 from typing import Any
 
 from backend.app.core.domain_contract import InternalToolDefinition
@@ -34,3 +35,9 @@ class InternalToolService:
 
     def execute(self, tool_name: str, arguments: dict[str, Any]) -> dict[str, Any]:
         return self.domain.execute_internal_tool(tool_name, arguments, self.settings)
+
+    async def aexecute(self, tool_name: str, arguments: dict[str, Any]) -> dict[str, Any]:
+        async_executor = getattr(self.domain, "aexecute_internal_tool", None)
+        if callable(async_executor):
+            return await async_executor(tool_name, arguments, self.settings)
+        return await asyncio.to_thread(self.execute, tool_name, arguments)

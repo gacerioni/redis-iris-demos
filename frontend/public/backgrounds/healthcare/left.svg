@@ -1,0 +1,158 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 590 817">
+  <defs>
+    <style>
+      .h1{fill:#4cc2ff}
+      .h2{fill:#2A96D4}
+      .h3{fill:#8DD6FF}
+      .h4{fill:#C8EBFF}
+      .h5{fill:#1A6A99}
+      .hw{fill:#fff}
+    </style>
+  </defs>
+
+  <!-- Stethoscope tube flowing from top-left -->
+  <path class="h2" d="M-20,0 Q-20,120 60,200 Q140,280 120,400 Q100,520 160,580" stroke-linecap="round" fill="none" stroke="#2A96D4" stroke-width="18"/>
+  <path class="h3" d="M-20,0 Q-20,120 60,200 Q140,280 120,400 Q100,520 160,580" stroke-linecap="round" fill="none" stroke="#8DD6FF" stroke-width="8"/>
+
+  <!-- Stethoscope head (chest piece) -->
+  <circle class="h2" cx="160" cy="580" r="38"/>
+  <circle class="h5" cx="160" cy="580" r="26"/>
+  <circle class="h2" cx="160" cy="580" r="14"/>
+
+  <!-- Stethoscope earpieces at top -->
+  <circle class="h5" cx="-10" cy="0" r="12"/>
+  <circle class="h5" cx="20" cy="0" r="12"/>
+  <rect class="h2" x="-2" y="-14" width="14" height="28" rx="7"/>
+
+  <!-- Large clipboard - bottom left, partially cut off -->
+  <g transform="translate(-40, 590)">
+    <rect class="h4" x="0" y="0" width="180" height="240" rx="16"/>
+    <rect class="hw" x="16" y="40" width="148" height="184" rx="10"/>
+    <!-- Clip at top -->
+    <rect class="h2" x="50" y="-12" width="80" height="30" rx="10"/>
+    <circle class="h2" cx="90" cy="-2" r="8"/>
+    <!-- Checklist lines -->
+    <!-- Check 1 -->
+    <rect class="h4" x="36" y="60" width="108" height="10" rx="5"/>
+    <rect class="h1" x="36" y="60" width="70" height="10" rx="5"/>
+    <path d="M28,65 L32,70 L40,58" stroke="#2A96D4" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- Check 2 -->
+    <rect class="h4" x="36" y="90" width="108" height="10" rx="5"/>
+    <rect class="h1" x="36" y="90" width="90" height="10" rx="5"/>
+    <path d="M28,95 L32,100 L40,88" stroke="#2A96D4" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- Check 3 -->
+    <rect class="h4" x="36" y="120" width="108" height="10" rx="5"/>
+    <rect class="h1" x="36" y="120" width="55" height="10" rx="5"/>
+    <path d="M28,125 L32,130 L40,118" stroke="#2A96D4" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- Check 4 (unchecked) -->
+    <rect class="h4" x="36" y="150" width="108" height="10" rx="5"/>
+    <rect class="h4" x="24" y="148" width="14" height="14" rx="3" stroke="#C8EBFF" stroke-width="0"/>
+    <rect fill="none" x="24" y="148" width="14" height="14" rx="3" stroke="#8DD6FF" stroke-width="2"/>
+  </g>
+
+  <!-- Heart rate / pulse wave line -->
+  <g transform="translate(0, 340)">
+    <polyline points="-10,0 80,0 110,-60 130,70 150,-40 170,30 190,0 350,0" fill="none" stroke="#4cc2ff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <!-- Second pulse wave, lighter -->
+  <g transform="translate(40, 460)">
+    <polyline points="-50,0 30,0 50,-30 65,35 80,-20 92,15 105,0 200,0" fill="none" stroke="#C8EBFF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- Pill capsule 1 - large, upper area -->
+  <g transform="translate(320, 120) rotate(-30)">
+    <rect class="h1" x="0" y="0" width="70" height="30" rx="15"/>
+    <rect class="hw" x="35" y="0" width="35" height="30" rx="15"/>
+    <rect class="h1" x="35" y="0" width="8" height="30"/>
+  </g>
+
+  <!-- Pill capsule 2 - medium, scattered -->
+  <g transform="translate(180, 160) rotate(15)">
+    <rect class="h3" x="0" y="0" width="50" height="22" rx="11"/>
+    <rect class="hw" x="25" y="0" width="25" height="22" rx="11"/>
+    <rect class="h3" x="25" y="0" width="6" height="22"/>
+  </g>
+
+  <!-- Pill capsule 3 - small, lower -->
+  <g transform="translate(400, 280) rotate(-50)">
+    <rect class="h4" x="0" y="0" width="40" height="18" rx="9"/>
+    <rect class="hw" x="20" y="0" width="20" height="18" rx="9"/>
+    <rect class="h4" x="20" y="0" width="5" height="18"/>
+  </g>
+
+  <!-- Pill capsule 4 - near edge -->
+  <g transform="translate(60, 470) rotate(40)">
+    <rect class="h2" x="0" y="0" width="55" height="24" rx="12"/>
+    <rect class="hw" x="27" y="0" width="28" height="24" rx="12"/>
+    <rect class="h2" x="27" y="0" width="7" height="24"/>
+  </g>
+
+  <!-- Round pill tablet -->
+  <circle class="h4" cx="440" cy="180" r="16"/>
+  <circle class="hw" cx="440" cy="180" r="11"/>
+  <line x1="429" y1="180" x2="451" y2="180" stroke="#C8EBFF" stroke-width="2"/>
+
+  <!-- Small round pill -->
+  <circle class="h3" cx="280" cy="90" r="10"/>
+  <circle class="hw" cx="280" cy="90" r="6"/>
+
+  <!-- Calendar page icon - upper right area -->
+  <g transform="translate(350, 400)">
+    <rect class="h4" x="0" y="0" width="120" height="110" rx="14"/>
+    <rect class="h2" x="0" y="0" width="120" height="32" rx="14"/>
+    <rect class="h2" x="0" y="16" width="120" height="16"/>
+    <!-- Calendar hooks -->
+    <rect class="hw" x="28" y="-8" width="8" height="20" rx="4"/>
+    <rect class="hw" x="84" y="-8" width="8" height="20" rx="4"/>
+    <!-- Date grid dots -->
+    <circle class="h3" cx="30" cy="52" r="6"/>
+    <circle class="h3" cx="60" cy="52" r="6"/>
+    <circle class="h3" cx="90" cy="52" r="6"/>
+    <circle class="h1" cx="30" cy="76" r="6"/>
+    <circle class="h5" cx="60" cy="76" r="8"/>
+    <circle class="h3" cx="90" cy="76" r="6"/>
+    <circle class="h3" cx="30" cy="96" r="4"/>
+    <circle class="h3" cx="60" cy="96" r="4"/>
+  </g>
+
+  <!-- Large decorative circle, partially off left edge -->
+  <circle class="h4" cx="-60" cy="400" r="120" opacity="0.4"/>
+
+  <!-- Small decorative circles scattered -->
+  <circle class="h3" cx="500" cy="50" r="8" opacity="0.5"/>
+  <circle class="h1" cx="460" cy="620" r="12" opacity="0.3"/>
+  <circle class="h4" cx="300" cy="750" r="18" opacity="0.4"/>
+  <circle class="h3" cx="520" cy="500" r="6" opacity="0.4"/>
+
+  <!-- Plus/cross shapes scattered (medical crosses) -->
+  <g transform="translate(480, 350)" opacity="0.35">
+    <rect class="h1" x="-3" y="-10" width="6" height="20" rx="3"/>
+    <rect class="h1" x="-10" y="-3" width="20" height="6" rx="3"/>
+  </g>
+  <g transform="translate(250, 520)" opacity="0.3">
+    <rect class="h2" x="-4" y="-12" width="8" height="24" rx="4"/>
+    <rect class="h2" x="-12" y="-4" width="24" height="8" rx="4"/>
+  </g>
+  <g transform="translate(100, 270)" opacity="0.35">
+    <rect class="h3" x="-3" y="-8" width="6" height="16" rx="3"/>
+    <rect class="h3" x="-8" y="-3" width="16" height="6" rx="3"/>
+  </g>
+
+  <!-- Heart shape - small decorative -->
+  <g transform="translate(420, 530) scale(0.8)">
+    <path class="h1" d="M0,-12 C0,-20 -16,-20 -16,-8 C-16,4 0,16 0,16 C0,16 16,4 16,-8 C16,-20 0,-20 0,-12Z" opacity="0.4"/>
+  </g>
+
+  <!-- Dot pattern decorative element -->
+  <g opacity="0.2">
+    <circle class="h2" cx="500" cy="700" r="3"/>
+    <circle class="h2" cx="520" cy="700" r="3"/>
+    <circle class="h2" cx="540" cy="700" r="3"/>
+    <circle class="h2" cx="500" cy="720" r="3"/>
+    <circle class="h2" cx="520" cy="720" r="3"/>
+    <circle class="h2" cx="540" cy="720" r="3"/>
+    <circle class="h2" cx="500" cy="740" r="3"/>
+    <circle class="h2" cx="520" cy="740" r="3"/>
+    <circle class="h2" cx="540" cy="740" r="3"/>
+  </g>
+</svg>

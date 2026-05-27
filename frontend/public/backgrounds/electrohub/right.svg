@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 632 817" fill="none">
+  <!-- Circuit board traces - background pattern toward right -->
+  <path d="M612 150 L612 300 L550 300" stroke="#B8EBFF" stroke-width="3" stroke-linecap="round"/>
+  <path d="M612 400 L612 500 L570 500 L570 560" stroke="#B8EBFF" stroke-width="3" stroke-linecap="round"/>
+  <path d="M560 80 L560 160 L500 160 L500 220" stroke="#B8EBFF" stroke-width="3" stroke-linecap="round"/>
+  <path d="M580 650 L580 700 L520 700 L520 750" stroke="#B8EBFF" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="550" cy="300" r="5" fill="#B8EBFF"/>
+  <circle cx="570" cy="560" r="5" fill="#B8EBFF"/>
+  <circle cx="500" cy="220" r="5" fill="#B8EBFF"/>
+  <circle cx="520" cy="750" r="5" fill="#B8EBFF"/>
+  <circle cx="612" cy="150" r="4" fill="#7DD8FF"/>
+  <circle cx="560" cy="80" r="4" fill="#7DD8FF"/>
+
+  <!-- Lighter traces further left -->
+  <path d="M400 50 L400 100 L360 100" stroke="#B8EBFF" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
+  <path d="M320 200 L320 250 L280 250" stroke="#B8EBFF" stroke-width="2" stroke-linecap="round" opacity="0.3"/>
+  <circle cx="360" cy="100" r="3" fill="#B8EBFF" opacity="0.5"/>
+  <circle cx="280" cy="250" r="3" fill="#B8EBFF" opacity="0.3"/>
+
+  <!-- Gaming Controller - top right, partially cut off -->
+  <!-- Body -->
+  <path d="M480 60 C440 60, 420 90, 420 130 C420 170, 450 200, 480 210 L500 220 C510 230, 520 230, 530 220 L540 210 C560 210, 570 200, 580 180 L620 160 C650 150, 670 130, 670 100 C670 70, 650 50, 620 50 L580 50 C560 50, 540 55, 530 60 Z" fill="#1a8fd0"/>
+  <!-- Inner detail -->
+  <path d="M490 80 C470 80, 450 100, 450 130 C450 155, 465 175, 485 185 L540 185 C560 175, 580 155, 590 130 C600 105, 600 80, 580 70 L530 70 C510 70, 500 75, 490 80 Z" fill="#0A5A8C"/>
+  <!-- D-pad -->
+  <rect x="470" y="110" width="30" height="10" rx="3" fill="#31c7ff"/>
+  <rect x="480" y="100" width="10" height="30" rx="3" fill="#31c7ff"/>
+  <!-- Action buttons -->
+  <circle cx="560" cy="100" r="7" fill="#31c7ff"/>
+  <circle cx="575" cy="115" r="7" fill="#7DD8FF"/>
+  <circle cx="545" cy="115" r="7" fill="#7DD8FF"/>
+  <circle cx="560" cy="130" r="7" fill="#31c7ff"/>
+  <!-- Analog sticks -->
+  <circle cx="505" cy="155" r="12" fill="#1a8fd0" stroke="#31c7ff" stroke-width="2"/>
+  <circle cx="545" cy="155" r="12" fill="#1a8fd0" stroke="#31c7ff" stroke-width="2"/>
+
+  <!-- Monitor/Display - mid right area -->
+  <rect x="420" y="280" width="220" height="150" rx="10" fill="#1a8fd0"/>
+  <rect x="432" y="292" width="196" height="126" rx="4" fill="#0A5A8C"/>
+  <!-- Screen content -->
+  <rect x="445" y="305" width="80" height="10" rx="3" fill="#31c7ff" opacity="0.6"/>
+  <rect x="445" y="325" width="120" height="70" rx="4" fill="#1a8fd0" opacity="0.5"/>
+  <rect x="575" y="305" width="40" height="40" rx="6" fill="#31c7ff" opacity="0.4"/>
+  <!-- Monitor stand -->
+  <rect x="505" y="430" width="30" height="30" rx="2" fill="#31c7ff"/>
+  <rect x="485" y="455" width="70" height="8" rx="4" fill="#1a8fd0"/>
+
+  <!-- Smart Speaker - mid right -->
+  <ellipse cx="580" cy="520" rx="45" ry="20" fill="#1a8fd0"/>
+  <rect x="535" y="420" width="90" height="100" rx="45" fill="#31c7ff"/>
+  <rect x="545" y="430" width="70" height="80" rx="35" fill="#1a8fd0"/>
+  <!-- Speaker mesh dots -->
+  <circle cx="565" cy="460" r="3" fill="#7DD8FF" opacity="0.6"/>
+  <circle cx="580" cy="460" r="3" fill="#7DD8FF" opacity="0.6"/>
+  <circle cx="595" cy="460" r="3" fill="#7DD8FF" opacity="0.6"/>
+  <circle cx="565" cy="475" r="3" fill="#7DD8FF" opacity="0.6"/>
+  <circle cx="580" cy="475" r="3" fill="#7DD8FF" opacity="0.6"/>
+  <circle cx="595" cy="475" r="3" fill="#7DD8FF" opacity="0.6"/>
+  <circle cx="565" cy="490" r="3" fill="#7DD8FF" opacity="0.6"/>
+  <circle cx="580" cy="490" r="3" fill="#7DD8FF" opacity="0.6"/>
+  <circle cx="595" cy="490" r="3" fill="#7DD8FF" opacity="0.6"/>
+  <!-- Light ring on top -->
+  <ellipse cx="580" cy="425" rx="25" ry="8" fill="none" stroke="#7DD8FF" stroke-width="3"/>
+
+  <!-- Star rating icons - scattered -->
+  <!-- Star 1 -->
+  <polygon points="350,380 356,396 374,396 360,406 365,422 350,413 335,422 340,406 326,396 344,396" fill="#31c7ff" opacity="0.5"/>
+  <!-- Star 2 -->
+  <polygon points="420,550 424,562 438,562 427,569 431,581 420,574 409,581 413,569 402,562 416,562" fill="#7DD8FF" opacity="0.4"/>
+  <!-- Star 3 -->
+  <polygon points="300,480 304,490 314,490 306,496 309,506 300,500 291,506 294,496 286,490 296,490" fill="#B8EBFF" opacity="0.4"/>
+
+  <!-- Large Smartphone - bottom right, partially cut off -->
+  <rect x="470" y="590" width="190" height="350" rx="24" fill="#1a8fd0"/>
+  <rect x="480" y="605" width="170" height="320" rx="16" fill="#0A5A8C"/>
+  <!-- Phone screen content -->
+  <rect x="495" y="625" width="100" height="14" rx="4" fill="#31c7ff" opacity="0.6"/>
+  <rect x="495" y="650" width="70" height="10" rx="3" fill="#7DD8FF" opacity="0.4"/>
+  <rect x="495" y="675" width="140" height="80" rx="8" fill="#1a8fd0" opacity="0.5"/>
+  <rect x="495" y="770" width="140" height="40" rx="8" fill="#31c7ff" opacity="0.3"/>
+  <!-- Phone notch -->
+  <rect x="535" y="595" width="60" height="12" rx="6" fill="#0A5A8C"/>
+  <!-- Camera dot -->
+  <circle cx="600" cy="601" r="5" fill="#31c7ff"/>
+  <!-- Home indicator -->
+  <rect x="535" y="900" width="60" height="5" rx="2.5" fill="#7DD8FF" opacity="0.5"/>
+
+  <!-- Power button icon - decorative -->
+  <circle cx="300" cy="680" r="16" stroke="#B8EBFF" stroke-width="3" fill="none" opacity="0.35"/>
+  <path d="M300 664 L300 673" stroke="#B8EBFF" stroke-width="3" stroke-linecap="round" opacity="0.35"/>
+
+  <!-- Bluetooth icon - small decorative -->
+  <path d="M350 620 L360 630 L350 640 M350 620 L350 640 L360 630 L350 620" stroke="#7DD8FF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.4"/>
+
+  <!-- Small decorative dots -->
+  <circle cx="350" cy="300" r="4" fill="#B8EBFF" opacity="0.4"/>
+  <circle cx="280" cy="400" r="3" fill="#B8EBFF" opacity="0.3"/>
+  <circle cx="250" cy="550" r="3" fill="#B8EBFF" opacity="0.2"/>
+  <circle cx="450" cy="560" r="5" fill="#7DD8FF" opacity="0.3"/>
+  <circle cx="380" cy="750" r="4" fill="#B8EBFF" opacity="0.3"/>
+  <circle cx="320" cy="700" r="3" fill="#B8EBFF" opacity="0.2"/>
+</svg>

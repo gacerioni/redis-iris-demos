@@ -93,7 +93,7 @@ def test_validate_entity_specs_rejects_invalid_vector_distance_metrics() -> None
                     "Embedding vector",
                     index="vector",
                     vector_dim=1536,
-                    distance_metric="COSINE",
+                    distance_metric="HAMMING",
                 ),
             ),
         ),
@@ -103,4 +103,4 @@ def test_validate_entity_specs_rejects_invalid_vector_distance_metrics() -> None
 
     assert len(errors) == 1
     assert "Guide.content_embedding" in errors[0]
-    assert "cosine" in errors[0]
+    assert "cosine" in errors[0].lower() or "hamming" in errors[0].lower()

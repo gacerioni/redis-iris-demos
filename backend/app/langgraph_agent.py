@@ -13,7 +13,7 @@ from __future__ import annotations
 import json
 import logging
 import warnings
-from typing import Any, Callable
+from typing import Any, Callable, Optional
 
 from langchain_core.tools import StructuredTool
 from langchain_openai import ChatOpenAI
@@ -127,7 +127,6 @@ def _serialize_verifier_context(messages: list[Any]) -> str:
 def _build_post_model_hook(
     model: ChatOpenAI,
     *,
-    settings: Settings,
     domain: Any,
     lightweight_model_name: str,
     runtime_config: dict[str, Any],
@@ -139,8 +138,9 @@ def _build_post_model_hook(
         "temperature": 0.2,
         "api_key": getattr(model, "openai_api_key", None) or getattr(model, "api_key", None),
     }
-    if settings.openai_base_url:
-        verifier_kw["base_url"] = settings.openai_base_url
+    base_url = getattr(model, "openai_base_url", None) or getattr(model, "base_url", None)
+    if base_url:
+        verifier_kw["base_url"] = base_url
     verifier_model = ChatOpenAI(**verifier_kw)
     domain_guidance = ""
     if hasattr(domain, "build_answer_verifier_prompt"):
@@ -210,6 +210,12 @@ def _make_internal_tools(service: InternalToolService) -> list[StructuredTool]:
             return json.dumps(result, default=str)
         return fn
 
+    def _make_coro(name: str):
+        async def fn(**kwargs: Any) -> str:
+            result = await service.aexecute(name, kwargs)
+            return json.dumps(result, default=str)
+        return fn
+
     for defn in service.definitions:
         schema = defn.input_schema or {"type": "object", "properties": {}}
         args_model = _pydantic_model_from_json_schema(defn.name, schema)
@@ -217,6 +223,7 @@ def _make_internal_tools(service: InternalToolService) -> list[StructuredTool]:
             name=defn.name,
             description=defn.description,
             func=_make_fn(defn.name),
+            coroutine=_make_coro(defn.name),
             args_schema=args_model,
         ))
     return tools
@@ -270,9 +277,9 @@ def _resolve_json_schema_variant(schema: dict[str, Any] | None) -> tuple[dict[st
                         required.append(field_name)
             if isinstance(resolved_variant.get("additionalProperties"), dict):
                 merged["additionalProperties"] = resolved_variant["additionalProperties"]
-            for key, value in resolved_variant.items():
-                if key not in {"type", "properties", "required", "additionalProperties"} and key not in merged:
-                    merged[key] = value
+            for k, v in resolved_variant.items():
+                if k not in {"type", "properties", "required", "additionalProperties"} and k not in merged:
+                    merged[k] = v
         if required:
             merged["required"] = required
         if merged:
@@ -362,10 +369,13 @@ async def build_mcp_tools(cs_service: ContextSurfaceService) -> list[StructuredT
 
 async def create_checkpointer(settings: Settings) -> AsyncRedisSaver:
     """Create an async Redis checkpointer for LangGraph conversation state."""
+    from backend.app.redis_connection import RESILIENT_CONNECTION_KWARGS
+
     redis_url = build_redis_url(settings)
     domain = get_active_domain(settings)
     checkpointer = AsyncRedisSaver(
         redis_url=redis_url,
+        connection_args=RESILIENT_CONNECTION_KWARGS,
         checkpoint_prefix=domain.manifest.namespace.checkpoint_prefix,
         checkpoint_write_prefix=domain.manifest.namespace.checkpoint_write_prefix,
     )
@@ -401,7 +411,6 @@ async def create_agent(
     if runtime_config.get("enable_post_model_verifier", False):
         post_model_hook = _build_post_model_hook(
             model,
-            settings=settings,
             domain=domain,
             lightweight_model_name=settings.openai_lightweight_model or settings.openai_chat_model,
             runtime_config=runtime_config,

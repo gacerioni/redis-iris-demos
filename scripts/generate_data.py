@@ -11,7 +11,8 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from backend.app.core.domain_loader import load_domain
-from backend.app.settings import get_settings
+from backend.app.settings import ENV_PATH, get_settings
+from scripts.setup_surface import upsert_env_values
 
 
 def main() -> None:
@@ -25,10 +26,10 @@ def main() -> None:
     result = domain.generate_demo_data(
         output_dir=ROOT / domain.manifest.output_dir,
         seed=args.seed,
-        update_env_file=True,
     )
     print(f"Generated data in {result.output_dir}")
     if result.env_updates:
+        upsert_env_values(ENV_PATH, result.env_updates)
         print("Updated env values:")
         for key, value in result.env_updates.items():
             print(f"  {key}={value}")
