@@ -1,11 +1,14 @@
 from __future__ import annotations
 
 import json
+import logging
 from typing import Any
 
 from context_surfaces import UnifiedClient
 
 from backend.app.settings import Settings
+
+log = logging.getLogger("iris.mcp")
 
 
 def _default_array_items_schema(*, field_name: str | None = None, schema: dict[str, Any] | None = None) -> dict[str, Any]:
@@ -68,110 +71,79 @@ def _sanitize_tool_definition(tool_def: dict[str, Any]) -> dict[str, Any]:
     return sanitized
 
 
-def _extract_wrapped_content_text(raw: str) -> str | None:
-    start_marker = "content='"
-    start = raw.find(start_marker)
-    if start < 0:
-        return None
-
-    content_start = start + len(start_marker)
-    value = ""
-
-    for index in range(content_start, len(raw)):
-        char = raw[index]
-        previous = raw[index - 1] if index > content_start else ""
-
-        if char == "'" and previous != "\\":
-            return value
-
-        value += char
-
-    return None
-
-
-def _parse_wrapped_content_json(raw: str) -> Any | None:
-    wrapped = _extract_wrapped_content_text(raw)
-    if wrapped is None:
-        return None
-    try:
-        return json.loads(wrapped.replace("\\'", "'"))
-    except json.JSONDecodeError:
-        return None
-
-
-def _normalize_tool_result_payload(result: Any) -> dict[str, Any]:
-    if isinstance(result, dict):
-        content = result.get("content", [])
-        if content and isinstance(content, list) and content[0].get("type") == "text":
-            text = content[0].get("text", "")
-            try:
-                parsed = json.loads(text)
-            except json.JSONDecodeError:
-                parsed = _parse_wrapped_content_json(text)
-            if isinstance(parsed, dict):
-                return parsed
-            return {"raw_text": text}
-        raw_text = result.get("raw_text")
-        if isinstance(raw_text, str):
-            parsed = _parse_wrapped_content_json(raw_text)
-            if isinstance(parsed, dict):
-                return parsed
-        nested_result = result.get("result")
-        if isinstance(nested_result, str):
-            parsed = _parse_wrapped_content_json(nested_result)
-            if isinstance(parsed, dict):
-                return parsed
-        return result
-
-    if isinstance(result, str):
-        parsed = _parse_wrapped_content_json(result)
-        if isinstance(parsed, dict):
-            return parsed
-        try:
-            loaded = json.loads(result)
-        except json.JSONDecodeError:
-            return {"result": result}
-        return loaded if isinstance(loaded, dict) else {"result": loaded}
-
-    parsed = _parse_wrapped_content_json(str(result))
-    if isinstance(parsed, dict):
-        return parsed
-    return {"result": result}
-
-
 class ContextSurfaceService:
     """Wraps the context-surfaces SDK to list and call MCP tools.
 
-    Uses UnifiedClient which auto-resolves API/MCP URLs from built-in defaults
-    (or CTX_API_URL / CTX_MCP_URL env vars if set).
+    Uses a persistent UnifiedClient to reuse HTTP/TLS connections across
+    tool calls, avoiding ~100ms connection setup overhead per call.
+    Automatically reconnects on stale connection errors.
     """
 
     def __init__(self, settings: Settings):
         self.settings = settings
         self._tool_cache: list[dict[str, Any]] | None = None
+        self._client: UnifiedClient | None = None
 
     @property
     def enabled(self) -> bool:
         return bool(self.settings.mcp_agent_key)
+
+    async def _get_client(self) -> UnifiedClient:
+        if self._client is None:
+            self._client = UnifiedClient()
+            await self._client.__aenter__()
+        return self._client
+
+    async def _reset_client(self) -> UnifiedClient:
+        log.warning("Resetting MCP client connection")
+        try:
+            if self._client is not None:
+                await self._client.__aexit__(None, None, None)
+        except Exception:
+            pass
+        self._client = None
+        return await self._get_client()
+
+    async def close(self) -> None:
+        if self._client is not None:
+            await self._client.__aexit__(None, None, None)
+            self._client = None
 
     async def list_tools(self) -> list[dict[str, Any]]:
         if not self.enabled:
             return []
         if self._tool_cache is not None:
             return self._tool_cache
-        async with UnifiedClient() as client:
-            tools = await client.list_tools(self.settings.mcp_agent_key)
-        self._tool_cache = [
-            _sanitize_tool_definition(t if isinstance(t, dict) else t.model_dump())
-            for t in tools
-        ]
+        client = await self._get_client()
+        tools = await client.list_tools(self.settings.mcp_agent_key)
+        self._tool_cache = [t if isinstance(t, dict) else t.model_dump() for t in tools]
         return self._tool_cache or []
 
     async def call_tool(self, tool_name: str, arguments: dict[str, Any]) -> dict[str, Any]:
-        async with UnifiedClient() as client:
-            result = await client.query_tool(
-                agent_key=self.settings.mcp_agent_key,
-                tool_name=tool_name,
-                arguments=arguments,
-            )
-        return _normalize_tool_result_payload(result)
+        last_exc: Exception | None = None
+        for attempt in range(2):
+            try:
+                client = await self._get_client()
+                result = await client.query_tool(
+                    agent_key=self.settings.mcp_agent_key,
+                    tool_name=tool_name,
+                    arguments=arguments,
+                )
+                if isinstance(result, dict):
+                    content = result.get("content", [])
+                    if content and isinstance(content, list) and content[0].get("type") == "text":
+                        text = content[0].get("text", "")
+                        try:
+                            return json.loads(text)
+                        except json.JSONDecodeError:
+                            return {"raw_text": text}
+                return result if isinstance(result, dict) else {"result": result}
+            except Exception as exc:
+                last_exc = exc
+                if attempt == 0:
+                    log.warning("MCP call_tool %s failed (attempt 1), reconnecting: %s", tool_name, exc)
+                    await self._reset_client()
+                else:
+                    raise
+        raise last_exc  # type: ignore[misc]
+

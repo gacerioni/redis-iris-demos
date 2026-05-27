@@ -11,7 +11,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from backend.app.core.domain_loader import load_domain
-from backend.app.core.domain_schema import FieldSpec
+from backend.app.core.domain_schema import FieldSpec, _base_type_name
 
 
 def render_field(field: FieldSpec) -> str:
@@ -34,7 +34,6 @@ def render_field(field: FieldSpec) -> str:
     if field.vector_dim is not None:
         lines.append(f"        vector_dim={field.vector_dim},")
     if field.distance_metric is not None:
-        # Must match backend/app/core/domain_schema.validate_entity_specs (lowercase only).
         lines.append(f'        distance_metric="{field.distance_metric.lower()}",')
     lines.append("    )")
     return "\n".join(lines)
@@ -42,11 +41,12 @@ def render_field(field: FieldSpec) -> str:
 
 def render(domain_id: str) -> str:
     domain = load_domain(domain_id)
-
     chunks = [
         f'"""Generated Context Surface models for the {domain.manifest.branding.app_name} domain."""',
         "",
         "from __future__ import annotations",
+        "",
+        "from typing import Any",
         "",
         "from context_surfaces.context_model import ContextField, ContextModel, ContextRelationship",
         "",
@@ -63,14 +63,16 @@ def render(domain_id: str) -> str:
             chunks.append(render_field(field))
             chunks.append("")
         for rel in entity.relationships:
-            chunks.append(
-                "\n".join([
-                    f"    {rel.name}: {rel.target_type} = ContextRelationship(",
-                    f'        description="{rel.description}",',
-                    f'        source_field="{rel.source_field}",',
-                    "    )",
-                ])
-            )
+            rel_lines = [
+                f"    {rel.name}: Any = ContextRelationship(",
+                f'        description="{rel.description}",',
+            ]
+            if rel.target_type:
+                target_name = _base_type_name(rel.target_type)
+                rel_lines.append(f'        target="{target_name}",')
+            rel_lines.append(f'        source_field="{rel.source_field}",')
+            rel_lines.append("    )")
+            chunks.append("\n".join(rel_lines))
             chunks.append("")
         chunks.append("")
 

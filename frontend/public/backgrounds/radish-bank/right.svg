@@ -1,0 +1,203 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 632 817">
+  <defs>
+    <style>
+      .g1{fill:#2ecc71}.g2{fill:#219653}.g3{fill:#6EE7A0}.g4{fill:#C8F5D8}.g5{fill:#15793E}.gold{fill:#F1C40F}.wh{fill:#fff}
+    </style>
+  </defs>
+
+  <!-- BANK BUILDING FACADE - top-right, partially cut off -->
+  <g transform="translate(420, -20)">
+    <!-- Main building body -->
+    <rect class="g2" x="20" y="120" width="240" height="200" rx="4"/>
+    <!-- Pediment / triangular roof -->
+    <polygon class="g5" points="0,120 140,-10 280,120"/>
+    <polygon class="g2" points="20,120 140,10 260,120"/>
+    <!-- Inner triangle detail -->
+    <polygon class="g4" points="60,120 140,40 220,120" opacity="0.3"/>
+    <!-- Columns -->
+    <rect class="g1" x="40" y="120" width="28" height="180" rx="6"/>
+    <rect class="wh" x="40" y="120" width="28" height="180" rx="6" opacity="0.15"/>
+    <rect class="g1" x="96" y="120" width="28" height="180" rx="6"/>
+    <rect class="g1" x="152" y="120" width="28" height="180" rx="6"/>
+    <rect class="wh" x="152" y="120" width="28" height="180" rx="6" opacity="0.1"/>
+    <rect class="g1" x="208" y="120" width="28" height="180" rx="6"/>
+    <!-- Column bases -->
+    <rect class="g5" x="36" y="290" width="36" height="14" rx="3"/>
+    <rect class="g5" x="92" y="290" width="36" height="14" rx="3"/>
+    <rect class="g5" x="148" y="290" width="36" height="14" rx="3"/>
+    <rect class="g5" x="204" y="290" width="36" height="14" rx="3"/>
+    <!-- Column capitals -->
+    <rect class="g5" x="36" y="114" width="36" height="12" rx="3"/>
+    <rect class="g5" x="92" y="114" width="36" height="12" rx="3"/>
+    <rect class="g5" x="148" y="114" width="36" height="12" rx="3"/>
+    <rect class="g5" x="204" y="114" width="36" height="12" rx="3"/>
+    <!-- Door -->
+    <rect class="g5" x="110" y="230" width="56" height="80" rx="28 28 0 0"/>
+    <rect class="g3" x="120" y="240" width="36" height="60" rx="18 18 0 0" opacity="0.3"/>
+    <!-- Door handle -->
+    <circle class="gold" cx="130" cy="272" r="4"/>
+    <!-- Steps -->
+    <rect class="g3" x="0" y="310" width="280" height="12" rx="3"/>
+    <rect class="g4" x="-10" y="322" width="300" height="10" rx="3"/>
+  </g>
+
+  <!-- MOBILE PHONE - large, bottom-right -->
+  <g transform="translate(430, 500)">
+    <!-- Phone body -->
+    <rect class="g5" x="0" y="0" width="160" height="300" rx="24"/>
+    <rect class="g2" x="6" y="6" width="148" height="288" rx="20"/>
+    <!-- Screen -->
+    <rect class="wh" x="12" y="30" width="136" height="240" rx="4"/>
+    <!-- Status bar area -->
+    <rect class="g4" x="12" y="30" width="136" height="24" rx="4"/>
+    <rect class="g4" x="12" y="30" width="136" height="24"/>
+    <rect class="wh" x="12" y="54" width="136" height="1"/>
+    <!-- Notch/camera -->
+    <rect class="g5" x="55" y="10" width="50" height="8" rx="4"/>
+    <!-- App header bar -->
+    <rect class="g1" x="12" y="30" width="136" height="32" rx="4"/>
+    <rect class="g1" x="12" y="50" width="136" height="12"/>
+    <!-- Balance display area -->
+    <rect class="g4" x="24" y="74" width="112" height="50" rx="8"/>
+    <rect class="g3" x="36" y="84" width="50" height="8" rx="4" opacity="0.6"/>
+    <rect class="wh" x="36" y="98" width="76" height="12" rx="4"/>
+    <!-- Transaction rows -->
+    <rect class="g4" x="24" y="136" width="112" height="28" rx="6" opacity="0.5"/>
+    <circle class="g3" cx="38" cy="150" r="8"/>
+    <rect class="wh" x="52" y="143" width="50" height="6" rx="3" opacity="0.6"/>
+    <rect class="gold" x="108" y="143" width="24" height="6" rx="3" opacity="0.5"/>
+
+    <rect class="g4" x="24" y="172" width="112" height="28" rx="6" opacity="0.5"/>
+    <circle class="g1" cx="38" cy="186" r="8"/>
+    <rect class="wh" x="52" y="179" width="40" height="6" rx="3" opacity="0.6"/>
+    <rect class="gold" x="108" y="179" width="24" height="6" rx="3" opacity="0.5"/>
+
+    <rect class="g4" x="24" y="208" width="112" height="28" rx="6" opacity="0.5"/>
+    <circle class="g2" cx="38" cy="222" r="8"/>
+    <rect class="wh" x="52" y="215" width="56" height="6" rx="3" opacity="0.6"/>
+    <rect class="gold" x="108" y="215" width="24" height="6" rx="3" opacity="0.5"/>
+
+    <!-- Bottom nav bar -->
+    <rect class="g4" x="12" y="244" width="136" height="26" rx="4"/>
+    <circle class="g2" cx="38" cy="257" r="6"/>
+    <circle class="g3" cx="68" cy="257" r="6"/>
+    <circle class="g1" cx="98" cy="257" r="6"/>
+    <circle class="g3" cx="128" cy="257" r="6"/>
+
+    <!-- Home indicator -->
+    <rect class="g3" x="55" y="280" width="50" height="4" rx="2"/>
+  </g>
+
+  <!-- GROWTH CHART - middle-right area -->
+  <g transform="translate(320, 350)">
+    <!-- Chart background -->
+    <rect class="g4" x="0" y="0" width="160" height="120" rx="10" opacity="0.5"/>
+    <!-- Grid lines -->
+    <line x1="20" y1="30" x2="140" y2="30" stroke="#C8F5D8" stroke-width="1.5"/>
+    <line x1="20" y1="55" x2="140" y2="55" stroke="#C8F5D8" stroke-width="1.5"/>
+    <line x1="20" y1="80" x2="140" y2="80" stroke="#C8F5D8" stroke-width="1.5"/>
+    <!-- Growth line going up -->
+    <polyline points="20,95 45,80 65,70 80,55 95,42 115,25 140,10" fill="none" stroke="#2ecc71" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- Area under line -->
+    <polygon points="20,95 45,80 65,70 80,55 95,42 115,25 140,10 140,100 20,100" fill="#2ecc71" opacity="0.15"/>
+    <!-- Data dots -->
+    <circle class="g1" cx="20" cy="95" r="4"/>
+    <circle class="g1" cx="45" cy="80" r="4"/>
+    <circle class="g1" cx="65" cy="70" r="4"/>
+    <circle class="g1" cx="80" cy="55" r="4"/>
+    <circle class="g1" cx="95" cy="42" r="4"/>
+    <circle class="g1" cx="115" cy="25" r="4"/>
+    <circle class="g1" cx="140" cy="10" r="5"/>
+    <circle class="wh" cx="140" cy="10" r="2.5"/>
+    <!-- Up arrow at end -->
+    <path d="M140 10 L140-6" stroke="#15793E" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M135-2 L140-8 L145-2" fill="none" stroke="#15793E" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- Axis labels (small bars) -->
+    <rect class="g3" x="20" y="104" width="8" height="4" rx="2" opacity="0.5"/>
+    <rect class="g3" x="45" y="104" width="8" height="4" rx="2" opacity="0.5"/>
+    <rect class="g3" x="70" y="104" width="8" height="4" rx="2" opacity="0.5"/>
+    <rect class="g3" x="95" y="104" width="8" height="4" rx="2" opacity="0.5"/>
+    <rect class="g3" x="120" y="104" width="8" height="4" rx="2" opacity="0.5"/>
+  </g>
+
+  <!-- CALCULATOR - left-center area -->
+  <g transform="translate(260, 160)">
+    <!-- Calculator body -->
+    <rect class="g2" width="120" height="170" rx="14"/>
+    <rect class="g5" x="4" y="4" width="112" height="162" rx="12"/>
+    <!-- Display -->
+    <rect class="g4" x="12" y="14" width="96" height="34" rx="6"/>
+    <rect class="wh" x="20" y="22" width="60" height="8" rx="4" opacity="0.5"/>
+    <rect class="wh" x="58" y="34" width="42" height="6" rx="3" opacity="0.3"/>
+    <!-- Button grid - row 1 -->
+    <rect class="g3" x="12" y="58" width="20" height="20" rx="5"/>
+    <rect class="g3" x="38" y="58" width="20" height="20" rx="5"/>
+    <rect class="g3" x="64" y="58" width="20" height="20" rx="5"/>
+    <rect class="g1" x="90" y="58" width="20" height="20" rx="5"/>
+    <!-- Button grid - row 2 -->
+    <rect class="g3" x="12" y="84" width="20" height="20" rx="5"/>
+    <rect class="g3" x="38" y="84" width="20" height="20" rx="5"/>
+    <rect class="g3" x="64" y="84" width="20" height="20" rx="5"/>
+    <rect class="g1" x="90" y="84" width="20" height="20" rx="5"/>
+    <!-- Button grid - row 3 -->
+    <rect class="g3" x="12" y="110" width="20" height="20" rx="5"/>
+    <rect class="g3" x="38" y="110" width="20" height="20" rx="5"/>
+    <rect class="g3" x="64" y="110" width="20" height="20" rx="5"/>
+    <rect class="g1" x="90" y="110" width="20" height="46" rx="5"/>
+    <!-- Button grid - row 4 -->
+    <rect class="g3" x="12" y="136" width="46" height="20" rx="5"/>
+    <rect class="g3" x="64" y="136" width="20" height="20" rx="5"/>
+  </g>
+
+  <!-- KEY ICON - upper-right floating -->
+  <g transform="translate(530, 180) rotate(30)">
+    <!-- Key head (circle with hole) -->
+    <circle class="gold" cx="0" cy="0" r="30"/>
+    <circle class="wh" cx="0" cy="0" r="30" opacity="0.15"/>
+    <circle class="g5" cx="0" cy="0" r="14"/>
+    <circle class="gold" cx="0" cy="0" r="9"/>
+    <!-- Key shaft -->
+    <rect class="gold" x="-6" y="26" width="12" height="70" rx="4"/>
+    <rect class="wh" x="-6" y="26" width="12" height="70" rx="4" opacity="0.1"/>
+    <!-- Key teeth -->
+    <rect class="gold" x="6" y="72" width="16" height="8" rx="3"/>
+    <rect class="gold" x="6" y="84" width="12" height="8" rx="3"/>
+  </g>
+
+  <!-- Decorative elements -->
+  <!-- Floating circles -->
+  <circle class="g4" cx="250" cy="100" r="8"/>
+  <circle class="g4" cx="220" cy="350" r="6"/>
+  <circle class="g3" cx="400" cy="490" r="5"/>
+  <circle class="g4" cx="330" cy="540" r="7"/>
+  <circle class="g4" cx="280" cy="680" r="5"/>
+  <circle class="g4" cx="380" cy="770" r="4"/>
+
+  <!-- Small plus signs -->
+  <g opacity="0.4">
+    <rect class="g3" x="230" y="260" width="3" height="14" rx="1.5"/>
+    <rect class="g3" x="224.5" y="265.5" width="14" height="3" rx="1.5"/>
+    <rect class="g3" x="300" y="710" width="3" height="14" rx="1.5"/>
+    <rect class="g3" x="294.5" y="715.5" width="14" height="3" rx="1.5"/>
+    <rect class="g3" x="410" y="460" width="3" height="14" rx="1.5"/>
+    <rect class="g3" x="404.5" y="465.5" width="14" height="3" rx="1.5"/>
+  </g>
+
+  <!-- Floating diamond shapes -->
+  <rect class="g4" x="290" y="140" width="10" height="10" rx="2" transform="rotate(45 295 145)" opacity="0.5"/>
+  <rect class="g4" x="350" y="620" width="8" height="8" rx="1.5" transform="rotate(45 354 624)" opacity="0.4"/>
+  <rect class="g3" x="240" y="500" width="6" height="6" rx="1" transform="rotate(45 243 503)" opacity="0.3"/>
+
+  <!-- Small currency circles (like floating coins far away) -->
+  <circle class="gold" cx="300" cy="60" r="10" opacity="0.3"/>
+  <circle class="gold" cx="310" cy="60" r="10" fill="none" stroke="#F1C40F" stroke-width="1.5" opacity="0.3"/>
+  <circle class="gold" cx="240" cy="750" r="12" opacity="0.25"/>
+  <circle cx="240" cy="750" r="8" fill="none" stroke="#fff" stroke-width="1" opacity="0.2"/>
+
+  <!-- Percentage symbol floating -->
+  <g transform="translate(260, 600)" opacity="0.35">
+    <circle class="g1" cx="0" cy="0" r="8"/>
+    <circle class="g1" cx="20" cy="20" r="8"/>
+    <rect class="g2" x="16" y="-6" width="4" height="36" rx="2" transform="rotate(-30 18 12)"/>
+  </g>
+</svg>

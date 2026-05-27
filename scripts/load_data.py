@@ -75,21 +75,40 @@ async def main() -> None:
     output_dir = ROOT / domain.manifest.output_dir
     raw_records = load_records(output_dir=output_dir, entity_by_file=entity_by_file)
 
+    batch_size = 25
+
     async with UnifiedClient() as client:
         for class_name, rows in raw_records.items():
             model_cls = generated_models[class_name]
             model_instances = [model_cls(**row) for row in rows]
-            result = await client.import_data(
-                admin_key=admin_key,
-                context_surface_id=surface_id,
-                records=model_instances,
-                on_conflict="overwrite",
-                on_error="fail_fast",
-            )
-            print(f"  {class_name}: imported={result.imported}, failed={result.failed}")
-            if result.errors:
-                for err in result.errors:
-                    print(f"    Error: {err}")
+
+            total_imported = 0
+            total_failed = 0
+            all_errors: list[Any] = []
+
+            for i in range(0, len(model_instances), batch_size):
+                batch = model_instances[i : i + batch_size]
+                try:
+                    result = await client.import_data(
+                        admin_key=admin_key,
+                        context_surface_id=surface_id,
+                        records=batch,
+                        on_conflict="overwrite",
+                        on_error="fail_fast",
+                    )
+                    total_imported += result.imported
+                    total_failed += result.failed
+                    if result.errors:
+                        all_errors.extend(result.errors)
+                except Exception as exc:
+                    batch_start = i + 1
+                    batch_end = min(i + batch_size, len(model_instances))
+                    print(f"  {class_name}: batch {batch_start}-{batch_end} FAILED: {exc}")
+                    total_failed += len(batch)
+
+            print(f"  {class_name}: imported={total_imported}, failed={total_failed}")
+            for err in all_errors:
+                print(f"    Error: {err}")
 
     summary = domain.write_dataset_meta(settings=settings, records=raw_records)
     print(f"  Wrote dataset summary → {domain.manifest.namespace.dataset_meta_key}")

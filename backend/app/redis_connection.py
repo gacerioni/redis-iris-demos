@@ -1,7 +1,11 @@
 from __future__ import annotations
 
+from typing import Any
+
 import redis
 import redis.asyncio as redis_asyncio
+from redis.backoff import ExponentialBackoff
+from redis.retry import Retry
 
 from backend.app.settings import Settings
 
@@ -16,6 +20,18 @@ def build_redis_url(settings: Settings) -> str:
     return f"{scheme}://{auth}{settings.redis_host}:{settings.redis_port}/{settings.redis_db}"
 
 
+RETRY = Retry(ExponentialBackoff(), 3)
+
+RESILIENT_CONNECTION_KWARGS: dict[str, Any] = {
+    "socket_connect_timeout": 10,
+    "socket_timeout": 30,
+    "socket_keepalive": True,
+    "health_check_interval": 30,
+    "retry": RETRY,
+    "retry_on_error": [ConnectionError, TimeoutError, OSError],
+}
+
+
 def create_redis_client(settings: Settings) -> redis.Redis:
     return redis.Redis(
         host=settings.redis_host,
@@ -25,8 +41,7 @@ def create_redis_client(settings: Settings) -> redis.Redis:
         db=settings.redis_db,
         ssl=settings.redis_ssl,
         decode_responses=True,
-        socket_connect_timeout=10,
-        socket_timeout=10,
+        **RESILIENT_CONNECTION_KWARGS,
     )
 
 
@@ -42,3 +57,4 @@ def create_async_redis_client(settings: Settings) -> redis_asyncio.Redis:
         socket_connect_timeout=10,
         socket_timeout=10,
     )
+

@@ -24,7 +24,7 @@ class RelationshipSpec:
     name: str
     description: str
     source_field: str
-    target_type: str
+    target_type: str = ""
 
 
 @dataclass(frozen=True)
@@ -80,7 +80,7 @@ def validate_entity_specs(entity_specs: tuple[EntitySpec, ...]) -> list[str]:
                     "with index='tag'. Numeric JSON values are not indexed by TAG fields; "
                     "use type 'str' for identifiers or index='numeric'."
                 )
-            if field_spec.distance_metric and field_spec.distance_metric not in valid_distance_metrics:
+            if field_spec.distance_metric and field_spec.distance_metric.lower() not in valid_distance_metrics:
                 errors.append(
                     "Invalid vector distance metric: "
                     f"{spec.class_name}.{field_spec.name} uses "
@@ -90,7 +90,7 @@ def validate_entity_specs(entity_specs: tuple[EntitySpec, ...]) -> list[str]:
 
     entity_names = {spec.class_name for spec in entity_specs}
     for spec in entity_specs:
-        field_names = {field.name for field in spec.fields}
+        field_names = {f.name for f in spec.fields}
         for relationship in spec.relationships:
             if relationship.source_field not in field_names:
                 errors.append(
@@ -98,13 +98,14 @@ def validate_entity_specs(entity_specs: tuple[EntitySpec, ...]) -> list[str]:
                     f"{spec.class_name}.{relationship.name} references "
                     f"'{relationship.source_field}', which is not defined on the entity."
                 )
-            base_target = _base_type_name(relationship.target_type)
-            if base_target not in entity_names:
-                errors.append(
-                    "Invalid relationship target: "
-                    f"{spec.class_name}.{relationship.name} targets "
-                    f"'{relationship.target_type}', which does not match any entity class."
-                )
+            if relationship.target_type:
+                base_target = _base_type_name(relationship.target_type)
+                if base_target not in entity_names:
+                    errors.append(
+                        "Invalid relationship target: "
+                        f"{spec.class_name}.{relationship.name} targets "
+                        f"'{relationship.target_type}', which does not match any entity class."
+                    )
 
     return errors
 
@@ -124,12 +125,12 @@ def validate_exported_data_model(data_model: dict[str, Any]) -> list[str]:
         if not isinstance(fields, list):
             continue
 
-        for field in fields:
-            if not isinstance(field, dict):
+        for f in fields:
+            if not isinstance(f, dict):
                 continue
-            field_name = str(field.get("name", "<unknown field>"))
-            field_type = str(field.get("type", ""))
-            redis_indices = field.get("redis_indices", [])
+            field_name = str(f.get("name", "<unknown field>"))
+            field_type = str(f.get("type", ""))
+            redis_indices = f.get("redis_indices", [])
             if not isinstance(redis_indices, list):
                 continue
 

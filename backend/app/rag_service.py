@@ -3,129 +3,69 @@
 from __future__ import annotations
 
 import json
-import re
 from typing import Any, AsyncIterator
 from uuid import uuid4
 
 from openai import AsyncOpenAI
+from redisvl.index import SearchIndex
+from redisvl.query import VectorQuery
 
-from backend.app.context_surface_service import ContextSurfaceService
-from backend.app.openai_errors import classify_openai_exception
 from backend.app.core.domain_loader import get_active_domain
-from backend.app.sse import format_sse_event
+from backend.app.openai_errors import classify_openai_exception
+from backend.app.redis_connection import RESILIENT_CONNECTION_KWARGS, build_redis_url, create_redis_client
 from backend.app.settings import Settings
 
 
-def _normalize_name(value: str) -> str:
-    return re.sub(r"[^a-z0-9]+", "", value.lower())
+def _discover_index(settings: Settings, *, name_contains: str) -> str:
+    """Find the domain-configured vector index name dynamically via FT._LIST.
+
+    Scopes to the current surface ID to avoid matching stale indexes from
+    previous surfaces.
+    """
+    client = create_redis_client(settings)
+    indexes = client.execute_command("FT._LIST")
+    surface_id = settings.ctx_surface_id or ""
+    needle = name_contains.lower()
+    for idx in indexes:
+        name = idx if isinstance(idx, str) else idx.decode()
+        if surface_id and surface_id not in name:
+            continue
+        if needle in name.lower():
+            return name
+    raise RuntimeError(
+        f"No matching search index found for '{name_contains}'. Run setup/load first."
+    )
 
 
-def _first_present_field(result: dict[str, Any], fields: list[str]) -> str | None:
+def _first_field(result: dict[str, Any], fields: list[str]) -> str:
     for field in fields:
         value = result.get(field)
         if value:
             return str(value)
-    return None
-
-
-def _result_title(result: dict[str, Any], fields: list[str]) -> str:
-    title = _first_present_field(result, fields)
-    if title:
-        return title
-    return "Document"
-
-
-def _result_label(result: dict[str, Any], fields: list[str]) -> str:
-    labels: list[str] = []
-    for field in fields:
-        value = result.get(field)
-        if value:
-            labels.append(str(value))
-    return ", ".join(labels)
-
-
-def _result_body(result: dict[str, Any], fields: list[str]) -> str:
-    body = _first_present_field(result, fields)
-    if body:
-        return body
-    return json.dumps(result, ensure_ascii=False)
+    return ""
 
 
 class SimpleRAGService:
-    def __init__(self, settings: Settings, cs_service: ContextSurfaceService):
+    def __init__(self, settings: Settings):
         self.settings = settings
-        self.cs_service = cs_service
         self.domain = get_active_domain(settings)
         client_kw: dict[str, Any] = {"api_key": settings.openai_api_key}
         if settings.openai_base_url:
             client_kw["base_url"] = settings.openai_base_url
         self.openai = AsyncOpenAI(**client_kw)
-        self._vector_tool_name: str | None = None
-        self._text_tool_name: str | None = None
+        self._index: SearchIndex | None = None
+        self._index_name: str | None = None
 
-    async def _get_search_tool_name(self, *, kind: str) -> str:
-        cache_name = "_vector_tool_name" if kind == "vector" else "_text_tool_name"
-        cached = getattr(self, cache_name)
-        if cached is not None:
-            return cached
-
-        rag = self.domain.manifest.rag
-        tools = await self.cs_service.list_tools()
-        if kind == "vector":
-            candidates = [
-                tool.get("name", "")
-                for tool in tools
-                if "content_embedding_similarity" in tool.get("name", "")
-            ]
-        else:
-            candidates = [
-                tool.get("name", "")
-                for tool in tools
-                if tool.get("name", "").startswith("search_") and tool.get("name", "").endswith("_by_text")
-            ]
-        if not candidates:
-            raise RuntimeError(f"No {kind} search tool is available on the active Context Surface.")
-
-        target = _normalize_name(rag.index_name_contains)
-        for tool_name in candidates:
-            if target and target in _normalize_name(tool_name):
-                setattr(self, cache_name, tool_name)
-                return tool_name
-
-        if len(candidates) == 1:
-            setattr(self, cache_name, candidates[0])
-            return candidates[0]
-
-        raise RuntimeError(
-            f"No matching {kind} search tool found for '{rag.index_name_contains}'. "
-            f"Available tools: {', '.join(candidates)}"
-        )
-
-    async def _get_vector_tool_name(self) -> str:
-        return await self._get_search_tool_name(kind="vector")
-
-    async def _get_text_tool_name(self) -> str:
-        return await self._get_search_tool_name(kind="text")
-
-    async def _search_documents(self, question: str, embedding: list[float]) -> list[dict[str, Any]]:
-        rag = self.domain.manifest.rag
-        vector_tool_name = await self._get_vector_tool_name()
-        payload = await self.cs_service.call_tool(
-            vector_tool_name,
-            {"vector": embedding, "k": rag.num_results},
-        )
-        vector_error = str(payload.get("error") or payload.get("raw_text") or "").lower()
-        results = payload.get("results", [])
-        if isinstance(results, list) and results and "unsupported query type" not in vector_error:
-            return results
-
-        text_tool_name = await self._get_text_tool_name()
-        payload = await self.cs_service.call_tool(
-            text_tool_name,
-            {"query": question, "limit": rag.num_results},
-        )
-        results = payload.get("results", [])
-        return results if isinstance(results, list) else []
+    def _get_index(self) -> SearchIndex:
+        if self._index is None:
+            rag = self.domain.manifest.rag
+            self._index_name = _discover_index(self.settings, name_contains=rag.index_name_contains)
+            self._index = SearchIndex.from_existing(
+                self._index_name,
+                redis_url=build_redis_url(self.settings),
+                connection_kwargs=RESILIENT_CONNECTION_KWARGS,
+            )
+        return self._index
 
     async def _embed(self, text: str) -> list[float]:
         resp = await self.openai.embeddings.create(
@@ -134,79 +74,77 @@ class SimpleRAGService:
         )
         return resp.data[0].embedding
 
+    def _search_documents(self, embedding: list[float]) -> list[dict[str, Any]]:
+        rag = self.domain.manifest.rag
+        query = VectorQuery(
+            vector=embedding,
+            vector_field_name=rag.vector_field,
+            return_fields=rag.return_fields,
+            num_results=rag.num_results,
+        )
+        try:
+            return self._get_index().query(query)
+        except (ConnectionError, TimeoutError, OSError):
+            self._index = None
+            return self._get_index().query(query)
+
     async def stream_answer(self, question: str, timer: Any) -> AsyncIterator[str]:
         """Embed the question, search domain documents, stream a one-shot LLM answer."""
         rag = self.domain.manifest.rag
         tool_run_id = str(uuid4())
-        yield format_sse_event("status", text="Embedding query…", ts=timer.elapsed_ms())
+
+        yield _sse("status", text="Embedding query…", ts=timer.elapsed_ms())
         try:
             embedding = await self._embed(question)
         except Exception as exc:
             code, msg = classify_openai_exception(exc)
             error_code = "budget_exceeded" if code == "budget_exceeded" else "openai_error"
-            yield format_sse_event(
-                "error",
-                errorCode=error_code,
-                message=msg,
-                ts=timer.elapsed_ms(),
-            )
+            yield _sse("error", errorCode=error_code, message=msg, ts=timer.elapsed_ms())
             return
 
-        yield format_sse_event("status", text=rag.status_text, ts=timer.elapsed_ms())
-        yield format_sse_event(
-            "tool-call",
-            runId=tool_run_id,
-            toolName=rag.tool_name,
-            toolKind="internal_function",
-            payload={"query": question, "num_results": rag.num_results},
-            ts=timer.elapsed_ms(),
-        )
+        yield _sse("status", text=rag.status_text, ts=timer.elapsed_ms())
+        yield _sse("tool-call", runId=tool_run_id, toolName=rag.tool_name,
+                    toolKind="internal_function",
+                    payload={"query": question, "num_results": rag.num_results},
+                    ts=timer.elapsed_ms())
 
         timer.lap_ms()
         try:
-            results = await self._search_documents(question, embedding)
+            results = self._search_documents(embedding)
             search_duration = timer.lap_ms()
         except Exception as exc:
             search_duration = timer.lap_ms()
-            yield format_sse_event(
-                "tool-result",
-                runId=tool_run_id,
-                toolName=rag.tool_name,
-                toolKind="internal_function",
-                payload={"error": str(exc), "results": []},
-                durationMs=search_duration,
-                ts=timer.elapsed_ms(),
-            )
-            yield format_sse_event(
-                "text-delta",
-                delta="Simple RAG is not available for this domain right now because the vector search index is not ready.",
-            )
+            yield _sse("tool-result", runId=tool_run_id, toolName=rag.tool_name,
+                        toolKind="internal_function",
+                        payload={"error": str(exc), "results": []},
+                        durationMs=search_duration, ts=timer.elapsed_ms())
+            yield _sse("text-delta",
+                        delta="Simple RAG is not available right now because the vector search index is not ready.")
             return
 
-        yield format_sse_event(
-            "tool-result",
-            runId=tool_run_id,
-            toolName=rag.tool_name,
-            toolKind="internal_function",
-            payload={"results": results},
-            durationMs=search_duration,
-            ts=timer.elapsed_ms(),
-        )
+        search_payload = [
+            {k: v for k, v in r.items() if k != rag.vector_field} for r in results
+        ]
+        yield _sse("tool-result", runId=tool_run_id, toolName=rag.tool_name,
+                    toolKind="internal_function",
+                    payload={"results": search_payload},
+                    durationMs=search_duration, ts=timer.elapsed_ms())
 
-        yield format_sse_event(
-            "status",
-            text=f"Found {len(results)} matching documents. {rag.generating_text}",
-            ts=timer.elapsed_ms(),
-        )
+        yield _sse("status",
+                    text=f"Found {len(results)} matching documents. {rag.generating_text}",
+                    ts=timer.elapsed_ms())
 
         context_chunks: list[str] = []
-        for result in results:
-            label = _result_label(result, rag.label_fields)
-            chunk = f"**{_result_title(result, rag.title_fields)}**"
+        for r in results:
+            title = _first_field(r, rag.title_fields) or "Document"
+            label = _first_field(r, rag.label_fields)
+            body = _first_field(r, rag.body_fields) or json.dumps(r, ensure_ascii=False)
+            chunk = f"**{title}**"
             if label:
                 chunk += f" ({label})"
-            chunk += f":\n{_result_body(result, rag.body_fields)}"
+            chunk += f":\n{body}"
             context_chunks.append(chunk)
+
         context_text = "\n\n".join(context_chunks)
         system_prompt = f"{rag.answer_system_prompt}\n\n--- DOMAIN DOCUMENTS ---\n{context_text}\n--- END ---"
         try:
@@ -222,13 +160,12 @@ class SimpleRAGService:
             async for chunk in stream:
                 delta = chunk.choices[0].delta.content or ""
                 if delta:
-                    yield format_sse_event("text-delta", delta=delta)
+                    yield _sse("text-delta", delta=delta)
         except Exception as exc:
             code, msg = classify_openai_exception(exc)
             error_code = "budget_exceeded" if code == "budget_exceeded" else "openai_error"
-            yield format_sse_event(
-                "error",
-                errorCode=error_code,
-                message=msg,
-                ts=timer.elapsed_ms(),
-            )
+            yield _sse("error", errorCode=error_code, message=msg, ts=timer.elapsed_ms())
+
+
+def _sse(event_type: str, **fields: Any) -> str:
+    return f"data: {json.dumps({'type': event_type, **fields})}\n\n"

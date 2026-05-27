@@ -38,6 +38,7 @@ class ThemeConfig(BaseModel):
     soft: str
     accent: str
     user: str
+    landing_bg: str = ""
 
 
 class BrandingConfig(BaseModel):
@@ -46,6 +47,7 @@ class BrandingConfig(BaseModel):
     hero_title: str
     placeholder_text: str
     logo_path: str
+    demo_steps: list[str] = Field(default_factory=list)
     starter_prompts: list[PromptCard]
     theme: ThemeConfig
     ui: UiConfig = Field(default_factory=UiConfig)
@@ -87,6 +89,30 @@ class IdentityConfig(BaseModel):
     description: str
 
 
+class GuardrailRouteConfig(BaseModel):
+    name: str
+    references: list[str]
+    distance_threshold: float = 0.7
+
+
+class GuardrailConfig(BaseModel):
+    router_name: str
+    allowed_route_name: str
+    routes: list[GuardrailRouteConfig]
+
+
+class SeedMemory(BaseModel):
+    text: str
+    topics: list[str] = Field(default_factory=list)
+    memory_type: str = "semantic"
+
+
+class SeedLangCacheEntry(BaseModel):
+    prompt: str
+    response: str
+    attributes: dict[str, str] = Field(default_factory=dict)
+
+
 class DomainManifest(BaseModel):
     id: str
     version: str = "1"
@@ -98,6 +124,9 @@ class DomainManifest(BaseModel):
     namespace: NamespaceConfig
     rag: RagConfig
     identity: IdentityConfig
+    guardrail: GuardrailConfig | None = None
+    seed_memories: list[SeedMemory] = Field(default_factory=list)
+    seed_langcache: list[SeedLangCacheEntry] = Field(default_factory=list)
 
 
 class InternalToolDefinition(BaseModel):
