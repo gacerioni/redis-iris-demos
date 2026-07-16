@@ -1,0 +1,12 @@
+<svg width="216" height="48" viewBox="0 0 216 48" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="StrideLane">
+  <!-- brandless motion mark: three forward strokes suggesting stride and speed -->
+  <g>
+    <path d="M6 34 L18 14 L24 14 L12 34 Z" fill="#14B8A6"/>
+    <path d="M18 34 L30 14 L36 14 L24 34 Z" fill="#2DD4BF"/>
+    <path d="M30 34 L42 14 L48 14 L36 34 Z" fill="#FF6B5E"/>
+  </g>
+  <!-- wordmark -->
+  <text x="58" y="32" font-family="'Space Grotesk','Segoe UI',system-ui,sans-serif" font-size="22" font-weight="700" letter-spacing="-0.4">
+    <tspan fill="#0F172A">Stride</tspan><tspan fill="#0D9488">Lane</tspan>
+  </text>
+</svg>

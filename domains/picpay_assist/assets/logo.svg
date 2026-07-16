@@ -1,0 +1,8 @@
+<!-- Placeholder genérico (NÃO é a marca oficial do PicPay). Baixe o logo oficial
+     com scripts/fetch_picpay_brand.sh sob responsabilidade do operador. -->
+<svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="PicPay Assist (placeholder)">
+  <rect width="120" height="120" rx="28" fill="#11C76F"/>
+  <path d="M40 34h26c13 0 22 8 22 21s-9 21-22 21H52v10H40V34zm12 31h13c6 0 10-3 10-10s-4-10-10-10H52v20z" fill="#FFFFFF"/>
+  <circle cx="86" cy="84" r="7" fill="#04130C"/>
+  <circle cx="86" cy="84" r="3" fill="#11C76F"/>
+</svg>
