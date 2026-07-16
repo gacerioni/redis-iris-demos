@@ -45,3 +45,7 @@ Thumbs.db
 
 # Vercel deployment
 .vercel
+
+# Local env variants and agent tooling
+.env.*
+.claude/
