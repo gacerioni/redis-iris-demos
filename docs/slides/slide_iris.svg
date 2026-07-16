@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" font-family="Helvetica, Arial, sans-serif">
+  <rect width="1200" height="675" fill="#FFFFFF"/>
+
+  <!-- Title -->
+  <text x="60" y="70" font-size="34" font-weight="700" fill="#091A23">IRIS BIA: the full context engine</text>
+  <text x="60" y="104" font-size="19" fill="#5C707A">Born from Yusuf's demo · ported per customer with spec-driven development</text>
+
+  <!-- Pipeline stages -->
+  <g font-size="17" font-weight="700" text-anchor="middle">
+    <rect x="60" y="180" width="196" height="110" rx="14" fill="#F0F4F6" stroke="#B9C2C6"/>
+    <text x="158" y="222" fill="#091A23">Guardrail</text>
+    <text x="158" y="246" font-weight="400" font-size="15" fill="#5C707A">semantic router:</text>
+    <text x="158" y="266" font-weight="400" font-size="15" fill="#5C707A">block before you spend</text>
+
+    <rect x="284" y="180" width="196" height="110" rx="14" fill="#F0F4F6" stroke="#B9C2C6"/>
+    <text x="382" y="222" fill="#091A23">LangCache</text>
+    <text x="382" y="246" font-weight="400" font-size="15" fill="#5C707A">semantic cache:</text>
+    <text x="382" y="266" font-weight="400" font-size="15" fill="#5C707A">answered = never re-paid</text>
+
+    <rect x="508" y="180" width="196" height="110" rx="14" fill="#F0F4F6" stroke="#B9C2C6"/>
+    <text x="606" y="222" fill="#091A23">Agent memory</text>
+    <text x="606" y="246" font-weight="400" font-size="15" fill="#5C707A">short + long term:</text>
+    <text x="606" y="266" font-weight="400" font-size="15" fill="#5C707A">the bank remembers you</text>
+
+    <rect x="732" y="180" width="196" height="110" rx="14" fill="#F0F4F6" stroke="#B9C2C6"/>
+    <text x="830" y="222" fill="#091A23">Context Surface</text>
+    <text x="830" y="246" font-weight="400" font-size="15" fill="#5C707A">tools generated from</text>
+    <text x="830" y="266" font-weight="400" font-size="15" fill="#5C707A">your Redis indexes</text>
+
+    <rect x="956" y="180" width="184" height="110" rx="14" fill="#F0F4F6" stroke="#B9C2C6"/>
+    <text x="1048" y="222" fill="#091A23">Feature store</text>
+    <text x="1048" y="246" font-weight="400" font-size="15" fill="#5C707A">online features for</text>
+    <text x="1048" y="266" font-weight="400" font-size="15" fill="#5C707A">real-time decisions</text>
+  </g>
+
+  <!-- Flow arrows between stages -->
+  <g stroke="#5C707A" stroke-width="2.5">
+    <line x1="256" y1="235" x2="284" y2="235"/>
+    <line x1="480" y1="235" x2="508" y2="235"/>
+    <line x1="704" y1="235" x2="732" y2="235"/>
+    <line x1="928" y1="235" x2="956" y2="235"/>
+  </g>
+
+  <!-- Arrows down to Redis -->
+  <g stroke="#FF4438" stroke-width="3">
+    <line x1="158" y1="290" x2="158" y2="380"/>
+    <line x1="382" y1="290" x2="382" y2="380"/>
+    <line x1="606" y1="290" x2="606" y2="380"/>
+    <line x1="830" y1="290" x2="830" y2="380"/>
+    <line x1="1048" y1="290" x2="1048" y2="380"/>
+  </g>
+  <g fill="#FF4438">
+    <polygon points="158,384 151,372 165,372"/>
+    <polygon points="382,384 375,372 389,372"/>
+    <polygon points="606,384 599,372 613,372"/>
+    <polygon points="830,384 823,372 837,372"/>
+    <polygon points="1048,384 1041,372 1055,372"/>
+  </g>
+
+  <!-- ONE Redis -->
+  <rect x="60" y="388" width="1080" height="96" rx="16" fill="#FF4438"/>
+  <text x="600" y="430" font-size="28" font-weight="800" fill="#FFFFFF" text-anchor="middle">ONE Redis</text>
+  <text x="600" y="462" font-size="17" fill="#FFF3F2" text-anchor="middle">router + cache + memory + tools + features: one engine, one latency budget, one bill</text>
+
+  <!-- Playbook footer -->
+  <g font-size="16" fill="#091A23">
+    <rect x="60" y="530" width="340" height="96" rx="14" fill="#FFFFFF" stroke="#B9C2C6"/>
+    <text x="82" y="566" font-weight="700">1 · Spec the customer's world</text>
+    <text x="82" y="592" fill="#5C707A">entities, journeys, brand voice</text>
+
+    <rect x="430" y="530" width="340" height="96" rx="14" fill="#FFFFFF" stroke="#B9C2C6"/>
+    <text x="452" y="566" font-weight="700">2 · Agent ports the domain pack</text>
+    <text x="452" y="592" fill="#5C707A">a fork per customer, in a day</text>
+
+    <rect x="800" y="530" width="340" height="96" rx="14" fill="#FFFFFF" stroke="#B9C2C6"/>
+    <text x="822" y="566" font-weight="700">3 · Harness keeps it honest</text>
+    <text x="822" y="592" fill="#5C707A">every golden path live-tested</text>
+  </g>
+</svg>

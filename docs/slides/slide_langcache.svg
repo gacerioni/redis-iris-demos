@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" font-family="Helvetica, Arial, sans-serif">
+  <rect width="1200" height="675" fill="#FFFFFF"/>
+
+  <!-- Title -->
+  <text x="60" y="70" font-size="34" font-weight="700" fill="#091A23">LangCache: the 5-minute story</text>
+  <text x="60" y="104" font-size="19" fill="#5C707A">Semantic caching as a managed API on Redis Cloud</text>
+
+  <!-- User prompt -->
+  <rect x="60" y="200" width="200" height="90" rx="14" fill="#F0F4F6" stroke="#B9C2C6"/>
+  <text x="160" y="238" font-size="20" font-weight="600" fill="#091A23" text-anchor="middle">User prompt</text>
+  <text x="160" y="264" font-size="15" fill="#5C707A" text-anchor="middle">"same meaning,</text>
+  <text x="160" y="282" font-size="15" fill="#5C707A" text-anchor="middle">different words"</text>
+
+  <!-- Arrow 1 -->
+  <line x1="260" y1="245" x2="330" y2="245" stroke="#091A23" stroke-width="3"/>
+  <polygon points="330,245 318,238 318,252" fill="#091A23"/>
+
+  <!-- LangCache search -->
+  <rect x="334" y="185" width="270" height="120" rx="14" fill="#FF4438"/>
+  <text x="469" y="232" font-size="22" font-weight="700" fill="#FFFFFF" text-anchor="middle">LangCache</text>
+  <text x="469" y="258" font-size="17" fill="#FFF3F2" text-anchor="middle">vector search over every</text>
+  <text x="469" y="278" font-size="17" fill="#FFF3F2" text-anchor="middle">answer you already gave</text>
+
+  <!-- HIT path -->
+  <line x1="604" y1="215" x2="720" y2="160" stroke="#00B57C" stroke-width="3"/>
+  <polygon points="720,160 705,161 711,173" fill="#00B57C"/>
+  <text x="646" y="168" font-size="16" font-weight="700" fill="#00B57C">HIT</text>
+  <rect x="724" y="115" width="416" height="90" rx="14" fill="#E9FBF4" stroke="#00B57C"/>
+  <text x="932" y="152" font-size="20" font-weight="700" fill="#046A4C" text-anchor="middle">Answer from cache in ~50 ms</text>
+  <text x="932" y="180" font-size="16" fill="#046A4C" text-anchor="middle">the LLM is never called</text>
+
+  <!-- MISS path -->
+  <line x1="604" y1="280" x2="720" y2="330" stroke="#5C707A" stroke-width="3"/>
+  <polygon points="720,330 705,328 710,316" fill="#5C707A"/>
+  <text x="640" y="326" font-size="16" font-weight="700" fill="#5C707A">MISS</text>
+  <rect x="724" y="300" width="190" height="80" rx="14" fill="#F0F4F6" stroke="#B9C2C6"/>
+  <text x="819" y="335" font-size="20" font-weight="600" fill="#091A23" text-anchor="middle">LLM</text>
+  <text x="819" y="360" font-size="15" fill="#5C707A" text-anchor="middle">full cost, full latency</text>
+  <line x1="914" y1="340" x2="984" y2="340" stroke="#5C707A" stroke-width="3"/>
+  <polygon points="984,340 972,333 972,347" fill="#5C707A"/>
+  <rect x="988" y="300" width="152" height="80" rx="14" fill="#FFF6E9" stroke="#DFA000"/>
+  <text x="1064" y="335" font-size="18" font-weight="600" fill="#8A6400" text-anchor="middle">store it,</text>
+  <text x="1064" y="358" font-size="16" fill="#8A6400" text-anchor="middle">next one hits</text>
+
+  <!-- Attributes box -->
+  <rect x="334" y="420" width="420" height="100" rx="14" fill="#FFFFFF" stroke="#FF4438" stroke-width="2" stroke-dasharray="7 5"/>
+  <text x="544" y="458" font-size="18" font-weight="700" fill="#FF4438" text-anchor="middle">attributes = { company, business_unit, person }</text>
+  <text x="544" y="486" font-size="16" fill="#5C707A" text-anchor="middle">one cached answer can be private, team-wide or global</text>
+  <line x1="469" y1="305" x2="469" y2="420" stroke="#FF4438" stroke-width="2" stroke-dasharray="7 5"/>
+
+  <!-- Bottom line -->
+  <rect x="60" y="575" width="1080" height="60" rx="14" fill="#091A23"/>
+  <text x="600" y="613" font-size="22" font-weight="700" fill="#FFFFFF" text-anchor="middle">Every hit is a full LLM call you did not pay for</text>
+</svg>
