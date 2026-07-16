@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>StrideLane</title>
+<style>
+  :root{
+    --bg:#F1F5F9; --panel:#FFFFFF; --ink:#0F172A; --muted:#64748B; --line:#E2E8F0;
+    --teal:#0D9488; --teal-bright:#14B8A6; --coral:#FF6B5E; --amber:#F59E0B;
+    --c-text:#6366F1; --c-vec:#0D9488; --c-geo:#FF6B5E; --c-rating:#F59E0B;
+    --shadow:0 1px 2px rgba(15,23,42,.06),0 8px 24px rgba(15,23,42,.06);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:'Space Grotesk',system-ui,Segoe UI,sans-serif;font-size:14px;line-height:1.45}
+  a{color:inherit}
+  .topbar{position:sticky;top:0;z-index:30;background:var(--panel);border-bottom:1px solid var(--line);padding:12px 20px;display:flex;align-items:center;gap:18px}
+  .brand{font-size:22px;font-weight:700;letter-spacing:-.5px;white-space:nowrap}
+  .brand .a{color:var(--ink)} .brand .b{color:var(--teal)}
+  .brand .mk{display:inline-block;transform:skewX(-12deg);width:7px;height:18px;border-radius:2px;margin-right:2px}
+  .searchwrap{position:relative;flex:1;max-width:680px}
+  .searchbox{width:100%;padding:11px 14px;border:1.5px solid var(--line);border-radius:12px;font-size:15px;outline:none;transition:border .15s}
+  .searchbox:focus{border-color:var(--teal-bright);box-shadow:0 0 0 3px rgba(20,184,166,.15)}
+  .suggest{position:absolute;top:46px;left:0;right:0;background:var(--panel);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);overflow:hidden;display:none}
+  .suggest.open{display:block}
+  .suggest div{padding:9px 14px;cursor:pointer;display:flex;justify-content:space-between;gap:8px}
+  .suggest div:hover,.suggest div.active{background:#F0FDFA}
+  .suggest .sc{color:var(--muted);font-size:12px}
+  .cartchip{margin-left:auto;display:flex;align-items:center;gap:8px;background:#0F172A;color:#fff;border:none;border-radius:11px;padding:9px 14px;cursor:pointer;font-weight:600;font-size:13px}
+  .cartchip .n{background:var(--coral);border-radius:9px;padding:1px 7px;font-size:12px}
+  .ribbon{background:#0B1220;color:#CBD5E1;font-size:12px;padding:6px 20px;display:flex;gap:16px;align-items:center}
+  .ribbon b{color:var(--teal-bright)}
+  .layout{display:grid;grid-template-columns:230px 1fr 320px;gap:18px;padding:18px 20px;align-items:start}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .rail{padding:16px}
+  .rail h3{margin:0 0 8px;font-size:12px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted)}
+  .facet-group{margin-bottom:16px}
+  .chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:5px 11px;margin:3px 4px 0 0;cursor:pointer;font-size:12.5px;background:#fff;transition:.12s}
+  .chip:hover{border-color:var(--teal-bright)}
+  .chip.on{background:var(--teal);color:#fff;border-color:var(--teal)}
+  .chip .ct{opacity:.6;font-size:11px}
+  .toggle{display:flex;align-items:center;gap:8px;cursor:pointer;margin-top:6px}
+  .results-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+  .results-head .cnt{color:var(--muted)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column;box-shadow:var(--shadow);transition:.15s}
+  .card:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(15,23,42,.12)}
+  .thumb{height:120px;background:linear-gradient(135deg,#E2E8F0,#F8FAFC);display:flex;align-items:center;justify-content:center;position:relative}
+  .thumb .swatch{width:46px;height:46px;border-radius:50%;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+  .thumb .rank{position:absolute;top:8px;left:8px;background:#0F172A;color:#fff;font-size:11px;font-weight:700;border-radius:8px;padding:2px 7px}
+  .thumb .store{position:absolute;top:8px;right:8px;background:rgba(13,148,136,.9);color:#fff;font-size:10.5px;border-radius:8px;padding:2px 7px}
+  .cbody{padding:11px 12px;display:flex;flex-direction:column;gap:5px;flex:1}
+  .cbrand{color:var(--muted);font-size:11.5px;text-transform:uppercase;letter-spacing:.4px}
+  .cname{font-weight:600;font-size:13.5px;line-height:1.25;min-height:34px}
+  .crow{display:flex;align-items:center;justify-content:space-between}
+  .price{font-weight:700;font-size:15px}
+  .price .old{color:var(--muted);font-weight:400;font-size:12px;text-decoration:line-through;margin-right:5px}
+  .stars{color:var(--amber);font-size:12px}
+  .stars span{color:var(--muted)}
+  .sbar{display:flex;height:6px;border-radius:4px;overflow:hidden;background:#F1F5F9;margin-top:2px}
+  .sbar i{display:block;height:100%}
+  .seg-legend{display:flex;gap:9px;font-size:10.5px;color:var(--muted);margin-top:3px;flex-wrap:wrap}
+  .dot{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:3px;vertical-align:middle}
+  .addbtn{margin-top:6px;border:none;background:var(--teal);color:#fff;border-radius:9px;padding:8px;cursor:pointer;font-weight:600;font-size:12.5px;transition:.12s}
+  .addbtn:hover{background:#0b7d72}
+  .metric{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dashed var(--line);font-size:13px}
+  .metric b{font-variant-numeric:tabular-nums}
+  .slider{margin:12px 0}
+  .slider label{display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:3px}
+  .slider input[type=range]{width:100%;accent-color:var(--teal)}
+  .bigbar{display:flex;height:26px;border-radius:8px;overflow:hidden;margin:8px 0 4px;border:1px solid var(--line)}
+  .bigbar i{display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:700}
+  .muted{color:var(--muted)} .small{font-size:12px}
+  .empty{padding:40px;text-align:center;color:var(--muted)}
+  @media(max-width:1100px){.layout{grid-template-columns:1fr}.rail,.panel.metrics{position:static}}
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="brand">
+      <span class="mk" style="background:#14B8A6"></span><span class="mk" style="background:#2DD4BF"></span><span class="mk" style="background:#FF6B5E"></span>
+      <span class="a">Stride</span><span class="b">Lane</span>
+    </div>
+    <div class="searchwrap">
+      <input id="q" class="searchbox" placeholder="Search shoes, apparel, gear... try: something to keep me warm on a chilly run" autocomplete="off"/>
+      <div id="suggest" class="suggest"></div>
+    </div>
+    <button class="cartchip" onclick="openCart()">Cart <span class="n" id="cartn">0</span> <span id="cartt">R$ 0</span></button>
+  </div>
+  <div class="ribbon">
+    <span>Powered by <b>Redis hybrid search</b>: BM25 text + vector + geo + rating, fused live.</span>
+    <span id="ribbon-stat" class="muted"></span>
+  </div>
+
+  <div class="layout">
+    <!-- LEFT: facets -->
+    <aside class="panel rail" id="facets">
+      <h3>Refine</h3>
+      <div id="facet-body" class="small muted">Loading facets...</div>
+      <div class="facet-group" style="margin-top:14px">
+        <label class="toggle"><input type="checkbox" id="instock"/> In stock only</label>
+        <label class="toggle"><input type="checkbox" id="geo" checked/> Rank by nearest store</label>
+      </div>
+    </aside>
+
+    <!-- CENTER: results -->
+    <main>
+      <div class="results-head">
+        <div><strong id="rcount">0</strong> <span class="cnt">results</span> <span id="rfilters" class="muted small"></span></div>
+        <div class="small muted" id="rtime"></div>
+      </div>
+      <div id="grid" class="grid"></div>
+      <div id="empty" class="empty" style="display:none">No matches. Try a broader search.</div>
+    </main>
+
+    <!-- RIGHT: hybrid ranking + metrics -->
+    <aside class="panel metrics rail">
+      <h3>Hybrid ranking</h3>
+      <div class="small muted" style="margin-bottom:4px">Drag a weight, watch results re-rank.</div>
+      <div class="slider"><label>Text (BM25) <b id="vt">0.40</b></label><input type="range" id="wt" min="0" max="1" step="0.05" value="0.40"></div>
+      <div class="slider"><label>Vector (semantic) <b id="vv">0.35</b></label><input type="range" id="wv" min="0" max="1" step="0.05" value="0.35"></div>
+      <div class="slider"><label>Geo (nearest store) <b id="vg">0.15</b></label><input type="range" id="wg" min="0" max="1" step="0.05" value="0.15"></div>
+      <div class="slider"><label>Rating <b id="vr">0.10</b></label><input type="range" id="wr" min="0" max="1" step="0.05" value="0.10"></div>
+
+      <h3 style="margin-top:16px">Top result, why it ranked</h3>
+      <div id="topname" class="small" style="font-weight:600;margin-bottom:2px">—</div>
+      <div class="bigbar" id="bigbar"></div>
+      <div class="seg-legend">
+        <span><i class="dot" style="background:var(--c-text)"></i>text</span>
+        <span><i class="dot" style="background:var(--c-vec)"></i>vector</span>
+        <span><i class="dot" style="background:var(--c-geo)"></i>geo</span>
+        <span><i class="dot" style="background:var(--c-rating)"></i>rating</span>
+      </div>
+
+      <h3 style="margin-top:16px">Redis metrics</h3>
+      <div class="metric"><span>Search latency</span><b id="m-lat">—</b></div>
+      <div class="metric"><span>Candidates scanned</span><b id="m-cand">—</b></div>
+      <div class="metric"><span>Re-ranked, returned</span><b id="m-ret">—</b></div>
+      <div class="metric"><span>Embedding</span><b id="m-emb">—</b></div>
+      <div class="metric"><span>Nearest store</span><b id="m-store">—</b></div>
+    </aside>
+  </div>
+
+<script>
+const $ = s => document.querySelector(s);
+const state = { q:"", filters:{category:[],brand:[],color:[]}, weights:{text:.40,vector:.35,geo:.15,rating:.10} };
+const SEG = {text:'var(--c-text)',vector:'var(--c-vec)',geo:'var(--c-geo)',rating:'var(--c-rating)'};
+const fmtBRL = v => "R$ " + (v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+const stars = r => { const n=Math.round(r); return '★'.repeat(n)+'<span>'+'★'.repeat(5-n)+'</span> '+r.toFixed(1); };
+let debTimer, sugTimer;
+
+function qstring(){
+  const f=state.filters, p=new URLSearchParams();
+  if(state.q) p.set('q',state.q);
+  for(const k of ['category','brand','color']) if(f[k]&&f[k].length) p.set(k,f[k].join(','));
+  if($('#instock').checked) p.set('in_stock_only','true');
+  p.set('geo', $('#geo').checked ? 'true':'false');
+  const w=state.weights; p.set('w_text',w.text);p.set('w_vector',w.vector);p.set('w_geo',w.geo);p.set('w_rating',w.rating);
+  p.set('k','24');
+  return p.toString();
+}
+
+async function doSearch(){
+  const res = await fetch('/api/search?'+qstring()).then(r=>r.json());
+  renderResults(res); renderMetrics(res);
+  loadFacets();
+}
+
+function renderResults(res){
+  const g=$('#grid'), rows=res.results||[];
+  $('#rcount').textContent = rows.length;
+  $('#rtime').textContent = res.metrics ? (res.metrics.search_ms+' ms in Redis') : '';
+  $('#empty').style.display = rows.length? 'none':'block';
+  g.innerHTML = rows.map((r,i)=>{
+    const b=r.score_breakdown, tot=Math.max(0.0001,b.text+b.vector+b.geo+b.rating);
+    const seg = ['text','vector','geo','rating'].map(k=>`<i style="width:${(b[k]/tot*100).toFixed(1)}%;background:${SEG[k]}"></i>`).join('');
+    const sale = r.sale_price? `<span class="old">${fmtBRL(r.price)}</span>${fmtBRL(r.sale_price)}` : fmtBRL(r.price);
+    const dist = (r.distance_km!=null)? `${r.distance_km} km` : (r.primary_store_id||'').replace('STORE_','').replace('CD_','CD ');
+    return `<div class="card">
+      <div class="thumb"><span class="rank">#${i+1}</span><span class="store">${dist}</span>
+        <span class="swatch" style="background:${colorOf(r.color)}"></span></div>
+      <div class="cbody">
+        <div class="cbrand">${r.brand||''}</div>
+        <div class="cname">${r.name||''}</div>
+        <div class="crow"><span class="price">${sale}</span><span class="stars">${stars(r.rating||0)}</span></div>
+        <div class="sbar">${seg}</div>
+        <button class="addbtn" onclick='addToCart(${JSON.stringify(r.product_id)})'>Add to cart</button>
+      </div></div>`;
+  }).join('');
+}
+
+function colorOf(c){
+  const m={black:'#1e293b',white:'#f8fafc','vintage white':'#efe9da',teal:'#0d9488',coral:'#ff6b5e',navy:'#1e3a5f',
+    maroon:'#7f1d3a',grey:'#94a3b8',olive:'#6b7d3a','royal blue':'#2347d4'};
+  return m[(c||'').toLowerCase()]||'#cbd5e1';
+}
+
+function renderMetrics(res){
+  const m=res.metrics||{}; const rows=res.results||[];
+  $('#m-lat').textContent=(m.search_ms??'—')+' ms';
+  $('#m-cand').textContent=m.candidates_scanned??'—';
+  $('#m-ret').textContent=(m.reranked??'—')+' → '+(m.returned??'—');
+  $('#m-emb').textContent=(m.embed_ms??'—')+' ms';
+  $('#ribbon-stat').textContent = m.search_ms!=null ? `last query: ${m.candidates_scanned} candidates ranked in ${m.search_ms} ms` : '';
+  const top=rows[0];
+  if(top){
+    $('#topname').textContent=top.name;
+    const b=top.score_breakdown, tot=Math.max(0.0001,b.text+b.vector+b.geo+b.rating);
+    $('#bigbar').innerHTML=['text','vector','geo','rating'].map(k=>{
+      const pct=b[k]/tot*100; return pct>3?`<i style="width:${pct.toFixed(1)}%;background:${SEG[k]}">${Math.round(pct)}%</i>`:`<i style="width:${pct.toFixed(1)}%;background:${SEG[k]}"></i>`;
+    }).join('');
+    $('#m-store').textContent = top.distance_km!=null? top.distance_km+' km':'—';
+  }
+}
+
+async function loadFacets(){
+  const f=state.filters, p=new URLSearchParams();
+  if($('#instock').checked) p.set('in_stock_only','true');
+  const data=await fetch('/api/facets?'+p.toString()).then(r=>r.json());
+  const body=$('#facet-body'); body.innerHTML='';
+  for(const [field,label] of [['category','Category'],['brand','Brand'],['color','Color']]){
+    const vals=(data[field]||[]).slice(0,8);
+    if(!vals.length) continue;
+    const sel=state.filters[field]||[];
+    const chips=vals.map(v=>`<span class="chip ${sel.includes(v.value)?'on':''}" onclick='toggleFacet(${JSON.stringify(field)},${JSON.stringify(v.value)})'>${v.value} <span class="ct">${v.count}</span></span>`).join('');
+    body.innerHTML+=`<div class="facet-group"><h3>${label}</h3>${chips}</div>`;
+  }
+}
+function toggleFacet(field,val){
+  const arr=state.filters[field]||(state.filters[field]=[]);
+  const i=arr.indexOf(val); if(i>=0)arr.splice(i,1); else arr.push(val);
+  doSearch();
+}
+
+// suggest
+$('#q').addEventListener('input',e=>{
+  state.q=e.target.value;
+  clearTimeout(sugTimer); sugTimer=setTimeout(loadSuggest,140);
+  clearTimeout(debTimer); debTimer=setTimeout(doSearch,420);
+});
+$('#q').addEventListener('keydown',e=>{ if(e.key==='Enter'){clearTimeout(debTimer);closeSuggest();doSearch();}});
+async function loadSuggest(){
+  const pfx=state.q.trim(); const box=$('#suggest');
+  if(pfx.length<2){closeSuggest();return;}
+  const data=await fetch('/api/suggest?prefix='+encodeURIComponent(pfx)).then(r=>r.json());
+  const s=data.suggestions||[];
+  if(!s.length){closeSuggest();return;}
+  box.innerHTML=s.map(x=>`<div onclick='pick(${JSON.stringify(x.text)})'>${x.text}<span class="sc">${x.score.toFixed(1)}</span></div>`).join('');
+  box.classList.add('open');
+}
+function pick(t){ $('#q').value=t; state.q=t; closeSuggest(); doSearch(); }
+function closeSuggest(){ $('#suggest').classList.remove('open'); }
+document.addEventListener('click',e=>{ if(!e.target.closest('.searchwrap')) closeSuggest(); });
+
+// sliders
+for(const [id,key,lab] of [['wt','text','vt'],['wv','vector','vv'],['wg','geo','vg'],['wr','rating','vr']]){
+  $('#'+id).addEventListener('input',e=>{
+    state.weights[key]=parseFloat(e.target.value); $('#'+lab).textContent=parseFloat(e.target.value).toFixed(2);
+    clearTimeout(debTimer); debTimer=setTimeout(doSearch,260);
+  });
+}
+$('#instock').addEventListener('change',doSearch);
+$('#geo').addEventListener('change',doSearch);
+
+// cart
+async function addToCart(pid){
+  const r=await fetch('/api/cart/add',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({product_id:pid,quantity:1})}).then(r=>r.json());
+  if(r.cart) updateCart(r.cart);
+}
+async function loadCart(){ const r=await fetch('/api/cart').then(r=>r.json()); if(r.cart)updateCart(r.cart); }
+function updateCart(c){ $('#cartn').textContent=c.item_count||0; $('#cartt').textContent=fmtBRL(c.total||0); }
+function openCart(){
+  fetch('/api/cart').then(r=>r.json()).then(r=>{
+    const c=r.cart||{items:[]};
+    const lines=(c.items||[]).map(it=>`${it.quantity}x ${it.name} — ${fmtBRL(it.line_total)}`).join('\n')||'(empty)';
+    alert('Your cart\n\n'+lines+'\n\nTotal: '+fmtBRL(c.total||0));
+  });
+}
+
+// boot
+doSearch(); loadCart();
+</script>
+</body>
+</html>

@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Redis · Token Control Plane</title>
+<style>
+  :root {
+    --bg: #0B0E14; --panel: #151A23; --panel-2: #1B212C; --line: rgba(255,255,255,.07);
+    --red: #FF4438; --green: #00D26A; --amber: #FFB020; --blue: #4C8DFF;
+    --text: #E6EDF3; --muted: #8B98A5; --mono: ui-monospace,"SF Mono",Menlo,monospace;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: radial-gradient(1200px 600px at 70% -10%, #16202e 0%, var(--bg) 55%);
+    color: var(--text); font-family: system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    min-height: 100vh; padding: 22px 26px 40px;
+  }
+  a { color: var(--red); }
+  .top { display: flex; align-items: center; gap: 14px; margin-bottom: 6px; }
+  .logo { width: 34px; height: 34px; flex: none; }
+  h1 { font-size: 20px; margin: 0; letter-spacing: -.3px; }
+  .sub { color: var(--muted); font-size: 13px; margin: 2px 0 20px; }
+  .pill { font-family: var(--mono); font-size: 11px; color: var(--muted); border: 1px solid var(--line);
+          padding: 2px 8px; border-radius: 20px; }
+  .grid { display: grid; gap: 16px; }
+  .cards { grid-template-columns: repeat(3, 1fr); }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; }
+  .card h3 { margin: 0 0 2px; font-size: 15px; }
+  .card .cap { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+  .gauge { height: 14px; border-radius: 8px; background: #0c1118; overflow: hidden; margin: 12px 0 8px; position: relative; border: 1px solid var(--line); }
+  .gauge > i { display: block; height: 100%; border-radius: 8px; transition: width .5s cubic-bezier(.4,0,.2,1), background .3s; }
+  .gstat { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 11px; color: var(--muted); }
+  .chips { display: flex; gap: 6px; margin-top: 12px; flex-wrap: wrap; }
+  .chip { font-family: var(--mono); font-size: 10.5px; padding: 3px 7px; border-radius: 6px; background: var(--panel-2); color: var(--muted); border: 1px solid var(--line); }
+  .chip b { color: var(--text); }
+  .layout { grid-template-columns: 360px 1fr; margin-top: 16px; align-items: start; }
+  .console { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; }
+  label.fld { font-size: 12px; color: var(--muted); display: block; margin: 10px 0 5px; }
+  select, input, textarea, button { font-family: inherit; }
+  select, textarea, input[type=text] { width: 100%; background: #0c1118; color: var(--text); border: 1px solid var(--line);
+          border-radius: 9px; padding: 9px 11px; font-size: 13px; }
+  textarea { resize: vertical; min-height: 56px; }
+  .quick { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+  .quick button { background: var(--panel-2); border: 1px solid var(--line); color: var(--muted); font-size: 11px;
+          padding: 5px 9px; border-radius: 7px; cursor: pointer; }
+  .quick button:hover { color: var(--text); border-color: var(--red); }
+  .row { display: flex; gap: 8px; margin-top: 12px; }
+  .btn { flex: 1; background: var(--red); color: #fff; border: none; border-radius: 9px; padding: 11px; font-size: 13px;
+         font-weight: 600; cursor: pointer; }
+  .btn:hover { filter: brightness(1.08); }
+  .btn.ghost { background: var(--panel-2); color: var(--text); border: 1px solid var(--line); }
+  .btn:disabled { opacity: .5; cursor: not-allowed; }
+  /* gauntlet pipeline */
+  .pipe { display: flex; gap: 10px; margin-bottom: 14px; }
+  .gate { flex: 1; background: var(--panel-2); border: 1px solid var(--line); border-radius: 11px; padding: 12px;
+          text-align: center; position: relative; transition: all .3s; opacity: .55; }
+  .gate.active { opacity: 1; border-color: var(--blue); box-shadow: 0 0 0 1px var(--blue), 0 6px 20px rgba(76,141,255,.12); }
+  .gate.pass { opacity: 1; border-color: var(--green); }
+  .gate.stop { opacity: 1; border-color: var(--red); }
+  .gate.save { opacity: 1; border-color: var(--amber); }
+  .gate .ico { font-size: 20px; }
+  .gate .nm { font-size: 11px; color: var(--muted); margin-top: 4px; }
+  .gate .st { font-family: var(--mono); font-size: 10px; margin-top: 4px; min-height: 13px; }
+  .gate.pass .st { color: var(--green); } .gate.stop .st { color: var(--red); } .gate.save .st { color: var(--amber); }
+  .arrow { align-self: center; color: var(--muted); font-size: 16px; }
+  .answer { background: #0c1118; border: 1px solid var(--line); border-radius: 11px; padding: 14px 16px; font-size: 14px;
+            line-height: 1.5; min-height: 70px; white-space: pre-wrap; }
+  .answer .meta { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-top: 10px; display: flex; gap: 14px; }
+  .totals { grid-template-columns: repeat(4, 1fr); margin-top: 16px; }
+  .tot { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; }
+  .tot .v { font-family: var(--mono); font-size: 22px; font-weight: 700; }
+  .tot .l { font-size: 11px; color: var(--muted); margin-top: 3px; }
+  .strip { display: flex; align-items: center; gap: 16px; margin-top: 16px; padding: 12px 16px; background: var(--panel);
+           border: 1px solid var(--line); border-radius: 12px; flex-wrap: wrap; }
+  .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 9px; overflow: hidden; }
+  .seg button { background: transparent; color: var(--muted); border: none; padding: 7px 13px; font-size: 12px; cursor: pointer; }
+  .seg button.on { background: var(--red); color: #fff; }
+  .kv { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+  .keyspace { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-top: 6px; line-height: 1.7; }
+  .keyspace b { color: var(--green); }
+</style>
+</head>
+<body>
+  <div class="top">
+    <svg class="logo" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="7" fill="#FF4438"/><path d="M7 11.5l9-4 9 4-9 4-9-4z" fill="#fff"/><path d="M7 16l9 4 9-4M7 20.5l9 4 9-4" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/></svg>
+    <div>
+      <h1>Token Control Plane <span class="pill" id="model">·</span></h1>
+    </div>
+  </div>
+  <div class="sub">Redis como rate limiter de LLM — todo request passa por 3 portões Redis antes de gastar 1 token. <span id="health" class="kv"></span></div>
+
+  <!-- AREA CARDS -->
+  <div class="grid cards" id="cards"></div>
+
+  <!-- CONSOLE + GAUNTLET -->
+  <div class="grid layout">
+    <div class="console">
+      <strong style="font-size:14px">Simulador de request</strong>
+      <label class="fld">Área (balde de orçamento)</label>
+      <select id="area"></select>
+      <label class="fld">Pergunta</label>
+      <textarea id="prompt" placeholder="Digite ou use um atalho abaixo...">Como funciona o Pix agendado?</textarea>
+      <div class="quick" id="quick"></div>
+      <div class="row">
+        <button class="btn" id="send">Enviar</button>
+        <button class="btn ghost" id="burst">Burst ×5</button>
+      </div>
+    </div>
+
+    <div class="console">
+      <div class="pipe" id="pipe"></div>
+      <div class="answer" id="answer"><span style="color:var(--muted)">A resposta e o caminho pelos portões aparecem aqui.</span></div>
+    </div>
+  </div>
+
+  <!-- STRATEGY STRIP -->
+  <div class="strip">
+    <div><div class="kv" style="margin-bottom:5px">Estratégia de rate limiting</div>
+      <div class="seg" id="strategy">
+        <button data-s="token_bucket" class="on">Token Bucket</button>
+        <button data-s="sliding_window">Sliding Window</button>
+      </div>
+    </div>
+    <div style="flex:1"></div>
+    <button class="btn ghost" style="flex:none" id="preset">Preset cliente (100/200/300)</button>
+    <button class="btn ghost" style="flex:none" id="reset">Reset baldes</button>
+  </div>
+
+  <!-- TOTALS -->
+  <div class="grid totals" id="totals"></div>
+
+  <!-- REDIS KEYSPACE -->
+  <div class="strip" style="display:block">
+    <div class="kv">Keyspace Redis vivo <b style="color:var(--text)">(namespace tcp:)</b> — é isto que impõe o limite E alimenta este painel</div>
+    <div class="keyspace" id="keyspace">—</div>
+  </div>
+
+<script>
+const API = "";  // mesma origem
+let STRATEGY = "token_bucket";
+let AREAS = [];
+
+const GATES = [
+  { id: "router",    ico: "🚦", nm: "Router" },
+  { id: "cache",     ico: "⚡", nm: "Cache" },
+  { id: "ratelimit", ico: "🪣", nm: "Rate limit" },
+  { id: "llm",       ico: "🤖", nm: "LLM" },
+];
+
+function fmt(n){ return new Intl.NumberFormat("pt-BR").format(Math.round(n)); }
+function brl(n){ return "$ " + (n).toFixed(4); }
+
+async function loadConfig(){
+  const c = await (await fetch(API+"/api/gateway/config")).json();
+  document.getElementById("model").textContent = c.model;
+  const sel = document.getElementById("area");
+  sel.innerHTML = c.areas.map(a => `<option value="${a.id}">${a.label} (cap ${a.default_capacity})</option>`).join("");
+  const quick = ["Como funciona o Pix agendado?","Qual a diferença entre CDB e LCI?","Me conta uma piada","Como contestar uma cobrança?"];
+  document.getElementById("quick").innerHTML = quick.map(q=>`<button>${q}</button>`).join("");
+  document.querySelectorAll("#quick button").forEach(b=> b.onclick = ()=> document.getElementById("prompt").value = b.textContent);
+}
+
+function gaugeColor(pct){ return pct > 50 ? "var(--green)" : pct > 20 ? "var(--amber)" : "var(--red)"; }
+
+async function refresh(){
+  const st = await (await fetch(API+"/api/gateway/state")).json();
+  STRATEGY = st.strategy;
+  AREAS = st.areas;
+  document.querySelectorAll("#strategy button").forEach(b=> b.classList.toggle("on", b.dataset.s===STRATEGY));
+  // cards
+  document.getElementById("cards").innerHTML = st.areas.map(a=>{
+    const pct = a.capacity ? Math.max(0, Math.min(100, 100*a.remaining/a.capacity)) : 0;
+    const u = a.usage;
+    return `<div class="card">
+      <h3 style="color:${a.color}">${a.label}</h3>
+      <div class="cap">balde ${fmt(a.remaining)} / ${fmt(a.capacity)} tokens · refill ${a.refill_per_sec}/s</div>
+      <div class="gauge"><i style="width:${pct}%;background:${gaugeColor(pct)}"></i></div>
+      <div class="gstat"><span>${pct.toFixed(0)}% disponível</span><span>gasto ${fmt(u.spent)}</span></div>
+      <div class="chips">
+        <span class="chip">✅ <b>${u.answered}</b> ok</span>
+        <span class="chip">🪣 <b>${u.throttled}</b> throttled</span>
+        <span class="chip">🚦 <b>${u.blocked}</b> off-topic</span>
+        <span class="chip">⚡ <b>${u.cached}</b> cache</span>
+      </div></div>`;
+  }).join("");
+  // totals
+  const sum = (f)=> st.areas.reduce((s,a)=>s+a.usage[f],0);
+  const spent = sum("spent"), savedR = sum("saved_router"), savedC = sum("saved_cache");
+  const savedPct = (spent+savedR+savedC) ? 100*(savedR+savedC)/(spent+savedR+savedC) : 0;
+  // ~$0.60 / 1M tokens input-ish blended (gpt-5.4-mini ballpark p/ demo)
+  const PRICE = 0.60/1e6;
+  document.getElementById("totals").innerHTML = `
+    <div class="tot"><div class="v" style="color:var(--red)">${fmt(spent)}</div><div class="l">tokens gastos no LLM</div></div>
+    <div class="tot"><div class="v" style="color:var(--amber)">${fmt(savedR)}</div><div class="l">tokens salvos · router (off-topic)</div></div>
+    <div class="tot"><div class="v" style="color:var(--green)">${fmt(savedC)}</div><div class="l">tokens salvos · cache (repetição)</div></div>
+    <div class="tot"><div class="v" style="color:var(--green)">${savedPct.toFixed(0)}%</div><div class="l">economia vs. sem gateway</div></div>`;
+  // keyspace
+  document.getElementById("keyspace").innerHTML = st.areas.map(a=>
+    `<b>tcp:bucket:${a.id}</b> → {tokens: ${fmt(a.remaining)}}  ·  <b>tcp:usage:${a.id}</b> → {spent: ${fmt(a.usage.spent)}, throttled: ${a.usage.throttled}}`
+  ).join("<br>");
+}
+
+function resetPipe(){
+  document.getElementById("pipe").innerHTML = GATES.map((g,i)=>
+    `${i>0?'<span class="arrow">→</span>':''}<div class="gate" id="g-${g.id}"><div class="ico">${g.ico}</div><div class="nm">${g.nm}</div><div class="st"></div></div>`
+  ).join("");
+}
+function setGate(id, cls, txt){
+  const el = document.getElementById("g-"+id); if(!el) return;
+  el.className = "gate " + cls;
+  if(txt!==undefined) el.querySelector(".st").textContent = txt;
+}
+
+async function send(prompt){
+  const area = document.getElementById("area").value;
+  prompt = prompt || document.getElementById("prompt").value;
+  resetPipe();
+  const ans = document.getElementById("answer"); ans.textContent = "";
+  document.getElementById("send").disabled = true;
+  let answerText = "", meta = "";
+  try {
+    const resp = await fetch(API+"/api/gateway/ask", {
+      method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({area, prompt})
+    });
+    const reader = resp.body.getReader(); const dec = new TextDecoder(); let buf="";
+    while(true){
+      const {done, value} = await reader.read(); if(done) break;
+      buf += dec.decode(value, {stream:true});
+      const lines = buf.split("\n\n"); buf = lines.pop();
+      for(const l of lines){
+        if(!l.startsWith("data: ")) continue;
+        const ev = JSON.parse(l.slice(6));
+        handleEvent(ev, (t)=>{answerText+=t; ans.textContent=answerText;}, (m)=>{meta=m;});
+      }
+    }
+  } catch(e){ ans.textContent = "Erro: "+e; }
+  if(meta){ const d=document.createElement("div"); d.className="meta"; d.innerHTML=meta; ans.appendChild(d); }
+  document.getElementById("send").disabled = false;
+  refresh();
+}
+
+function handleEvent(ev, appendText, setMeta){
+  if(ev.type==="gate"){
+    const s = ev.status;
+    if(s==="checking") setGate(ev.gate, "active", "...");
+    else if(s==="passed"||s==="miss") setGate(ev.gate, "pass", s==="miss"?"miss":"ok"+(ev.remaining!=null?` ${fmt(ev.remaining)}`:""));
+    else if(s==="blocked") setGate(ev.gate, "stop", "BLOCK");
+    else if(s==="hit") setGate(ev.gate, "save", "HIT");
+    else if(s==="throttled") setGate(ev.gate, "stop", "THROTTLE");
+    else if(s==="calling") setGate(ev.gate, "active", "...");
+    else if(s==="done") setGate(ev.gate, "pass", fmt(ev.actual_tokens)+"t");
+    else if(s==="error") setGate(ev.gate, "stop", "erro");
+  } else if(ev.type==="answer-delta"){ appendText(ev.delta); }
+  else if(ev.type==="answer"){ appendText(ev.text); }
+  else if(ev.type==="done"){
+    const tag = {answered:"✅ respondido", blocked:"🚦 bloqueado (off-topic)", cached:"⚡ cache hit", throttled:"🪣 throttled", error:"erro"}[ev.outcome]||ev.outcome;
+    let m = `<span>${tag}</span>`;
+    if(ev.spent) m += `<span>gastou ${fmt(ev.spent)} tokens</span>`;
+    if(ev.saved) m += `<span style="color:var(--amber)">economizou ${fmt(ev.saved)} tokens</span>`;
+    setMeta(m);
+  }
+}
+
+async function setStrategy(s){
+  await fetch(API+"/api/gateway/config",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({strategy:s})});
+  refresh();
+}
+async function applyPreset(){
+  await fetch(API+"/api/gateway/config",{method:"POST",headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({overrides:{cartoes:{capacity:100},investimentos:{capacity:200},canais:{capacity:300}}})});
+  await fetch(API+"/api/gateway/reset",{method:"POST"});
+  refresh();
+}
+async function burst(){
+  const qs=["Como funciona o limite do cartão?","O que é CDB?","Como abrir conta digital?","O que é open finance?","Como funciona portabilidade?"];
+  for(let i=0;i<5;i++){ await send(qs[i]); }
+}
+
+document.getElementById("send").onclick = ()=> send();
+document.getElementById("burst").onclick = burst;
+document.getElementById("reset").onclick = async()=>{ await fetch(API+"/api/gateway/reset",{method:"POST"}); refresh(); };
+document.getElementById("preset").onclick = applyPreset;
+document.querySelectorAll("#strategy button").forEach(b=> b.onclick=()=>setStrategy(b.dataset.s));
+
+(async()=>{
+  const h = await (await fetch(API+"/api/health")).json();
+  document.getElementById("health").textContent = `· router ${h.router_enabled?"on":"off"} · cache ${h.cache_enabled?"on":"off"}`;
+  await loadConfig(); resetPipe(); refresh(); setInterval(refresh, 1500);
+})();
+</script>
+</body>
+</html>

@@ -29,6 +29,15 @@ export type ThinkingStep = {
 
 export type StatusMessage = { text: string; ts: number };
 
+export type DoneMeta = {
+  cacheHit?: boolean;
+  guardrailBlocked?: boolean;
+  tokensIn?: number;
+  tokensOut?: number;
+  tokensSavedEst?: number;
+  totalElapsedMs?: number;
+};
+
 export type ChatMessage = {
   id: string;
   role: ChatRole;
@@ -36,6 +45,7 @@ export type ChatMessage = {
   statusMessages: StatusMessage[];
   thinkingSteps: ThinkingStep[];
   toolEvents: ToolEvent[];
+  doneMeta?: DoneMeta;
 };
 
 export type HealthState = {
@@ -58,7 +68,7 @@ export type MemoryDashboardState = {
 
 export type AgentMode = "context_surfaces" | "simple_rag";
 
-export type PromptCard = { eyebrow: string; title: string; prompt: string };
+export type PromptCard = { eyebrow: string; title: string; prompt: string; featured?: boolean };
 
 export type UiConfig = {
   show_platform_surface?: boolean;
@@ -96,4 +106,26 @@ export type ToolsResponse = {
   count: number;
 };
 
-export type RedisContextView = "activity" | "redis-context";
+export type RedisContextView = "activity" | "redis-context" | "finops";
+
+export type LatencyStats = { p50: number; p95: number; samples: number };
+
+export type FinOpsSummary = {
+  turns: number;
+  cache_hits: number;
+  llm_turns: number;
+  blocked: number;
+  hit_rate: number;
+  tokens_in: number;
+  tokens_out: number;
+  saved_in: number;
+  saved_out: number;
+  avg_tokens_in_per_llm_turn: number;
+  avg_tokens_out_per_llm_turn: number;
+  latency_hit_ms: LatencyStats;
+  latency_llm_ms: LatencyStats;
+  latency_lookup_ms: LatencyStats;
+  slice_calls: number;
+  slice_full_tokens: number;
+  slice_served_tokens: number;
+};

@@ -397,6 +397,9 @@ async def create_agent(
         "model": settings.openai_chat_model,
         "temperature": 0.2,
         "api_key": settings.openai_api_key,
+        # Ask OpenAI to append usage to the stream so FinOps telemetry can
+        # meter real prompt/completion tokens per turn.
+        "stream_usage": True,
     }
     if settings.openai_base_url:
         model_kw["base_url"] = settings.openai_base_url

@@ -106,9 +106,10 @@ export function EmptyState({
                   {cards.map((p) => (
                     <button
                       key={p.title}
-                      className="starter-chip"
+                      className={`starter-chip${p.featured ? " starter-chip--golden" : ""}`}
                       onClick={() => onPrefill(p.prompt)}
                       type="button"
+                      title={p.featured ? "Golden path" : undefined}
                     >
                       {p.title}
                     </button>

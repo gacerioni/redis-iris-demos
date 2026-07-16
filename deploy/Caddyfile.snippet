@@ -1,0 +1,41 @@
+# Bloco pra adicionar ao /etc/caddy/Caddyfile do host
+# Após adicionar: sudo systemctl reload caddy
+# Let's Encrypt provisiona o cert automaticamente na primeira request HTTPS.
+
+irisbank.platformengineer.io {
+    encode gzip zstd
+
+    # Logs estruturados pra debug
+    log {
+        output file /var/log/caddy/irisbank.log
+        format console
+    }
+
+    # API do backend (FastAPI no container Docker, exposto em 127.0.0.1:8040)
+    handle /api/* {
+        reverse_proxy 127.0.0.1:8040 {
+            # Streaming SSE precisa de flush rápido e timeout longo
+            flush_interval -1
+            transport http {
+                read_timeout 5m
+                write_timeout 5m
+                dial_timeout 10s
+            }
+        }
+    }
+
+    # Frontend estático (Vite build) servido direto pelo Caddy
+    handle {
+        root * /opt/iris-bank/dist
+        try_files {path} /index.html
+        file_server
+    }
+
+    # Headers de segurança básicos
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains"
+        X-Content-Type-Options "nosniff"
+        Referrer-Policy "strict-origin-when-cross-origin"
+        -Server
+    }
+}

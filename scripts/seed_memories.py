@@ -43,11 +43,19 @@ def main() -> None:
     print(f"Owner: {owner_id}")
     print(f"Namespace: {settings.effective_memory_namespace}")
 
-    print("Purging all existing long-term memories from Redis...")
+    # Memory API only accepts [A-Za-z0-9-] in IDs and namespaces.
+    # Sanitize the domain id (e.g. "redis_eats" → "redis-eats") so seed IDs are valid.
+    safe_domain_id = domain.manifest.id.replace("_", "-")
+
+    # SCOPED PURGE (was a global wipe). On a SHARED Redis Cloud the demos all live in the
+    # same memory store; deleting memory:{store}:ltm:* wiped the LTM of EVERY other demo
+    # (this clobbered bradesco/prod). Purge ONLY this domain's own seed keys
+    # (seed-<domain>-*); the re-seed below recreates them. Other demos stay intact.
+    print(f"Purging existing seed memories for '{safe_domain_id}' (scoped, not global)...")
     r = create_redis_client(settings)
     store_id = settings.memory_store_id
     if store_id:
-        prefix = f"memory:{store_id}:ltm:*"
+        prefix = f"memory:{store_id}:ltm:seed-{safe_domain_id}-*"
         cursor, keys = 0, []
         while True:
             cursor, batch = r.scan(cursor=cursor, match=prefix, count=200)
@@ -56,13 +64,13 @@ def main() -> None:
                 break
         if keys:
             r.delete(*keys)
-            print(f"  Deleted {len(keys)} LTM keys from Redis")
+            print(f"  Deleted {len(keys)} '{safe_domain_id}' seed LTM keys (other domains untouched)")
         else:
-            print("  No existing LTM keys found")
+            print("  No existing seed LTM keys for this domain")
 
     print(f"Seeding {len(seeds)} memories...")
     for i, entry in enumerate(seeds):
-        mid = f"seed-{domain.manifest.id}-{i}"
+        mid = f"seed-{safe_domain_id}-{i}"
         created = service.create_long_term_memory(
             text=entry.text,
             owner_id=owner_id,

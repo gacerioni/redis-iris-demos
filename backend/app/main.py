@@ -17,12 +17,14 @@ from langchain_core.messages import AIMessage
 from backend.app.context_surface_service import ContextSurfaceService
 from backend.app.core.domain_loader import get_active_domain
 from backend.app.contracts import ChatRequest
+from backend.app.finops_service import FinOpsService
 from backend.app.internal_tools import InternalToolService, domain_runtime_config, internal_tool_names
 from backend.app.guardrail_service import GuardrailService
 from backend.app.langcache_service import LangCacheService
 from backend.app.langgraph_agent import create_agent, create_checkpointer
 from backend.app.memory_service import MemoryService
 from backend.app.rag_service import SimpleRAGService
+from backend.app.redis_connection import create_redis_client
 from backend.app.request_context import reset_thread_id, set_thread_id
 from backend.app.settings import get_settings
 
@@ -82,6 +84,7 @@ runtime_config = domain_runtime_config(domain, settings)
 memory_service = MemoryService(settings)
 langcache_service = LangCacheService(settings)
 guardrail_service = GuardrailService(settings, domain.manifest.guardrail)
+finops_service = FinOpsService(settings)
 
 
 @app.on_event("startup")
@@ -92,6 +95,10 @@ async def _warmup() -> None:
     if guardrail_service.is_configured():
         tasks.append(asyncio.create_task(guardrail_service.warm_up()))
     tasks.append(asyncio.create_task(get_agent()))
+    if langcache_service.is_configured() and domain.manifest.seed_langcache:
+        seed_entries = [{"prompt": e.prompt, "response": e.response, "attributes": e.attributes}
+                        for e in domain.manifest.seed_langcache]
+        tasks.append(asyncio.create_task(langcache_service.seed(seed_entries)))
     results = await asyncio.gather(*tasks, return_exceptions=True)
     for r in results:
         if isinstance(r, Exception):
@@ -147,6 +154,10 @@ def sse(event_type: str, **fields: Any) -> str:
 
 
 def _logo_src(path: Path) -> str:
+    # Fictional brands (e.g. Gabs Bank) ship no logo file: fall back to a
+    # text wordmark on the frontend by returning an empty src.
+    if not path.is_file():
+        return ""
     suffix = path.suffix.lower()
     mime_type = {
         ".svg": "image/svg+xml",
@@ -285,6 +296,40 @@ async def domain_config() -> JSONResponse:
     })
 
 
+@app.get("/api/identity-badge")
+async def identity_badge() -> JSONResponse:
+    """Score vivo do consumidor logado, lido do feature store no Redis.
+
+    Mantém o badge da UI em sincronia com o score real (que muda em runtime via
+    recompute-on-write e aceite de proposta). Domínios sem feature store de score
+    retornam score=null e a UI cai no rótulo estático.
+    """
+    identity = domain.manifest.identity
+    consumer_id = os.getenv(identity.id_env_var, identity.default_id)
+    score: int | None = None
+    faixa: str | None = None
+    try:
+        client = create_redis_client(settings)
+        raw = client.execute_command("JSON.GET", f"{domain.manifest.id}_features:{consumer_id}")
+        if raw:
+            raw = raw.decode() if isinstance(raw, bytes) else raw
+            data = json.loads(raw)
+            sc = data.get("score_calculado") or data.get("score_interno")
+            if sc is not None:
+                score = int(sc)
+            faixa = data.get("faixa")
+            if faixa is None and score is not None:
+                if score >= 850:
+                    faixa = "Excelente"
+                elif score >= 700:
+                    faixa = "Bom"
+                elif score >= 500:
+                    faixa = "Regular"
+    except Exception:  # noqa: BLE001 — badge é cosmético, nunca derruba a request
+        pass
+    return JSONResponse({"consumer_id": consumer_id, "score": score, "faixa": faixa})
+
+
 @app.get("/api/memory/dashboard")
 async def memory_dashboard(thread_id: str | None = None) -> JSONResponse:
     identity = domain.manifest.identity
@@ -354,6 +399,39 @@ async def list_available_tools() -> JSONResponse:
     return JSONResponse({"tools": tools, "count": len(tools)})
 
 
+@app.get("/api/finops/summary")
+async def finops_summary() -> JSONResponse:
+    try:
+        return JSONResponse(await finops_service.summary())
+    except Exception as exc:
+        return JSONResponse({"error": str(exc)}, status_code=503)
+
+
+@app.post("/api/finops/reset")
+async def finops_reset() -> JSONResponse:
+    await finops_service.reset()
+    return JSONResponse({"ok": True})
+
+
+def _extract_usage(output: Any) -> dict[str, int] | None:
+    """Pull usage_metadata out of an on_chat_model_end payload (shape varies
+    across langchain versions: AIMessage, LLMResult, or plain dict)."""
+    if output is None:
+        return None
+    usage = getattr(output, "usage_metadata", None)
+    if usage is None and isinstance(output, dict):
+        usage = output.get("usage_metadata")
+    if usage is None and hasattr(output, "generations"):
+        try:
+            message = output.generations[0][0].message
+            usage = getattr(message, "usage_metadata", None)
+        except (AttributeError, IndexError):
+            usage = None
+    if usage is None:
+        return None
+    return dict(usage)
+
+
 async def cs_event_stream(request: ChatRequest) -> AsyncIterator[str]:
     timer = Timer()
     phases: list[tuple[str, int]] = []
@@ -394,12 +472,13 @@ async def cs_event_stream(request: ChatRequest) -> AsyncIterator[str]:
         if not guard_result.get("allowed", True):
             app_name = domain.manifest.branding.app_name
             subtitle = domain.manifest.branding.subtitle.lower()
-            blocked_message = (
+            blocked_message = domain.manifest.guardrail.blocked_message or (
                 f"I'm your {app_name} {subtitle} assistant — "
                 "I can only help with topics related to this service. "
                 "What can I help you with today?"
             )
             yield sse("text-delta", delta=blocked_message, ts=timer.elapsed_ms())
+            await finops_service.record_guardrail_block(latency_ms=timer.elapsed_ms())
             yield sse("done", totalElapsedMs=timer.elapsed_ms(), guardrailBlocked=True)
             log.info(
                 "━━━ GUARDRAIL BLOCKED in %dms (route=%s, distance=%.3f): %s",
@@ -438,7 +517,16 @@ async def cs_event_stream(request: ChatRequest) -> AsyncIterator[str]:
             )
             cached_response = cache_result.get("response", "")
             yield sse("text-delta", delta=cached_response, ts=timer.elapsed_ms())
-            yield sse("done", totalElapsedMs=timer.elapsed_ms(), cacheHit=True)
+            saved = await finops_service.record_cache_hit(
+                latency_ms=timer.elapsed_ms(), lookup_ms=cache_ms
+            )
+            yield sse(
+                "done",
+                totalElapsedMs=timer.elapsed_ms(),
+                cacheHit=True,
+                tokensSavedEst=saved["saved_in"] + saved["saved_out"],
+                tokensSavedSamples=saved["samples"],
+            )
             log.info("━━━ CACHE HIT in %dms (similarity=%.3f)", cache_ms, cache_result.get("similarity", 0))
             return
         else:
@@ -469,6 +557,8 @@ async def cs_event_stream(request: ChatRequest) -> AsyncIterator[str]:
     llm_step_ids: dict[str, str] = {}
     llm_call_counter = 0
     tool_calls_seen = 0
+    tokens_in_total = 0
+    tokens_out_total = 0
     last_thinking_step: str | None = None
     final_text = ""
     thread_token = set_thread_id(thread_id)
@@ -644,6 +734,10 @@ async def cs_event_stream(request: ChatRequest) -> AsyncIterator[str]:
                     yield sse("thinking-step", step=step, stepId=step_id, stepKind="llm", ts=timer.elapsed_ms())
 
             elif kind == "on_chat_model_end":
+                usage = _extract_usage(event["data"].get("output"))
+                if usage:
+                    tokens_in_total += usage.get("input_tokens", 0) or 0
+                    tokens_out_total += usage.get("output_tokens", 0) or 0
                 start = llm_start_times.pop(event["run_id"], perf_counter())
                 step_id = llm_step_ids.pop(event["run_id"], "")
                 duration_ms = max(round((perf_counter() - start) * 1000), 1)
@@ -722,7 +816,17 @@ async def cs_event_stream(request: ChatRequest) -> AsyncIterator[str]:
             yield sse("status", text=f"Assistant memory logging unavailable: {exc}", ts=timer.elapsed_ms())
     phases.append(("memory_save", timer.phase("Assistant memory save")))
 
-    yield sse("done", totalElapsedMs=timer.elapsed_ms())
+    await finops_service.record_llm_turn(
+        tokens_in=tokens_in_total,
+        tokens_out=tokens_out_total,
+        latency_ms=timer.elapsed_ms(),
+    )
+    yield sse(
+        "done",
+        totalElapsedMs=timer.elapsed_ms(),
+        tokensIn=tokens_in_total,
+        tokensOut=tokens_out_total,
+    )
     reset_thread_id(thread_token)
 
     # ── Request summary ──
@@ -761,7 +865,7 @@ async def rag_event_stream(question: str) -> AsyncIterator[str]:
         if not guard_result.get("allowed", True):
             app_name = domain.manifest.branding.app_name
             subtitle = domain.manifest.branding.subtitle.lower()
-            blocked_message = (
+            blocked_message = domain.manifest.guardrail.blocked_message or (
                 f"I'm your {app_name} {subtitle} assistant — "
                 "I can only help with topics related to this service. "
                 "What can I help you with today?"

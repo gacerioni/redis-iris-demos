@@ -1,0 +1,36 @@
+# Stack de produção do Itaú Assist demo
+#
+# Topologia:
+#   - backend container (FastAPI uvicorn) escuta em 8040, mapeado pra 127.0.0.1:8040 do host
+#   - Caddy do HOST (já instalado no VM) faz HTTPS + reverse proxy:
+#       irisbank.platformengineer.io  →  /  →  /opt/iris-bank/dist/   (frontend estático)
+#       irisbank.platformengineer.io  →  /api/* →  127.0.0.1:8040     (backend)
+#   - Sem Redis local: Context Surface + Agent Memory + LangCache são gerenciados via Redis Cloud
+#
+# Como subir:
+#   cd /opt/iris-bank/code
+#   docker compose -f deploy/docker-compose.prod.yml up -d --build
+
+services:
+  backend:
+    build:
+      context: ..
+      dockerfile: deploy/backend/Dockerfile
+    container_name: iris-bank-backend
+    restart: unless-stopped
+    env_file:
+      - /opt/iris-bank/.env
+    ports:
+      # Apenas localhost — Caddy do host faz o reverse proxy
+      - "127.0.0.1:8040:8040"
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8040/api/health"]
+      interval: 30s
+      timeout: 5s
+      start_period: 20s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"

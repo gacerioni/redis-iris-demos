@@ -1,7 +1,8 @@
 import { RefObject } from "react";
-import type { ChatMessage } from "../types";
+import type { ChatMessage, DoneMeta } from "../types";
 import { mergeToolEvents } from "../utils";
 import { MarkdownMessage } from "./MarkdownMessage";
+import { fmtTokens } from "./FinOpsPanel";
 
 const RedisIcon = () => (
   <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
@@ -27,6 +28,37 @@ function deriveCurrentPhase(message: ChatMessage): { label: string; redis: boole
   if (hasCache) return { label: "Checking semantic cache", redis: true };
 
   return { label: "Initializing agent", redis: false };
+}
+
+function TurnFinOpsBadge({ meta }: { meta: DoneMeta }) {
+  const elapsed = meta.totalElapsedMs != null ? `${(meta.totalElapsedMs / 1000).toFixed(1)}s` : null;
+  if (meta.cacheHit) {
+    return (
+      <div className="turn-finops-badge cache-hit">
+        <span className="turn-finops-flash">⚡</span>
+        <span>
+          LangCache hit{elapsed ? ` in ${elapsed}` : ""}
+          {meta.tokensSavedEst ? ` · ~${fmtTokens(meta.tokensSavedEst)} LLM tokens avoided` : ""}
+        </span>
+      </div>
+    );
+  }
+  if (meta.guardrailBlocked) {
+    return (
+      <div className="turn-finops-badge blocked">
+        <span>Blocked by semantic guardrail · LLM never invoked</span>
+      </div>
+    );
+  }
+  const total = (meta.tokensIn ?? 0) + (meta.tokensOut ?? 0);
+  if (!total) return null;
+  return (
+    <div className="turn-finops-badge">
+      <span>
+        {fmtTokens(total)} LLM tokens{elapsed ? ` · ${elapsed}` : ""}
+      </span>
+    </div>
+  );
 }
 
 type MessageListProps = {
@@ -121,6 +153,7 @@ export function MessageList({ messages, isLoading, scrollRef, onShowActivity }: 
                     </div>
                   </div>
                 )}
+                {message.doneMeta && !isStreaming && <TurnFinOpsBadge meta={message.doneMeta} />}
               </div>
             )}
           </article>

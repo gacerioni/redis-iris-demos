@@ -1,0 +1,69 @@
+# Bloco pra adicionar ao /etc/caddy/Caddyfile do bastion (Ubuntu, sa-east-1).
+# Após adicionar: sudo caddy validate --config /etc/caddy/Caddyfile && sudo systemctl reload caddy
+# Let's Encrypt provisiona o cert automaticamente na primeira request HTTPS
+# (precisa do A record irisbia.platformengineer.io -> EIP do bastion ANTES,
+#  e das portas 80 + 443 abertas no security group).
+#
+# Defina um e-mail de contato do ACME uma vez, no topo do Caddyfile (fora deste bloco):
+#   {
+#       email voce@platformengineer.io
+#   }
+
+irisbia.platformengineer.io {
+    encode gzip zstd
+
+    # Gate de acesso: basic_auth no site inteiro (SPA + API).
+    # Gere o hash com:  caddy hash-password --plaintext 'SUA_SENHA'
+    # e cole abaixo. O usuário é "iris" (troque se quiser). Uma credencial só,
+    # que você entrega pra plateia. Cobre /api/* também (o browser reenvia a
+    # credencial nas chamadas same-origin do SPA e no EventSource do SSE).
+    basic_auth {
+        iris JDJhJDE0JFJptROCANTHASHEXEMPLOtroqueppelocaddyhashpassword
+    }
+
+    log {
+        output file /var/log/caddy/irisbia.log
+        format console
+    }
+
+    # API do backend (FastAPI no container Docker, exposto em 127.0.0.1:8040)
+    handle /api/* {
+        reverse_proxy 127.0.0.1:8040 {
+            # Streaming SSE (/api/chat/stream, /api/domain-events/stream) precisa
+            # de flush imediato e timeout longo.
+            flush_interval -1
+            transport http {
+                read_timeout 5m
+                write_timeout 5m
+                dial_timeout 10s
+            }
+        }
+    }
+
+    # Frontend estático (Vite build) servido direto pelo Caddy
+    handle {
+        root * /opt/iris-bia/dist
+        try_files {path} /index.html
+        file_server
+    }
+
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains"
+        X-Content-Type-Options "nosniff"
+        Referrer-Policy "strict-origin-when-cross-origin"
+        -Server
+    }
+
+    # ── Rate limit por IP (opcional, recomendado) ────────────────────────────
+    # Requer o módulo de terceiros caddy-ratelimit (build via xcaddy):
+    #   xcaddy build --with github.com/mholt/caddy-ratelimit
+    # Depois descomente (e mova pra dentro de um route, ordem antes do basic_auth):
+    # rate_limit {
+    #     zone irisbia_api {
+    #         match { path /api/* }
+    #         key    {remote_host}
+    #         events 8
+    #         window 10s
+    #     }
+    # }
+}

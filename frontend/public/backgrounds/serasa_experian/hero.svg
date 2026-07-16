@@ -1,0 +1,11 @@
+<svg width="1440" height="520" viewBox="0 0 1440 520" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <defs>
+    <linearGradient id="shero" x1="0" y1="0" x2="0.2" y2="1">
+      <stop offset="0" stop-color="#FF2E9A"/>
+      <stop offset="0.55" stop-color="#E80070"/>
+      <stop offset="1" stop-color="#B0005A"/>
+    </linearGradient>
+  </defs>
+  <path fill="url(#shero)" d="M0 0 H1440 V300 C 1150 392, 880 250, 600 300 C 360 342, 170 300, 0 338 Z"/>
+  <path fill="#FF5CAB" opacity="0.32" d="M0 338 C 170 300, 360 342, 600 300 C 880 250, 1150 392, 1440 300 L1440 372 C 1150 452, 880 312, 600 360 C 360 402, 170 360, 0 398 Z"/>
+</svg>

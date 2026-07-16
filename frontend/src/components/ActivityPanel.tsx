@@ -17,6 +17,7 @@ import {
   extractEntity,
 } from "../utils";
 import { FlowStrip } from "./FlowStrip";
+import { FinOpsPanel } from "./FinOpsPanel";
 
 type DomainEvent = {
   stream_id: string;
@@ -723,6 +724,13 @@ export function ActivityPanel({
           >
             All Context
           </button>
+          <button
+            className={`panel-tab ${contextView === "finops" ? "active" : ""}`}
+            onClick={() => onContextViewChange("finops")}
+            type="button"
+          >
+            FinOps
+          </button>
         </div>
       )}
 
@@ -761,6 +769,7 @@ export function ActivityPanel({
                 variant="conversation"
               />
             )}
+            {contextView === "finops" && <FinOpsPanel />}
           </>
         )}
       </div>

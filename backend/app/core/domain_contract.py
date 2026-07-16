@@ -12,6 +12,9 @@ class PromptCard(BaseModel):
     eyebrow: str
     title: str
     prompt: str
+    # Golden path: a WOW flow that shows off the demo. Rendered with a delicate
+    # gold marker so the presenter knows the best paths at a glance.
+    featured: bool = False
 
 
 class UiConfig(BaseModel):
@@ -93,12 +96,18 @@ class GuardrailRouteConfig(BaseModel):
     name: str
     references: list[str]
     distance_threshold: float = 0.7
+    # Rota de bloqueio: quando é o best match, a query é recusada.
+    blocked: bool = False
 
 
 class GuardrailConfig(BaseModel):
     router_name: str
-    allowed_route_name: str
+    # Legado: usado só quando NENHUMA rota tem blocked=True (domínios de 2 rotas).
+    # Com flags `blocked` por rota, a decisão ignora este campo.
+    allowed_route_name: str | None = None
     routes: list[GuardrailRouteConfig]
+    # Mensagem mostrada quando o guardrail bloqueia. None → fallback EN do main.py.
+    blocked_message: str | None = None
 
 
 class SeedMemory(BaseModel):

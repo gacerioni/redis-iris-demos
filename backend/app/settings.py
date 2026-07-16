@@ -75,6 +75,11 @@ class Settings(BaseSettings):
     show_final_verifier_trace_step: bool = Field(default=False)
     show_llm_trace_steps: bool = Field(default=False)
 
+    # Quando False, o tool `remember_customer_detail` NÃO persiste de verdade
+    # no Agent Memory — só ecoa sucesso (modo "teatro" pra demo pública sem
+    # poluir o store compartilhado). Default True pra dev local.
+    demo_ltm_persist: bool = Field(default=True)
+
     radish_hf_embedding_model: str = Field(
         default="sentence-transformers/all-mpnet-base-v2",
     )

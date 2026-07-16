@@ -11,8 +11,11 @@ import asyncio
 import logging
 from typing import Any
 
+from functools import partial
+
 from openai import AsyncOpenAI
 from redisvl.extensions.router import Route, SemanticRouter
+from redisvl.extensions.router.schema import DistanceAggregationMethod
 from redisvl.utils.vectorize import OpenAITextVectorizer
 
 from backend.app.core.domain_contract import GuardrailConfig
@@ -86,9 +89,40 @@ class GuardrailService:
             return {"allowed": True, "route": None, "distance": None}
         try:
             router = await self._ensure_router()
-            match = await asyncio.to_thread(router, None, vector)
-            allowed = match.name == self._config.allowed_route_name
-            return {"allowed": allowed, "route": match.name, "distance": match.distance}
+            # route_many + aggregation MIN em vez de router(...) single-match:
+            # 1) o caminho single do redisvl 0.18.2 retorna name=None de forma
+            #    errática mesmo com match exato no índice;
+            # 2) a agregação default (avg) dilui um match exato na média de
+            #    TODAS as referências da rota — com 16 refs off_topic e
+            #    threshold 0.5, a rota de bloqueio nunca dispara. MIN pergunta
+            #    "qual rota tem a referência mais próxima?", que é a semântica
+            #    que um guardrail precisa.
+            matches = await asyncio.to_thread(
+                partial(
+                    router.route_many,
+                    vector=vector,
+                    max_k=max(len(self._config.routes), 2),
+                    aggregation_method=DistanceAggregationMethod.min,
+                )
+            )
+            # Default PERMISSIVO: sem nenhuma rota dentro do threshold, deixa
+            # passar pro agente decidir. Bloqueia SÓ quando a rota mais próxima
+            # é explicitamente não permitida (off_topic).
+            if not matches:
+                return {"allowed": True, "route": None, "distance": None}
+            best = min(matches, key=lambda m: (m.distance is None, m.distance))
+            if best.name is None:
+                return {"allowed": True, "route": None, "distance": None}
+            # Decisão por flags `blocked` por rota (multi-rotas de intenção).
+            # Fallback legado: sem flags, tudo que não é allowed_route_name bloqueia.
+            blocked_names = {r.name for r in self._config.routes if r.blocked}
+            if not blocked_names and self._config.allowed_route_name:
+                blocked_names = {
+                    r.name for r in self._config.routes
+                    if r.name != self._config.allowed_route_name
+                }
+            allowed = best.name not in blocked_names
+            return {"allowed": allowed, "route": best.name, "distance": best.distance}
         except Exception:
             log.warning("Guardrail check failed, allowing through", exc_info=True)
             return {"allowed": True, "route": None, "distance": None}

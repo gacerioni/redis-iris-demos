@@ -1,0 +1,21 @@
+<svg width="520" height="900" viewBox="0 0 520 900" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <defs>
+    <linearGradient id="ppR" x1="1" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#21C25E" stop-opacity="0.18"/>
+      <stop offset="1" stop-color="#11C76F" stop-opacity="0.03"/>
+    </linearGradient>
+  </defs>
+  <!-- moedas de cashback empilhadas -->
+  <g fill="#11C76F">
+    <ellipse cx="360" cy="200" rx="70" ry="22" fill-opacity="0.16"/>
+    <ellipse cx="360" cy="232" rx="70" ry="22" fill-opacity="0.22"/>
+    <ellipse cx="360" cy="264" rx="70" ry="22" fill-opacity="0.30"/>
+  </g>
+  <!-- ondas de transferência -->
+  <g stroke="#21C25E" stroke-opacity="0.20" stroke-width="2" fill="none">
+    <path d="M40 480 Q160 420 280 480 T520 480"/>
+    <path d="M40 540 Q160 480 280 540 T520 540"/>
+    <path d="M40 600 Q160 540 280 600 T520 600"/>
+  </g>
+  <circle cx="420" cy="760" r="240" fill="url(#ppR)"/>
+</svg>

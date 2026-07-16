@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 590 817" fill="none">
+  <!-- Elegante e minimal. Navy dominante + leve toque laranja. -->
+  <defs>
+    <linearGradient id="navyFade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#710E9B" stop-opacity="0.10"/>
+      <stop offset="100%" stop-color="#710E9B" stop-opacity="0.00"/>
+    </linearGradient>
+    <linearGradient id="orangeFade" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#B24BE3" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#B24BE3" stop-opacity="0.00"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Grande arco navy no topo, dando profundidade sem ruído -->
+  <path d="M -50 0 Q 250 240 -50 480 Z" fill="url(#navyFade)" opacity="0.9"/>
+
+  <!-- Anel concêntrico discreto (estabilidade financeira) -->
+  <circle cx="120" cy="220" r="180" fill="none" stroke="#710E9B" stroke-width="1" stroke-opacity="0.10"/>
+  <circle cx="120" cy="220" r="120" fill="none" stroke="#710E9B" stroke-width="1" stroke-opacity="0.13"/>
+  <circle cx="120" cy="220" r="60" fill="none" stroke="#710E9B" stroke-width="1.2" stroke-opacity="0.18"/>
+
+  <!-- Linha de tendência suave (gráfico financeiro estilizado) -->
+  <path d="M 0 620 Q 150 580 280 600 T 590 590"
+        fill="none" stroke="#710E9B" stroke-width="1.5" stroke-opacity="0.18"/>
+  <circle cx="280" cy="600" r="3" fill="#B24BE3" fill-opacity="0.6"/>
+  <circle cx="430" cy="595" r="3" fill="#B24BE3" fill-opacity="0.6"/>
+
+  <!-- Faixa lateral laranja sutil no canto inferior esquerdo -->
+  <rect x="0" y="730" width="280" height="3" fill="url(#orangeFade)"/>
+</svg>

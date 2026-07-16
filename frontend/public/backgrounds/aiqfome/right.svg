@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 590 817" fill="none">
+  <!-- Espelho do left, mais discreto -->
+  <defs>
+    <linearGradient id="navyFadeR" x1="1" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#710E9B" stop-opacity="0.10"/>
+      <stop offset="100%" stop-color="#710E9B" stop-opacity="0.00"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Arco navy descendente no canto superior direito -->
+  <path d="M 640 0 Q 350 240 640 480 Z" fill="url(#navyFadeR)" opacity="0.9"/>
+
+  <!-- Anel grande à direita -->
+  <circle cx="470" cy="240" r="200" fill="none" stroke="#710E9B" stroke-width="1" stroke-opacity="0.10"/>
+  <circle cx="470" cy="240" r="140" fill="none" stroke="#710E9B" stroke-width="1" stroke-opacity="0.13"/>
+
+  <!-- Triângulo navy suave (representando crescimento) -->
+  <path d="M 380 720 L 520 580 L 660 720 Z"
+        fill="none" stroke="#710E9B" stroke-width="1.5" stroke-opacity="0.15"/>
+
+  <!-- Ponto laranja discreto -->
+  <circle cx="520" cy="580" r="4" fill="#B24BE3" fill-opacity="0.65"/>
+</svg>

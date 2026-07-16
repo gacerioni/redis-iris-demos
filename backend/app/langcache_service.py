@@ -110,6 +110,23 @@ class LangCacheService:
             log.warning("LangCache flush failed: %s", exc)
             return False
 
+    async def seed(self, entries: list[dict]) -> int:
+        """Flush cache and store seed entries. Returns count stored."""
+        if not self.is_configured() or not entries:
+            return 0
+        await self.flush()
+        stored = 0
+        for entry in entries:
+            prompt = entry.get("prompt", "")
+            response = entry.get("response", "")
+            attrs = entry.get("attributes") or {}
+            if prompt and response:
+                ok = await self.store(prompt, response, attrs or None)
+                if ok:
+                    stored += 1
+        log.info("Seeded %d/%d LangCache entries", stored, len(entries))
+        return stored
+
     async def close(self) -> None:
         if self._client:
             await self._client.aclose()

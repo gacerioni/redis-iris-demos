@@ -1,0 +1,40 @@
+# Append this block to /etc/caddy/Caddyfile on the VM, then:
+#   sudo caddy validate --config /etc/caddy/Caddyfile && sudo systemctl reload caddy
+# Let's Encrypt provisions the TLS cert automatically on the first HTTPS hit.
+#
+# NOTE: deliberately NO `log { output file ... }` directive. A new vhost whose log
+# file the caddy user can't create makes the WHOLE Caddy fail to load on reload
+# (and `caddy validate` does not catch it). Caddy logs to journald by default,
+# which is enough. Check with: sudo journalctl -u caddy -f
+
+gabsbank.platformengineer.io {
+    encode gzip zstd
+
+    # Backend API (FastAPI in Docker, bound to 127.0.0.1:8042 on the host)
+    handle /api/* {
+        reverse_proxy 127.0.0.1:8042 {
+            # SSE streaming needs a fast flush and a long timeout
+            flush_interval -1
+            transport http {
+                read_timeout 5m
+                write_timeout 5m
+                dial_timeout 10s
+            }
+        }
+    }
+
+    # Static frontend (Vite build) served directly by Caddy
+    handle {
+        root * /opt/gabs-bank/dist
+        try_files {path} /index.html
+        file_server
+    }
+
+    # Basic security headers
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains"
+        X-Content-Type-Options "nosniff"
+        Referrer-Policy "strict-origin-when-cross-origin"
+        -Server
+    }
+}

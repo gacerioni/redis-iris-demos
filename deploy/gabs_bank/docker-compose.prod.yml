@@ -1,0 +1,37 @@
+# Gabs Bank (Ava) — production stack, public English demo.
+#
+# Isolated slot on the shared gabs-iris-bank VM (does NOT touch iris-bank):
+#   - backend container listens on 8040 internally, mapped to 127.0.0.1:8042 on the host
+#   - Host Caddy does HTTPS + reverse proxy:
+#       gabsbank.platformengineer.io  →  /       →  /opt/gabs-bank/dist/   (static frontend)
+#       gabsbank.platformengineer.io  →  /api/*  →  127.0.0.1:8042         (backend)
+#   - No local Redis: Context Surface + Agent Memory + LangCache are managed via Redis Cloud
+#
+# Bring up:
+#   cd /opt/gabs-bank/code
+#   sudo docker compose -f deploy/gabs_bank/docker-compose.prod.yml up -d --build
+
+services:
+  backend:
+    build:
+      context: ../..
+      dockerfile: deploy/backend/Dockerfile
+    container_name: gabs-bank-backend
+    restart: unless-stopped
+    env_file:
+      - /opt/gabs-bank/.env
+    ports:
+      # Host 8042 → container 8040 (Dockerfile CMD listens on 8040). localhost only:
+      # the host Caddy does the reverse proxy. 8042 keeps the iris-bank slot (8040) free.
+      - "127.0.0.1:8042:8040"
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8040/api/health"]
+      interval: 30s
+      timeout: 5s
+      start_period: 20s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"

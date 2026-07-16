@@ -98,6 +98,14 @@ setup-surface:
 validate-domain:
 	@uv run python scripts/validate_domain.py --domain $(DOMAIN)
 
+validate:
+	@echo "Validando domínio ativo ($(DOMAIN))..."
+	@uv run python -c "import sys; sys.path.insert(0, '.'); \
+	from backend.app.core.domain_loader import load_domain; \
+	d = load_domain('$(DOMAIN)'); errors = d.validate(); \
+	[print(f'  ✗ {e}') for e in errors] if errors else print('  ✓ OK'); \
+	sys.exit(1 if errors else 0)"
+
 smoke-domain:
 	@uv run python scripts/smoke_domain.py --domain $(DOMAIN)
 
@@ -122,7 +130,9 @@ seed-langcache:
 seed-all: seed-memories seed-langcache
 
 dev:
-	@lsof -ti:$(BACKEND_PORT) | xargs kill -9 2>/dev/null || true
-	@lsof -ti:$(FRONTEND_PORT) | xargs kill -9 2>/dev/null || true
+	@# Mata SÓ processos que estão LISTEN na porta (uvicorn/vite),
+	@# nunca clientes conectados (ex: Firefox/Chrome com a aba aberta).
+	@lsof -ti:$(BACKEND_PORT) -sTCP:LISTEN 2>/dev/null | xargs kill -9 2>/dev/null || true
+	@lsof -ti:$(FRONTEND_PORT) -sTCP:LISTEN 2>/dev/null | xargs kill -9 2>/dev/null || true
 	@sleep 0.5
 	@trap 'kill 0' EXIT; $(MAKE) backend & $(MAKE) frontend & wait

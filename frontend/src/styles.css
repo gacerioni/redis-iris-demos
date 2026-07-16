@@ -248,6 +248,60 @@ button { cursor: pointer; border: none; background: none; }
   flex-shrink: 0;
 }
 
+/* ── Battle Card (credits) ───────────────────────────── */
+.topbar-credits {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  margin-right: 6px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--color-border-light);
+  background: transparent;
+  color: var(--color-text-tertiary);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  transition: border-color 150ms ease, color 150ms ease, background-color 150ms ease;
+}
+
+.topbar-credits:hover {
+  border-color: var(--color-border);
+  color: var(--color-text-secondary);
+}
+
+.credits-label {
+  opacity: 0.65;
+  font-weight: 400;
+  text-transform: lowercase;
+}
+
+.credits-name {
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.credits-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  color: var(--color-text-tertiary);
+  text-decoration: none;
+  transition: color 150ms ease, background-color 150ms ease;
+}
+
+.credits-link:hover {
+  color: var(--color-redis);
+  background: var(--color-redis-soft);
+}
+
+.credits-link:first-of-type {
+  margin-left: 4px;
+}
+
 /* ── Empty State ─────────────────────────────────────── */
 .empty-state {
   flex: 1;
@@ -350,6 +404,16 @@ button { cursor: pointer; border: none; background: none; }
 .starter-chip:hover {
   background: rgba(255, 255, 255, 0.7);
   color: var(--color-text-primary);
+}
+
+/* Golden path: WOW flows worth demoing. Delicate gold star + warm tint. */
+.starter-chip--golden::before {
+  content: "★";
+  margin-right: 4px;
+  font-size: 0.6rem;
+  line-height: 1;
+  vertical-align: 1px;
+  color: #c8962b;
 }
 
 .starter-strip--loading {
@@ -1578,3 +1642,2523 @@ button { cursor: pointer; border: none; background: none; }
   }
 }
 
+/* ═══════════════════════════════════════════════════════════════════
+ * Domain override: itau_assist
+ * Cores: navy primário (#001E50), laranja accent secundário (#EC7000)
+ * Estética: clean, espaçada, tipografia mais densa (Personnalité feel)
+ * ═══════════════════════════════════════════════════════════════════ */
+
+body.domain-itau_assist {
+  --color-redis: #001E50;
+  --color-redis-soft: rgba(0, 30, 80, 0.06);
+  --color-redis-badge: rgba(0, 30, 80, 0.10);
+  --color-warm-bg: #F5EFE3;
+  --color-user-bubble: #F0EAD9;
+
+  /* Laranja como cor de destaque secundária, usada com parcimônia */
+  --itau-orange: #EC7000;
+  --itau-orange-soft: rgba(236, 112, 0, 0.10);
+  --itau-orange-strong: rgba(236, 112, 0, 0.85);
+}
+
+body.domain-itau_assist .topbar {
+  background: var(--color-warm-bg);
+  border-bottom: 1px solid rgba(0, 30, 80, 0.10);
+  padding: 14px 28px;
+}
+
+body.domain-itau_assist .topbar-brand-logo {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 30, 80, 0.20);
+}
+
+body.domain-itau_assist .brand-name {
+  font-size: 1.55rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #001E50;
+}
+
+body.domain-itau_assist .brand-accent {
+  color: var(--itau-orange);
+  font-weight: 800;
+}
+
+body.domain-itau_assist .brand-subtitle {
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: rgba(0, 30, 80, 0.55);
+}
+
+/* CTA button (Redis Iris/Vector Search no canto direito) */
+body.domain-itau_assist .topbar-context-btn {
+  border: 1px solid rgba(0, 30, 80, 0.18);
+  color: #001E50;
+  background: #ffffff;
+}
+
+body.domain-itau_assist .topbar-context-btn:hover {
+  border-color: var(--itau-orange);
+  background: var(--itau-orange-soft);
+  color: var(--itau-orange);
+}
+
+/* Landing: mais elegante, com leve gradient cream → navy ghost */
+body.domain-itau_assist .shell--landing {
+  background:
+    radial-gradient(ellipse at 12% 18%, rgba(0, 30, 80, 0.08) 0%, transparent 45%),
+    radial-gradient(ellipse at 90% 82%, rgba(236, 112, 0, 0.06) 0%, transparent 40%),
+    #F5EFE3;
+}
+
+body.domain-itau_assist .empty-state-title {
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: #001E50;
+}
+
+/* Starter chips: navy outline, hover laranja */
+body.domain-itau_assist .starter-chip {
+  border: 1px solid rgba(0, 30, 80, 0.16);
+  background: rgba(255, 255, 255, 0.65);
+  color: #001E50;
+}
+
+body.domain-itau_assist .starter-chip:hover {
+  border-color: var(--itau-orange);
+  color: var(--itau-orange);
+  background: #ffffff;
+}
+
+/* Mode toggle (Simple RAG / Real-time Context) */
+body.domain-itau_assist .mode-toggle-option.active {
+  background: #001E50;
+  color: #ffffff;
+  border-color: #001E50;
+}
+
+body.domain-itau_assist .mode-toggle-option.context.active {
+  background: var(--itau-orange);
+  border-color: var(--itau-orange);
+}
+
+/* Composer bar (input principal) */
+body.domain-itau_assist .composer {
+  border-color: rgba(0, 30, 80, 0.18);
+}
+
+body.domain-itau_assist .composer:focus-within {
+  border-color: var(--itau-orange);
+  box-shadow: 0 0 0 3px var(--itau-orange-soft);
+}
+
+/* Activity panel header (tool calls / memory) */
+body.domain-itau_assist .activity-panel {
+  border-left: 1px solid rgba(0, 30, 80, 0.12);
+}
+
+/* Eyebrow labels (Context Retriever / Memory / Cached) */
+body.domain-itau_assist .starter-group-label {
+  color: rgba(0, 30, 80, 0.65);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+/* Battle card credits — cores ajustadas pra paleta */
+body.domain-itau_assist .topbar-credits {
+  border-color: rgba(0, 30, 80, 0.18);
+  color: rgba(0, 30, 80, 0.65);
+}
+
+body.domain-itau_assist .credits-name {
+  color: #001E50;
+}
+
+body.domain-itau_assist .credits-link:hover {
+  color: var(--itau-orange);
+  background: var(--itau-orange-soft);
+}
+
+/* ── UserBadge — sensação de "sessão ativa" no banco ────────── */
+body.domain-itau_assist .user-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 14px 6px 6px;
+  border-radius: 999px;
+  background: #ffffff;
+  border: 1px solid rgba(0, 30, 80, 0.14);
+  box-shadow: 0 1px 2px rgba(0, 30, 80, 0.05);
+  margin-right: 6px;
+}
+
+body.domain-itau_assist .user-avatar-wrap {
+  position: relative;
+  display: inline-block;
+}
+
+body.domain-itau_assist .user-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #001E50 0%, #0B2F6E 100%);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.82rem;
+  letter-spacing: 0.02em;
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 0 2px #10B981; /* anel verde = online */
+  overflow: hidden;
+}
+
+body.domain-itau_assist .user-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+body.domain-itau_assist .user-online-dot {
+  position: absolute;
+  bottom: -1px;
+  right: -1px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #10B981;
+  border: 2px solid #ffffff;
+}
+
+body.domain-itau_assist .user-info {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+  min-width: 0;
+}
+
+body.domain-itau_assist .user-name {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #001E50;
+  letter-spacing: -0.005em;
+}
+
+body.domain-itau_assist .user-segment {
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--itau-orange);
+}
+
+/* ── Raspar laranja excessivo: toggle ativo navy, não laranja ── */
+body.domain-itau_assist .mode-toggle-option.context.active {
+  background: #001E50;
+  border-color: #001E50;
+  color: #ffffff;
+}
+
+body.domain-itau_assist .mode-toggle-option.context {
+  color: #001E50;
+}
+
+/* Hover laranja segue só nos chips e composer (microinterações), não em
+   elementos grandes. Ajustes finais: */
+body.domain-itau_assist .starter-chip:hover {
+  border-color: rgba(0, 30, 80, 0.45);
+  color: #001E50;
+  background: #ffffff;
+}
+
+/* Markdown bold dentro das mensagens fica navy (não Redis red) */
+body.domain-itau_assist .message strong,
+body.domain-itau_assist .markdown-message strong {
+  color: #001E50;
+  font-weight: 700;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+ * Domain override: serasa_limpa_nome
+ * Cores: magenta vibrante (#E2007A) primário, laranja Experian
+ * (#FF6A13) secundário. Estética: clean, informal, "Serasa Pra Você".
+ * ═══════════════════════════════════════════════════════════════════ */
+
+body.domain-serasa_limpa_nome {
+  --color-redis: #E2007A;
+  --color-redis-soft: rgba(226, 0, 122, 0.07);
+  --color-redis-badge: rgba(226, 0, 122, 0.12);
+  --color-warm-bg: #FBF0F6;
+  --color-user-bubble: #F5E5EF;
+
+  --serasa-magenta: #E2007A;
+  --serasa-magenta-soft: rgba(226, 0, 122, 0.10);
+  --serasa-orange: #FF6A13;
+  --serasa-orange-soft: rgba(255, 106, 19, 0.12);
+}
+
+body.domain-serasa_limpa_nome .topbar {
+  background: var(--color-warm-bg);
+  border-bottom: 1px solid rgba(226, 0, 122, 0.10);
+  padding: 14px 28px;
+}
+
+body.domain-serasa_limpa_nome .topbar-brand-logo {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(226, 0, 122, 0.20);
+}
+
+body.domain-serasa_limpa_nome .brand-name {
+  font-size: 1.55rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #5A0030;
+}
+
+body.domain-serasa_limpa_nome .brand-accent {
+  color: var(--serasa-magenta);
+  font-weight: 800;
+}
+
+body.domain-serasa_limpa_nome .brand-subtitle {
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: rgba(90, 0, 48, 0.55);
+}
+
+body.domain-serasa_limpa_nome .topbar-context-btn {
+  border: 1px solid rgba(226, 0, 122, 0.18);
+  color: #5A0030;
+  background: #ffffff;
+}
+
+body.domain-serasa_limpa_nome .topbar-context-btn:hover {
+  border-color: var(--serasa-orange);
+  background: var(--serasa-orange-soft);
+  color: var(--serasa-orange);
+}
+
+body.domain-serasa_limpa_nome .shell--landing {
+  background:
+    radial-gradient(ellipse at 12% 18%, rgba(226, 0, 122, 0.10) 0%, transparent 45%),
+    radial-gradient(ellipse at 90% 82%, rgba(255, 106, 19, 0.08) 0%, transparent 40%),
+    #FBF0F6;
+}
+
+body.domain-serasa_limpa_nome .empty-state-title {
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: #5A0030;
+}
+
+body.domain-serasa_limpa_nome .starter-chip {
+  border: 1px solid rgba(226, 0, 122, 0.16);
+  background: rgba(255, 255, 255, 0.65);
+  color: #5A0030;
+}
+
+body.domain-serasa_limpa_nome .starter-chip:hover {
+  border-color: rgba(226, 0, 122, 0.45);
+  color: var(--serasa-magenta);
+  background: #ffffff;
+}
+
+body.domain-serasa_limpa_nome .mode-toggle-option.active {
+  background: var(--serasa-magenta);
+  color: #ffffff;
+  border-color: var(--serasa-magenta);
+}
+
+body.domain-serasa_limpa_nome .mode-toggle-option.context.active {
+  background: var(--serasa-orange);
+  border-color: var(--serasa-orange);
+}
+
+body.domain-serasa_limpa_nome .mode-toggle-option.context {
+  color: #5A0030;
+}
+
+body.domain-serasa_limpa_nome .composer {
+  border-color: rgba(226, 0, 122, 0.18);
+}
+
+body.domain-serasa_limpa_nome .composer:focus-within {
+  border-color: var(--serasa-orange);
+  box-shadow: 0 0 0 3px var(--serasa-orange-soft);
+}
+
+body.domain-serasa_limpa_nome .activity-panel {
+  border-left: 1px solid rgba(226, 0, 122, 0.12);
+}
+
+body.domain-serasa_limpa_nome .starter-group-label {
+  color: rgba(90, 0, 48, 0.65);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+body.domain-serasa_limpa_nome .topbar-credits {
+  border-color: rgba(226, 0, 122, 0.18);
+  color: rgba(90, 0, 48, 0.65);
+}
+
+body.domain-serasa_limpa_nome .credits-name {
+  color: #5A0030;
+}
+
+body.domain-serasa_limpa_nome .credits-link:hover {
+  color: var(--serasa-orange);
+  background: var(--serasa-orange-soft);
+}
+
+/* UserBadge "logado" — avatar redondo com ring verde online */
+body.domain-serasa_limpa_nome .user-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 14px 6px 6px;
+  border-radius: 999px;
+  background: #ffffff;
+  border: 1px solid rgba(226, 0, 122, 0.14);
+  box-shadow: 0 1px 2px rgba(226, 0, 122, 0.05);
+  margin-right: 6px;
+}
+
+body.domain-serasa_limpa_nome .user-avatar-wrap {
+  position: relative;
+  display: inline-block;
+}
+
+body.domain-serasa_limpa_nome .user-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #E2007A 0%, #FF6A13 100%);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.82rem;
+  letter-spacing: 0.02em;
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 0 2px #10B981;
+  overflow: hidden;
+}
+
+body.domain-serasa_limpa_nome .user-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+body.domain-serasa_limpa_nome .user-online-dot {
+  position: absolute;
+  bottom: -1px;
+  right: -1px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #10B981;
+  border: 2px solid #ffffff;
+}
+
+body.domain-serasa_limpa_nome .user-info {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+  min-width: 0;
+}
+
+body.domain-serasa_limpa_nome .user-name {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #5A0030;
+  letter-spacing: -0.005em;
+}
+
+body.domain-serasa_limpa_nome .user-segment {
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--serasa-magenta);
+}
+
+/* Markdown bold dentro de mensagens fica magenta */
+body.domain-serasa_limpa_nome .message strong,
+body.domain-serasa_limpa_nome .markdown-message strong {
+  color: var(--serasa-magenta);
+  font-weight: 700;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   PicPay Assist — verde vibrante, vibe carteira social clean
+   ═══════════════════════════════════════════════════════════════════ */
+/* ── StrideLane (retail hybrid search): dark athletic theme, teal + coral ── */
+body.domain-stridelane {
+  --color-redis: #14B8A6;
+  --color-redis-soft: rgba(20, 184, 166, 0.10);
+  --color-redis-badge: rgba(20, 184, 166, 0.16);
+  --sl-ink: #F1F5F9;
+  --sl-muted: #94A3B8;
+  --sl-teal: #14B8A6;
+  --sl-teal-deep: #0D9488;
+}
+body.domain-stridelane .shell--landing {
+  background:
+    radial-gradient(ellipse at 12% 16%, rgba(20, 184, 166, 0.16) 0%, transparent 46%),
+    radial-gradient(ellipse at 90% 84%, rgba(255, 107, 94, 0.10) 0%, transparent 42%),
+    #0B1220;
+}
+body.domain-stridelane .topbar {
+  background: #0B1220;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.18);
+}
+body.domain-stridelane .brand-name { color: var(--sl-ink); font-weight: 700; letter-spacing: -0.02em; }
+body.domain-stridelane .brand-accent { color: var(--sl-teal); font-weight: 800; }
+body.domain-stridelane .brand-subtitle {
+  color: var(--sl-muted); text-transform: uppercase; letter-spacing: 0.04em; font-weight: 600;
+}
+body.domain-stridelane .empty-state-title { color: var(--sl-ink); font-weight: 700; letter-spacing: -0.025em; }
+body.domain-stridelane .starter-chip {
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  background: rgba(255, 255, 255, 0.05);
+  color: #CBD5E1;
+}
+body.domain-stridelane .starter-chip:hover {
+  border-color: var(--sl-teal);
+  color: var(--sl-teal);
+  background: rgba(20, 184, 166, 0.10);
+}
+body.domain-stridelane .starter-group-label { color: var(--sl-muted); font-weight: 700; letter-spacing: 0.04em; }
+body.domain-stridelane .composer { border-color: rgba(20, 184, 166, 0.25); }
+body.domain-stridelane .composer:focus-within {
+  border-color: var(--sl-teal);
+  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.18);
+}
+body.domain-stridelane .mode-toggle-option.active {
+  background: var(--sl-teal); color: #04241f; border-color: var(--sl-teal);
+}
+body.domain-stridelane .topbar-context-btn {
+  border: 1px solid rgba(20, 184, 166, 0.30); color: var(--sl-teal); background: transparent;
+}
+body.domain-stridelane .activity-panel { border-left: 1px solid rgba(148, 163, 184, 0.14); }
+
+body.domain-picpay_assist {
+  --color-redis: #11C76F;
+  --color-redis-soft: rgba(17, 199, 111, 0.07);
+  --color-redis-badge: rgba(17, 199, 111, 0.12);
+  --color-warm-bg: #EAF9F1;
+  --color-user-bubble: #DCF4E7;
+
+  --pp-green: #11C76F;
+  --pp-green-soft: rgba(17, 199, 111, 0.10);
+  --pp-green-deep: #064E33;
+  --pp-green-2: #21C25E;
+  --pp-green-2-soft: rgba(33, 194, 94, 0.12);
+}
+
+body.domain-picpay_assist .topbar {
+  background: var(--color-warm-bg);
+  border-bottom: 1px solid rgba(17, 199, 111, 0.12);
+  padding: 14px 28px;
+}
+
+body.domain-picpay_assist .topbar-brand-logo {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(17, 199, 111, 0.22);
+}
+
+body.domain-picpay_assist .brand-name {
+  font-size: 1.55rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--pp-green-deep);
+}
+
+body.domain-picpay_assist .brand-accent {
+  color: var(--pp-green);
+  font-weight: 800;
+}
+
+body.domain-picpay_assist .brand-subtitle {
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: rgba(6, 78, 51, 0.55);
+}
+
+body.domain-picpay_assist .topbar-context-btn {
+  border: 1px solid rgba(17, 199, 111, 0.20);
+  color: var(--pp-green-deep);
+  background: #ffffff;
+}
+
+body.domain-picpay_assist .topbar-context-btn:hover {
+  border-color: var(--pp-green);
+  background: var(--pp-green-soft);
+  color: var(--pp-green);
+}
+
+body.domain-picpay_assist .shell--landing {
+  background:
+    radial-gradient(ellipse at 12% 18%, rgba(17, 199, 111, 0.12) 0%, transparent 45%),
+    radial-gradient(ellipse at 90% 82%, rgba(33, 194, 94, 0.08) 0%, transparent 40%),
+    #EAF9F1;
+}
+
+body.domain-picpay_assist .empty-state-title {
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: var(--pp-green-deep);
+}
+
+body.domain-picpay_assist .starter-chip {
+  border: 1px solid rgba(17, 199, 111, 0.18);
+  background: rgba(255, 255, 255, 0.65);
+  color: var(--pp-green-deep);
+}
+
+body.domain-picpay_assist .starter-chip:hover {
+  border-color: rgba(17, 199, 111, 0.45);
+  color: var(--pp-green);
+  background: #ffffff;
+}
+
+body.domain-picpay_assist .mode-toggle-option.active {
+  background: var(--pp-green);
+  color: #ffffff;
+  border-color: var(--pp-green);
+}
+
+body.domain-picpay_assist .mode-toggle-option.context.active {
+  background: var(--pp-green-2);
+  border-color: var(--pp-green-2);
+}
+
+body.domain-picpay_assist .mode-toggle-option.context {
+  color: var(--pp-green-deep);
+}
+
+body.domain-picpay_assist .composer {
+  border-color: rgba(17, 199, 111, 0.20);
+}
+
+body.domain-picpay_assist .composer:focus-within {
+  border-color: var(--pp-green);
+  box-shadow: 0 0 0 3px var(--pp-green-soft);
+}
+
+body.domain-picpay_assist .activity-panel {
+  border-left: 1px solid rgba(17, 199, 111, 0.12);
+}
+
+body.domain-picpay_assist .starter-group-label {
+  color: rgba(6, 78, 51, 0.65);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+body.domain-picpay_assist .topbar-credits {
+  border-color: rgba(17, 199, 111, 0.20);
+  color: rgba(6, 78, 51, 0.65);
+}
+
+body.domain-picpay_assist .credits-name {
+  color: var(--pp-green-deep);
+}
+
+body.domain-picpay_assist .credits-link:hover {
+  color: var(--pp-green);
+  background: var(--pp-green-soft);
+}
+
+/* UserBadge "logado" — avatar redondo com ring verde online */
+body.domain-picpay_assist .user-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 14px 6px 6px;
+  border-radius: 999px;
+  background: #ffffff;
+  border: 1px solid rgba(17, 199, 111, 0.16);
+  box-shadow: 0 1px 2px rgba(17, 199, 111, 0.05);
+  margin-right: 6px;
+}
+
+body.domain-picpay_assist .user-avatar-wrap {
+  position: relative;
+  display: inline-block;
+}
+
+body.domain-picpay_assist .user-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #11C76F 0%, #21C25E 100%);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.82rem;
+  letter-spacing: 0.02em;
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 0 2px #10B981;
+  overflow: hidden;
+}
+
+body.domain-picpay_assist .user-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+body.domain-picpay_assist .user-online-dot {
+  position: absolute;
+  bottom: -1px;
+  right: -1px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #10B981;
+  border: 2px solid #ffffff;
+}
+
+body.domain-picpay_assist .user-info {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+  min-width: 0;
+}
+
+body.domain-picpay_assist .user-name {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--pp-green-deep);
+  letter-spacing: -0.005em;
+}
+
+body.domain-picpay_assist .user-segment {
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--pp-green);
+}
+
+/* Markdown bold dentro de mensagens fica verde */
+body.domain-picpay_assist .message strong,
+body.domain-picpay_assist .markdown-message strong {
+  color: var(--pp-green);
+  font-weight: 700;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   Bradesco BIA — vermelho Bradesco, banco premium clean
+   ═══════════════════════════════════════════════════════════════════ */
+body.domain-bradesco_bia {
+  --color-redis: #DE0433;
+  --color-redis-soft: rgba(222, 4, 51, 0.08);
+  --color-redis-badge: rgba(222, 4, 51, 0.12);
+  --color-warm-bg: #FDEFF1;
+  --color-user-bubble: #FADCE2;
+
+  --bra-red: #DE0433;          /* vermelho real do logo Bradesco */
+  --bra-red-soft: rgba(222, 4, 51, 0.10);
+  --bra-red-deep: #8A0420;     /* crimson escuro legível pra texto */
+  --bra-magenta: #9F084E;      /* ponta magenta do gradiente do logo */
+}
+
+body.domain-bradesco_bia .topbar {
+  background: var(--color-warm-bg);
+  border-bottom: 1px solid rgba(222, 4, 51, 0.12);
+  padding: 14px 28px;
+}
+
+body.domain-bradesco_bia .topbar-brand-logo {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(222, 4, 51, 0.22);
+}
+
+body.domain-bradesco_bia .brand-name {
+  font-size: 1.55rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--bra-red-deep);
+}
+
+body.domain-bradesco_bia .brand-accent {
+  color: var(--bra-red);
+  font-weight: 800;
+}
+
+body.domain-bradesco_bia .brand-subtitle {
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: rgba(138, 6, 32, 0.55);
+}
+
+body.domain-bradesco_bia .topbar-context-btn {
+  border: 1px solid transparent;
+  color: #ffffff;
+  font-weight: 700;
+  background: linear-gradient(100deg, #EC0A40 0%, #B00A45 100%);
+  box-shadow: 0 2px 10px rgba(204, 9, 47, 0.35);
+}
+
+body.domain-bradesco_bia .topbar-context-btn span {
+  color: #ffffff;
+}
+
+body.domain-bradesco_bia .topbar-context-btn:hover {
+  color: #ffffff;
+  background: linear-gradient(100deg, #FF2153 0%, #C20B4C 100%);
+  box-shadow: 0 5px 16px rgba(204, 9, 47, 0.48);
+  transform: translateY(-1px);
+}
+
+/* logo Redis num chip branco (como na imagem 2 de referência), NÃO invertido */
+body.domain-bradesco_bia .topbar-context-btn .topbar-context-logo {
+  background: #ffffff;
+  border-radius: 6px;
+  padding: 3px;
+  box-sizing: content-box;
+}
+
+/* Faixa vermelha forte no topo com onda branca descendo pro branco (estilo app Bradesco).
+   Full-width: sem listra, sem emenda no meio. */
+body.domain-bradesco_bia .shell--landing {
+  background:
+    url('/backgrounds/bradesco_bia/hero.svg') no-repeat top center / 100% 42vh,
+    linear-gradient(180deg, #FFFFFF 0%, #FFF4F7 60%, #FCE7EC 100%);
+}
+/* mata as faixas laterais (eram as listras + a emenda) */
+body.domain-bradesco_bia .shell--landing::before,
+body.domain-bradesco_bia .shell--landing::after {
+  content: none;
+}
+
+body.domain-bradesco_bia .empty-state-title {
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: var(--bra-red-deep);
+}
+
+body.domain-bradesco_bia .starter-chip {
+  border: 1px solid rgba(222, 4, 51, 0.18);
+  background: rgba(255, 255, 255, 0.65);
+  color: var(--bra-red-deep);
+}
+
+body.domain-bradesco_bia .starter-chip:hover {
+  border-color: rgba(222, 4, 51, 0.45);
+  color: var(--bra-red);
+  background: #ffffff;
+}
+
+/* Golden paths no tema Bradesco: estrela + tom dourado quente, delicado. */
+body.domain-bradesco_bia .starter-chip--golden {
+  border-color: rgba(193, 145, 43, 0.55);
+  background: linear-gradient(180deg, rgba(247, 224, 160, 0.32), rgba(255, 255, 255, 0.72));
+  color: var(--bra-red-deep);
+  font-weight: 600;
+}
+
+body.domain-bradesco_bia .starter-chip--golden::before {
+  color: #c0871d;
+}
+
+body.domain-bradesco_bia .starter-chip--golden:hover {
+  border-color: rgba(193, 145, 43, 0.9);
+  background: linear-gradient(180deg, rgba(247, 224, 160, 0.48), #ffffff);
+  color: var(--bra-red);
+}
+
+body.domain-bradesco_bia .mode-toggle-option.active {
+  background: var(--bra-red);
+  color: #ffffff;
+  border-color: var(--bra-red);
+}
+
+body.domain-bradesco_bia .mode-toggle-option.context.active {
+  background: linear-gradient(100deg, #EC0A40 0%, #C70A35 100%);
+  border-color: #C70A35;
+  color: #ffffff;
+}
+
+body.domain-bradesco_bia .mode-toggle-option.context {
+  color: var(--bra-red-deep);
+}
+
+body.domain-bradesco_bia .composer {
+  border-color: rgba(222, 4, 51, 0.20);
+}
+
+body.domain-bradesco_bia .composer:focus-within {
+  border-color: var(--bra-red);
+  box-shadow: 0 0 0 3px var(--bra-red-soft);
+}
+
+body.domain-bradesco_bia .activity-panel {
+  border-left: 1px solid rgba(222, 4, 51, 0.12);
+}
+
+body.domain-bradesco_bia .starter-group-label {
+  color: rgba(138, 6, 32, 0.65);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+body.domain-bradesco_bia .topbar-credits {
+  border-color: rgba(222, 4, 51, 0.20);
+  color: rgba(138, 6, 32, 0.65);
+}
+
+body.domain-bradesco_bia .credits-name {
+  color: var(--bra-red-deep);
+}
+
+body.domain-bradesco_bia .credits-link:hover {
+  color: var(--bra-red);
+  background: var(--bra-red-soft);
+}
+
+/* UserBadge "logado" */
+body.domain-bradesco_bia .user-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 14px 6px 6px;
+  border-radius: 999px;
+  background: #ffffff;
+  border: 1px solid rgba(222, 4, 51, 0.16);
+  box-shadow: 0 1px 2px rgba(222, 4, 51, 0.05);
+  margin-right: 6px;
+}
+
+body.domain-bradesco_bia .user-avatar-wrap {
+  position: relative;
+  display: inline-block;
+}
+
+body.domain-bradesco_bia .user-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #DE0433 0%, #9F084E 100%);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.82rem;
+  letter-spacing: 0.02em;
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 0 2px #10B981;
+  overflow: hidden;
+}
+
+body.domain-bradesco_bia .user-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+body.domain-bradesco_bia .user-online-dot {
+  position: absolute;
+  bottom: -1px;
+  right: -1px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #10B981;
+  border: 2px solid #ffffff;
+}
+
+body.domain-bradesco_bia .user-info {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+  min-width: 0;
+}
+
+body.domain-bradesco_bia .user-name {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--bra-red-deep);
+  letter-spacing: -0.005em;
+}
+
+body.domain-bradesco_bia .user-segment {
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--bra-red);
+}
+
+/* Markdown bold dentro de mensagens fica vermelho */
+body.domain-bradesco_bia .message strong,
+body.domain-bradesco_bia .markdown-message strong {
+  color: var(--bra-red);
+  font-weight: 700;
+}
+
+/* ============================================================
+   SERASA EXPERIAN - paridade visual com bradesco_bia
+   magenta (#E80070) hero + azul estrutural (#1D4F91)
+   ============================================================ */
+body.domain-serasa_experian {
+  --color-redis: #E80070;
+  --color-redis-soft: rgba(232, 0, 112, 0.08);
+  --color-redis-badge: rgba(232, 0, 112, 0.12);
+  --color-warm-bg: #FCE9F2;
+  --color-user-bubble: #FAD6E8;
+
+  --ser-magenta: #E80070;
+  --ser-magenta-soft: rgba(232, 0, 112, 0.10);
+  --ser-magenta-deep: #9B0050;
+  --ser-blue: #1D4F91;
+  --ser-blue-deep: #143A6B;
+  --ser-blue-soft: rgba(29, 79, 145, 0.10);
+}
+
+body.domain-serasa_experian .topbar {
+  background: var(--color-warm-bg);
+  border-bottom: 1px solid rgba(232, 0, 112, 0.12);
+  padding: 14px 28px;
+}
+
+/* logo oficial = wordmark "serasa experian" (223x99). Altura fixa, largura auto:
+   NAO espremer num quadrado. */
+body.domain-serasa_experian .topbar-brand-logo {
+  width: auto;
+  height: 36px;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+/* O logo oficial JA e o wordmark "serasa experian", entao escondemos o texto
+   de nome pra nao duplicar. Fica logo (wordmark) + subtitulo, lockup limpo. */
+body.domain-serasa_experian .brand-name {
+  display: none;
+}
+
+body.domain-serasa_experian .brand-accent {
+  color: var(--ser-magenta);
+  font-weight: 800;
+}
+
+body.domain-serasa_experian .brand-subtitle {
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: rgba(29, 79, 145, 0.55);
+}
+
+body.domain-serasa_experian .topbar-context-btn {
+  border: 1px solid transparent;
+  color: #ffffff;
+  font-weight: 700;
+  background: linear-gradient(100deg, #E80070 0%, #B0005A 100%);
+  box-shadow: 0 2px 10px rgba(232, 0, 112, 0.35);
+}
+
+body.domain-serasa_experian .topbar-context-btn span {
+  color: #ffffff;
+}
+
+body.domain-serasa_experian .topbar-context-btn:hover {
+  color: #ffffff;
+  background: linear-gradient(100deg, #FF2E9A 0%, #C2006A 100%);
+  box-shadow: 0 5px 16px rgba(232, 0, 112, 0.48);
+  transform: translateY(-1px);
+}
+
+body.domain-serasa_experian .topbar-context-btn .topbar-context-logo {
+  background: #ffffff;
+  border-radius: 6px;
+  padding: 3px;
+  box-sizing: content-box;
+}
+
+/* Faixa magenta no topo com onda descendo pro branco (estilo app Serasa).
+   Full-width: sem listra lateral, sem emenda no meio. */
+body.domain-serasa_experian .shell--landing {
+  background:
+    url('/backgrounds/serasa_experian/hero.svg?v=2') no-repeat top center / 100% 42vh,
+    linear-gradient(180deg, #FFFFFF 0%, #FFF1F8 60%, #FCDDEC 100%);
+}
+
+/* Landing ancorada a partir do topo (abaixo da onda), NÃO centralizada verticalmente.
+   O Serasa tem muitos chips (7 grupos): com centro vertical, carregar os chips depois
+   crescia a altura e empurrava o toggle pra CIMA, parando em cima do magenta (ilegível).
+   Ancorar com padding-top fixo mantém toggle + título + busca sempre no mesmo lugar,
+   logo abaixo da onda, independente de quantos chips carregam. */
+body.domain-serasa_experian .empty-state {
+  justify-content: flex-start;
+  padding-top: calc(34vh - 80px);
+  padding-bottom: 28px;
+}
+body.domain-serasa_experian .shell--landing::before,
+body.domain-serasa_experian .shell--landing::after {
+  content: none;
+}
+
+body.domain-serasa_experian .empty-state-title {
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: var(--ser-blue-deep);
+}
+
+body.domain-serasa_experian .starter-chip {
+  border: 1px solid rgba(232, 0, 112, 0.18);
+  background: rgba(255, 255, 255, 0.65);
+  color: var(--ser-blue-deep);
+}
+
+body.domain-serasa_experian .starter-chip:hover {
+  border-color: rgba(232, 0, 112, 0.45);
+  color: var(--ser-magenta);
+  background: #ffffff;
+}
+
+body.domain-serasa_experian .mode-toggle-option.active {
+  background: var(--ser-magenta);
+  color: #ffffff;
+  border-color: var(--ser-magenta);
+}
+
+body.domain-serasa_experian .mode-toggle-option.context.active {
+  background: linear-gradient(100deg, #E80070 0%, #B0005A 100%);
+  border-color: #B0005A;
+  color: #ffffff;
+}
+
+body.domain-serasa_experian .mode-toggle-option.context {
+  color: var(--ser-blue-deep);
+}
+
+body.domain-serasa_experian .composer {
+  border-color: rgba(232, 0, 112, 0.20);
+}
+
+body.domain-serasa_experian .composer:focus-within {
+  border-color: var(--ser-magenta);
+  box-shadow: 0 0 0 3px var(--ser-magenta-soft);
+}
+
+body.domain-serasa_experian .activity-panel {
+  border-left: 1px solid rgba(232, 0, 112, 0.12);
+}
+
+body.domain-serasa_experian .starter-group-label {
+  color: rgba(29, 79, 145, 0.70);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+body.domain-serasa_experian .topbar-credits {
+  border-color: rgba(232, 0, 112, 0.20);
+  color: rgba(29, 79, 145, 0.65);
+}
+
+body.domain-serasa_experian .credits-name {
+  color: var(--ser-blue-deep);
+}
+
+body.domain-serasa_experian .credits-link:hover {
+  color: var(--ser-magenta);
+  background: var(--ser-magenta-soft);
+}
+
+/* UserBadge "logado" */
+body.domain-serasa_experian .user-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 14px 6px 6px;
+  border-radius: 999px;
+  background: #ffffff;
+  border: 1px solid rgba(232, 0, 112, 0.16);
+  box-shadow: 0 1px 2px rgba(232, 0, 112, 0.05);
+  margin-right: 6px;
+}
+
+body.domain-serasa_experian .user-avatar-wrap {
+  position: relative;
+  display: inline-block;
+}
+
+body.domain-serasa_experian .user-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #E80070 0%, #1D4F91 100%);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.82rem;
+  letter-spacing: 0.02em;
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 0 2px #10B981;
+  overflow: hidden;
+}
+
+body.domain-serasa_experian .user-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+body.domain-serasa_experian .user-online-dot {
+  position: absolute;
+  bottom: -1px;
+  right: -1px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #10B981;
+  border: 2px solid #ffffff;
+}
+
+body.domain-serasa_experian .user-info {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+  min-width: 0;
+}
+
+body.domain-serasa_experian .user-name {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--ser-blue-deep);
+  letter-spacing: -0.005em;
+}
+
+body.domain-serasa_experian .user-segment {
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ser-magenta);
+}
+
+/* Markdown bold dentro de mensagens fica magenta */
+body.domain-serasa_experian .message strong,
+body.domain-serasa_experian .markdown-message strong {
+  color: var(--ser-magenta);
+  font-weight: 700;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+ * Domain override: banco_inter
+ * Cores: laranja Inter (#EA7100) primário sobre creme/branco. Estética:
+ * banco digital, clean e vibrante. Logo = wordmark oficial "inter".
+ * ═══════════════════════════════════════════════════════════════════ */
+body.domain-banco_inter {
+  --inter-orange: #EA7100;
+  --inter-orange-soft: rgba(234, 113, 0, 0.10);
+  --inter-orange-strong: rgba(234, 113, 0, 0.90);
+  --inter-ink: #2A2018;
+  --color-warm-bg: #FFF6EE;
+  --color-user-bubble: #FCE7D4;
+}
+
+body.domain-banco_inter .topbar {
+  background: #FFF6EE;
+  border-bottom: 1px solid rgba(234, 113, 0, 0.16);
+  padding: 14px 28px;
+}
+
+/* Logo = wordmark largo "inter", não um ícone quadrado */
+body.domain-banco_inter .topbar-brand-logo {
+  width: auto;
+  height: 26px;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+body.domain-banco_inter .brand-name {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--inter-ink);
+}
+
+body.domain-banco_inter .brand-accent {
+  color: var(--inter-orange);
+  font-weight: 800;
+}
+
+body.domain-banco_inter .brand-subtitle {
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: rgba(42, 32, 24, 0.5);
+}
+
+body.domain-banco_inter .topbar-context-btn {
+  border: 1px solid rgba(234, 113, 0, 0.30);
+  color: var(--inter-orange-strong);
+  background: #ffffff;
+}
+body.domain-banco_inter .topbar-context-btn:hover {
+  border-color: var(--inter-orange);
+  background: var(--inter-orange-soft);
+  color: var(--inter-orange);
+}
+
+/* Landing: creme quente com glow laranja */
+body.domain-banco_inter .shell--landing {
+  background:
+    radial-gradient(ellipse at 15% 12%, rgba(234, 113, 0, 0.12) 0%, transparent 45%),
+    radial-gradient(ellipse at 88% 85%, rgba(234, 113, 0, 0.10) 0%, transparent 42%),
+    #FFF6EE;
+}
+
+body.domain-banco_inter .empty-state-title {
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: var(--inter-ink);
+}
+
+/* Starter chips: outline laranja suave, hover laranja cheio */
+body.domain-banco_inter .starter-chip {
+  border: 1px solid rgba(234, 113, 0, 0.22);
+  background: rgba(255, 255, 255, 0.75);
+  color: var(--inter-ink);
+}
+body.domain-banco_inter .starter-chip:hover {
+  border-color: var(--inter-orange);
+  color: var(--inter-orange);
+  background: #ffffff;
+}
+
+/* Mode toggle (Simple RAG / Real-time Context) */
+body.domain-banco_inter .mode-toggle-option.active {
+  background: var(--inter-orange);
+  color: #ffffff;
+  border-color: var(--inter-orange);
+}
+body.domain-banco_inter .mode-toggle-option.context.active {
+  background: var(--inter-orange);
+  border-color: var(--inter-orange);
+  color: #ffffff;
+}
+body.domain-banco_inter .mode-toggle-option.context {
+  color: var(--inter-ink);
+}
+
+/* Composer bar */
+body.domain-banco_inter .composer {
+  border-color: rgba(234, 113, 0, 0.28);
+}
+body.domain-banco_inter .composer:focus-within {
+  border-color: var(--inter-orange);
+  box-shadow: 0 0 0 3px var(--inter-orange-soft);
+}
+
+body.domain-banco_inter .activity-panel {
+  border-left: 1px solid rgba(234, 113, 0, 0.14);
+}
+
+body.domain-banco_inter .starter-group-label {
+  color: rgba(42, 32, 24, 0.6);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+/* Battle card credits */
+body.domain-banco_inter .topbar-credits {
+  border-color: rgba(234, 113, 0, 0.24);
+  color: rgba(42, 32, 24, 0.6);
+}
+body.domain-banco_inter .credits-name { color: var(--inter-ink); }
+body.domain-banco_inter .credits-link:hover {
+  color: var(--inter-orange);
+  background: var(--inter-orange-soft);
+}
+
+/* ── UserBadge — sensação de "sessão ativa" no banco ────────── */
+body.domain-banco_inter .user-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 14px 6px 6px;
+  border-radius: 999px;
+  background: #ffffff;
+  border: 1px solid rgba(234, 113, 0, 0.20);
+  box-shadow: 0 1px 2px rgba(234, 113, 0, 0.06);
+  margin-right: 6px;
+}
+body.domain-banco_inter .user-avatar-wrap { position: relative; display: inline-block; }
+body.domain-banco_inter .user-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #EA7100 0%, #FF9A3D 100%);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.82rem;
+  letter-spacing: 0.02em;
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 0 2px #10B981; /* anel verde = online */
+  overflow: hidden;
+}
+body.domain-banco_inter .user-avatar-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+body.domain-banco_inter .user-online-dot {
+  position: absolute; bottom: -1px; right: -1px;
+  width: 10px; height: 10px; border-radius: 50%;
+  background: #10B981; border: 2px solid #ffffff;
+}
+body.domain-banco_inter .user-info { display: flex; flex-direction: column; line-height: 1.15; min-width: 0; }
+body.domain-banco_inter .user-name {
+  font-size: 0.82rem; font-weight: 700; color: var(--inter-ink); letter-spacing: -0.005em;
+}
+body.domain-banco_inter .user-segment {
+  font-size: 0.66rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--inter-orange);
+}
+
+/* Markdown bold laranja Inter dentro das mensagens */
+body.domain-banco_inter .message strong,
+body.domain-banco_inter .markdown-message strong {
+  color: var(--inter-orange-strong);
+  font-weight: 700;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+ * Domain override: gabs_bank
+ * Fictional English neobank. Teal (#0D9488) on near-white. No logo file:
+ * the brand renders as a two-tone text wordmark "Gabs Bank".
+ * ═══════════════════════════════════════════════════════════════════ */
+body.domain-gabs_bank {
+  --gabs-teal: #0D9488;
+  --gabs-teal-soft: rgba(13, 148, 136, 0.10);
+  --gabs-teal-strong: rgba(13, 148, 136, 0.92);
+  --gabs-ink: #10302C;
+  --color-warm-bg: #F1FBF9;
+  --color-user-bubble: #D8F1EC;
+}
+
+body.domain-gabs_bank .topbar {
+  background: #F1FBF9;
+  border-bottom: 1px solid rgba(13, 148, 136, 0.16);
+  padding: 14px 28px;
+}
+
+body.domain-gabs_bank .brand-name {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--gabs-ink);
+}
+
+body.domain-gabs_bank .brand-accent {
+  color: var(--gabs-teal);
+  font-weight: 800;
+}
+
+body.domain-gabs_bank .brand-subtitle {
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: rgba(16, 48, 44, 0.5);
+}
+
+body.domain-gabs_bank .topbar-context-btn {
+  border: 1px solid rgba(13, 148, 136, 0.30);
+  color: var(--gabs-teal-strong);
+  background: #ffffff;
+}
+body.domain-gabs_bank .topbar-context-btn:hover {
+  border-color: var(--gabs-teal);
+  background: var(--gabs-teal-soft);
+  color: var(--gabs-teal);
+}
+
+/* Landing: near-white with a soft teal glow */
+body.domain-gabs_bank .shell--landing {
+  background:
+    radial-gradient(ellipse at 15% 12%, rgba(13, 148, 136, 0.12) 0%, transparent 45%),
+    radial-gradient(ellipse at 88% 85%, rgba(13, 148, 136, 0.09) 0%, transparent 42%),
+    #F1FBF9;
+}
+
+body.domain-gabs_bank .empty-state-title {
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: var(--gabs-ink);
+}
+
+/* Starter chips: soft teal outline, full teal on hover */
+body.domain-gabs_bank .starter-chip {
+  border: 1px solid rgba(13, 148, 136, 0.22);
+  background: rgba(255, 255, 255, 0.78);
+  color: var(--gabs-ink);
+}
+body.domain-gabs_bank .starter-chip:hover {
+  border-color: var(--gabs-teal);
+  color: var(--gabs-teal);
+  background: #ffffff;
+}
+
+/* Mode toggle (Simple RAG / Real-time Context) */
+body.domain-gabs_bank .mode-toggle-option.active {
+  background: var(--gabs-teal);
+  color: #ffffff;
+  border-color: var(--gabs-teal);
+}
+body.domain-gabs_bank .mode-toggle-option.context.active {
+  background: var(--gabs-teal);
+  border-color: var(--gabs-teal);
+  color: #ffffff;
+}
+body.domain-gabs_bank .mode-toggle-option.context {
+  color: var(--gabs-ink);
+}
+
+/* Composer bar */
+body.domain-gabs_bank .composer {
+  border-color: rgba(13, 148, 136, 0.28);
+}
+body.domain-gabs_bank .composer:focus-within {
+  border-color: var(--gabs-teal);
+  box-shadow: 0 0 0 3px var(--gabs-teal-soft);
+}
+
+body.domain-gabs_bank .activity-panel {
+  border-left: 1px solid rgba(13, 148, 136, 0.14);
+}
+
+body.domain-gabs_bank .starter-group-label {
+  color: rgba(16, 48, 44, 0.6);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+/* Battle card credits */
+body.domain-gabs_bank .topbar-credits {
+  border-color: rgba(13, 148, 136, 0.24);
+  color: rgba(16, 48, 44, 0.6);
+}
+body.domain-gabs_bank .credits-name { color: var(--gabs-ink); }
+body.domain-gabs_bank .credits-link:hover {
+  color: var(--gabs-teal);
+  background: var(--gabs-teal-soft);
+}
+
+/* ── UserBadge — active session ──────────────────────────────── */
+body.domain-gabs_bank .user-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 14px 6px 6px;
+  border-radius: 999px;
+  background: #ffffff;
+  border: 1px solid rgba(13, 148, 136, 0.20);
+  box-shadow: 0 1px 2px rgba(13, 148, 136, 0.06);
+  margin-right: 6px;
+}
+body.domain-gabs_bank .user-avatar-wrap { position: relative; display: inline-block; }
+body.domain-gabs_bank .user-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0D9488 0%, #22C7B4 100%);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.82rem;
+  letter-spacing: 0.02em;
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 0 2px #10B981; /* green ring = online */
+  overflow: hidden;
+}
+body.domain-gabs_bank .user-avatar-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+body.domain-gabs_bank .user-online-dot {
+  position: absolute; bottom: -1px; right: -1px;
+  width: 10px; height: 10px; border-radius: 50%;
+  background: #10B981; border: 2px solid #ffffff;
+}
+body.domain-gabs_bank .user-info { display: flex; flex-direction: column; line-height: 1.15; min-width: 0; }
+body.domain-gabs_bank .user-name {
+  font-size: 0.82rem; font-weight: 700; color: var(--gabs-ink); letter-spacing: -0.005em;
+}
+body.domain-gabs_bank .user-segment {
+  font-size: 0.66rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--gabs-teal);
+}
+
+/* Markdown bold in teal inside messages */
+body.domain-gabs_bank .message strong,
+body.domain-gabs_bank .markdown-message strong {
+  color: var(--gabs-teal-strong);
+  font-weight: 700;
+}
+
+/* ── FinOps panel ─────────────────────────────────────── */
+
+.finops-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.finops-stat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px 20px;
+  padding: 4px 0;
+}
+
+.finops-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.finops-stat-value {
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+}
+
+.finops-stat-value.finops-accent {
+  color: var(--color-redis);
+}
+
+.finops-stat-label {
+  font-size: 0.76rem;
+  color: var(--color-text-tertiary);
+}
+
+.finops-share {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.finops-share-track {
+  height: 8px;
+  border-radius: var(--radius-pill);
+  background: var(--color-bg-tertiary);
+  overflow: hidden;
+}
+
+.finops-share-bar {
+  height: 100%;
+  border-radius: var(--radius-pill);
+  background: var(--color-redis);
+  transition: width 0.4s ease;
+}
+
+.finops-share-label {
+  font-size: 0.76rem;
+  color: var(--color-text-secondary);
+}
+
+.finops-footnote {
+  margin-top: 10px;
+  font-size: 0.74rem;
+  color: var(--color-text-tertiary);
+  line-height: 1.5;
+}
+
+.finops-reset-btn {
+  font-size: 0.74rem;
+  font-weight: 500;
+  color: var(--color-text-tertiary);
+  padding: 2px 10px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--color-border-light);
+  background: var(--color-surface);
+}
+
+.finops-reset-btn:hover {
+  color: var(--color-redis);
+  border-color: var(--color-redis-soft);
+}
+
+.finops-lat-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 4px 0;
+}
+
+.finops-lat-row {
+  display: grid;
+  grid-template-columns: 150px 1fr auto;
+  align-items: center;
+  gap: 10px;
+}
+
+.finops-lat-label {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+}
+
+.finops-lat-track {
+  height: 8px;
+  border-radius: var(--radius-pill);
+  background: var(--color-bg-tertiary);
+  overflow: hidden;
+}
+
+.finops-lat-bar {
+  height: 100%;
+  border-radius: var(--radius-pill);
+  background: var(--color-text-tertiary);
+  transition: width 0.4s ease;
+}
+
+.finops-lat-bar.fast {
+  background: var(--color-redis);
+}
+
+.finops-lat-value {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.finops-lat-p95 {
+  font-weight: 400;
+  color: var(--color-text-tertiary);
+}
+
+.finops-inputs {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+  padding: 4px 0 10px;
+}
+
+.finops-input {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.finops-input span {
+  font-size: 0.72rem;
+  color: var(--color-text-tertiary);
+}
+
+.finops-input input {
+  width: 100%;
+  padding: 6px 8px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.finops-input input:focus {
+  outline: none;
+  border-color: var(--color-redis);
+}
+
+.finops-projection {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px 20px;
+}
+
+/* ── Per-turn FinOps badge under assistant messages ───── */
+
+.turn-finops-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  font-size: 0.74rem;
+  color: var(--color-text-tertiary);
+}
+
+.turn-finops-badge.cache-hit {
+  color: var(--color-redis);
+  font-weight: 500;
+}
+
+.turn-finops-badge.blocked {
+  color: var(--color-text-secondary);
+}
+
+.turn-finops-flash {
+  font-size: 0.8rem;
+}
+
+/* ── BS2 Pay (bs2_adiq): royal blue on ice, derived from the itau block ── */
+
+body.domain-bs2_adiq {
+  --color-redis: #090E29;
+  --color-redis-soft: rgba(9, 14, 41, 0.06);
+  --color-redis-badge: rgba(9, 14, 41, 0.10);
+  --color-warm-bg: #F4F6FF;
+  --color-user-bubble: #E7EBFF;
+
+  /* Laranja como cor de destaque secundária, usada com parcimônia */
+  --bs2-royal: #4353FF;
+  --bs2-royal-soft: rgba(67, 83, 255, 0.10);
+  --bs2-royal-strong: rgba(67, 83, 255, 0.85);
+}
+
+body.domain-bs2_adiq .topbar {
+  background: var(--color-warm-bg);
+  border-bottom: 1px solid rgba(9, 14, 41, 0.10);
+  padding: 14px 28px;
+}
+
+body.domain-bs2_adiq .topbar-brand-logo {
+  /* Official wordmark PNG (wide, generous padding): no crop, no shadow */
+  width: auto;
+  height: 40px;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+body.domain-bs2_adiq .brand-name {
+  font-size: 1.55rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #1226AA;
+}
+
+body.domain-bs2_adiq .brand-accent {
+  color: var(--bs2-royal);
+  font-weight: 800;
+}
+
+body.domain-bs2_adiq .brand-subtitle {
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: rgba(9, 14, 41, 0.55);
+}
+
+/* CTA button (Redis Iris/Vector Search no canto direito) */
+body.domain-bs2_adiq .topbar-context-btn {
+  border: 1px solid rgba(9, 14, 41, 0.18);
+  color: #090E29;
+  background: #ffffff;
+}
+
+body.domain-bs2_adiq .topbar-context-btn:hover {
+  border-color: var(--bs2-royal);
+  background: var(--bs2-royal-soft);
+  color: var(--bs2-royal);
+}
+
+/* Landing: mais elegante, com leve gradient cream → navy ghost */
+body.domain-bs2_adiq .shell--landing {
+  background:
+    radial-gradient(ellipse at 12% 18%, rgba(9, 14, 41, 0.08) 0%, transparent 45%),
+    radial-gradient(ellipse at 90% 82%, rgba(67, 83, 255, 0.06) 0%, transparent 40%),
+    #F4F6FF;
+}
+
+body.domain-bs2_adiq .empty-state-title {
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: #090E29;
+}
+
+/* Starter chips: navy outline, hover laranja */
+body.domain-bs2_adiq .starter-chip {
+  border: 1px solid rgba(9, 14, 41, 0.16);
+  background: rgba(255, 255, 255, 0.65);
+  color: #090E29;
+}
+
+body.domain-bs2_adiq .starter-chip:hover {
+  border-color: var(--bs2-royal);
+  color: var(--bs2-royal);
+  background: #ffffff;
+}
+
+/* Mode toggle (Simple RAG / Real-time Context) */
+body.domain-bs2_adiq .mode-toggle-option.active {
+  background: #090E29;
+  color: #ffffff;
+  border-color: #090E29;
+}
+
+body.domain-bs2_adiq .mode-toggle-option.context.active {
+  background: var(--bs2-royal);
+  border-color: var(--bs2-royal);
+}
+
+/* Composer bar (input principal) */
+body.domain-bs2_adiq .composer {
+  border-color: rgba(9, 14, 41, 0.18);
+}
+
+body.domain-bs2_adiq .composer:focus-within {
+  border-color: var(--bs2-royal);
+  box-shadow: 0 0 0 3px var(--bs2-royal-soft);
+}
+
+/* Activity panel header (tool calls / memory) */
+body.domain-bs2_adiq .activity-panel {
+  border-left: 1px solid rgba(9, 14, 41, 0.12);
+}
+
+/* Eyebrow labels (Context Retriever / Memory / Cached) */
+body.domain-bs2_adiq .starter-group-label {
+  color: rgba(9, 14, 41, 0.65);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+/* Battle card credits — cores ajustadas pra paleta */
+body.domain-bs2_adiq .topbar-credits {
+  border-color: rgba(9, 14, 41, 0.18);
+  color: rgba(9, 14, 41, 0.65);
+}
+
+body.domain-bs2_adiq .credits-name {
+  color: #090E29;
+}
+
+body.domain-bs2_adiq .credits-link:hover {
+  color: var(--bs2-royal);
+  background: var(--bs2-royal-soft);
+}
+
+/* ── UserBadge — sensação de "sessão ativa" no banco ────────── */
+body.domain-bs2_adiq .user-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 14px 6px 6px;
+  border-radius: 999px;
+  background: #ffffff;
+  border: 1px solid rgba(9, 14, 41, 0.14);
+  box-shadow: 0 1px 2px rgba(9, 14, 41, 0.05);
+  margin-right: 6px;
+}
+
+body.domain-bs2_adiq .user-avatar-wrap {
+  position: relative;
+  display: inline-block;
+}
+
+body.domain-bs2_adiq .user-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #090E29 0%, #0B2F6E 100%);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.82rem;
+  letter-spacing: 0.02em;
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 0 2px #10B981; /* anel verde = online */
+  overflow: hidden;
+}
+
+body.domain-bs2_adiq .user-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+body.domain-bs2_adiq .user-online-dot {
+  position: absolute;
+  bottom: -1px;
+  right: -1px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #10B981;
+  border: 2px solid #ffffff;
+}
+
+body.domain-bs2_adiq .user-info {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+  min-width: 0;
+}
+
+body.domain-bs2_adiq .user-name {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #090E29;
+  letter-spacing: -0.005em;
+}
+
+body.domain-bs2_adiq .user-segment {
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--bs2-royal);
+}
+
+/* ── Raspar laranja excessivo: toggle ativo navy, não laranja ── */
+body.domain-bs2_adiq .mode-toggle-option.context.active {
+  background: #090E29;
+  border-color: #090E29;
+  color: #ffffff;
+}
+
+body.domain-bs2_adiq .mode-toggle-option.context {
+  color: #090E29;
+}
+
+/* Hover laranja segue só nos chips e composer (microinterações), não em
+   elementos grandes. Ajustes finais: */
+body.domain-bs2_adiq .starter-chip:hover {
+  border-color: rgba(9, 14, 41, 0.45);
+  color: #090E29;
+  background: #ffffff;
+}
+
+/* Markdown bold dentro das mensagens fica navy (não Redis red) */
+body.domain-bs2_adiq .message strong,
+body.domain-bs2_adiq .markdown-message strong {
+  color: #090E29;
+  font-weight: 700;
+}
+
+/* ── aiqfome: roxo oficial #710E9B em lilás, derived from the itau block ── */
+
+body.domain-aiqfome {
+  --color-redis: #710E9B;
+  --color-redis-soft: rgba(113, 14, 155, 0.06);
+  --color-redis-badge: rgba(113, 14, 155, 0.10);
+  --color-warm-bg: #FAF3FF;
+  --color-user-bubble: #F3E8FC;
+
+  /* Laranja como cor de destaque secundária, usada com parcimônia */
+  --aiq-accent: #B24BE3;
+  --aiq-accent-soft: rgba(178, 75, 227, 0.10);
+  --aiq-accent-strong: rgba(178, 75, 227, 0.85);
+}
+
+body.domain-aiqfome .topbar {
+  background: var(--color-warm-bg);
+  border-bottom: 1px solid rgba(113, 14, 155, 0.10);
+  padding: 14px 28px;
+}
+
+body.domain-aiqfome .topbar-brand-logo {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(113, 14, 155, 0.20);
+}
+
+body.domain-aiqfome .brand-name {
+  font-size: 1.55rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #710E9B;
+}
+
+body.domain-aiqfome .brand-accent {
+  color: var(--aiq-accent);
+  font-weight: 800;
+}
+
+body.domain-aiqfome .brand-subtitle {
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: rgba(113, 14, 155, 0.55);
+}
+
+/* CTA button (Redis Iris/Vector Search no canto direito) */
+body.domain-aiqfome .topbar-context-btn {
+  border: 1px solid rgba(113, 14, 155, 0.18);
+  color: #710E9B;
+  background: #ffffff;
+}
+
+body.domain-aiqfome .topbar-context-btn:hover {
+  border-color: var(--aiq-accent);
+  background: var(--aiq-accent-soft);
+  color: var(--aiq-accent);
+}
+
+/* Landing: mais elegante, com leve gradient cream → navy ghost */
+body.domain-aiqfome .shell--landing {
+  background:
+    radial-gradient(ellipse at 12% 18%, rgba(113, 14, 155, 0.08) 0%, transparent 45%),
+    radial-gradient(ellipse at 90% 82%, rgba(178, 75, 227, 0.06) 0%, transparent 40%),
+    #FAF3FF;
+}
+
+body.domain-aiqfome .empty-state-title {
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: #710E9B;
+}
+
+/* Starter chips: navy outline, hover laranja */
+body.domain-aiqfome .starter-chip {
+  border: 1px solid rgba(113, 14, 155, 0.16);
+  background: rgba(255, 255, 255, 0.65);
+  color: #710E9B;
+}
+
+body.domain-aiqfome .starter-chip:hover {
+  border-color: var(--aiq-accent);
+  color: var(--aiq-accent);
+  background: #ffffff;
+}
+
+/* Mode toggle (Simple RAG / Real-time Context) */
+body.domain-aiqfome .mode-toggle-option.active {
+  background: #710E9B;
+  color: #ffffff;
+  border-color: #710E9B;
+}
+
+body.domain-aiqfome .mode-toggle-option.context.active {
+  background: var(--aiq-accent);
+  border-color: var(--aiq-accent);
+}
+
+/* Composer bar (input principal) */
+body.domain-aiqfome .composer {
+  border-color: rgba(113, 14, 155, 0.18);
+}
+
+body.domain-aiqfome .composer:focus-within {
+  border-color: var(--aiq-accent);
+  box-shadow: 0 0 0 3px var(--aiq-accent-soft);
+}
+
+/* Activity panel header (tool calls / memory) */
+body.domain-aiqfome .activity-panel {
+  border-left: 1px solid rgba(113, 14, 155, 0.12);
+}
+
+/* Eyebrow labels (Context Retriever / Memory / Cached) */
+body.domain-aiqfome .starter-group-label {
+  color: rgba(113, 14, 155, 0.65);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+/* Battle card credits — cores ajustadas pra paleta */
+body.domain-aiqfome .topbar-credits {
+  border-color: rgba(113, 14, 155, 0.18);
+  color: rgba(113, 14, 155, 0.65);
+}
+
+body.domain-aiqfome .credits-name {
+  color: #710E9B;
+}
+
+body.domain-aiqfome .credits-link:hover {
+  color: var(--aiq-accent);
+  background: var(--aiq-accent-soft);
+}
+
+/* ── UserBadge — sensação de "sessão ativa" no banco ────────── */
+body.domain-aiqfome .user-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 14px 6px 6px;
+  border-radius: 999px;
+  background: #ffffff;
+  border: 1px solid rgba(113, 14, 155, 0.14);
+  box-shadow: 0 1px 2px rgba(113, 14, 155, 0.05);
+  margin-right: 6px;
+}
+
+body.domain-aiqfome .user-avatar-wrap {
+  position: relative;
+  display: inline-block;
+}
+
+body.domain-aiqfome .user-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #710E9B 0%, #0B2F6E 100%);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.82rem;
+  letter-spacing: 0.02em;
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 0 2px #10B981; /* anel verde = online */
+  overflow: hidden;
+}
+
+body.domain-aiqfome .user-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+body.domain-aiqfome .user-online-dot {
+  position: absolute;
+  bottom: -1px;
+  right: -1px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #10B981;
+  border: 2px solid #ffffff;
+}
+
+body.domain-aiqfome .user-info {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+  min-width: 0;
+}
+
+body.domain-aiqfome .user-name {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #710E9B;
+  letter-spacing: -0.005em;
+}
+
+body.domain-aiqfome .user-segment {
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--aiq-accent);
+}
+
+/* ── Raspar laranja excessivo: toggle ativo navy, não laranja ── */
+body.domain-aiqfome .mode-toggle-option.context.active {
+  background: #710E9B;
+  border-color: #710E9B;
+  color: #ffffff;
+}
+
+body.domain-aiqfome .mode-toggle-option.context {
+  color: #710E9B;
+}
+
+/* Hover laranja segue só nos chips e composer (microinterações), não em
+   elementos grandes. Ajustes finais: */
+body.domain-aiqfome .starter-chip:hover {
+  border-color: rgba(113, 14, 155, 0.45);
+  color: #710E9B;
+  background: #ffffff;
+}
+
+/* Markdown bold dentro das mensagens fica navy (não Redis red) */
+body.domain-aiqfome .message strong,
+body.domain-aiqfome .markdown-message strong {
+  color: #710E9B;
+  font-weight: 700;
+}
+
+/* ── Bradesco EN (bradesco_en): same identity as bradesco_bia ── */
+
+body.domain-bradesco_en {
+  --color-redis: #DE0433;
+  --color-redis-soft: rgba(222, 4, 51, 0.08);
+  --color-redis-badge: rgba(222, 4, 51, 0.12);
+  --color-warm-bg: #FDEFF1;
+  --color-user-bubble: #FADCE2;
+
+  --bra-red: #DE0433;          /* vermelho real do logo Bradesco */
+  --bra-red-soft: rgba(222, 4, 51, 0.10);
+  --bra-red-deep: #8A0420;     /* crimson escuro legível pra texto */
+  --bra-magenta: #9F084E;      /* ponta magenta do gradiente do logo */
+}
+
+body.domain-bradesco_en .topbar {
+  background: var(--color-warm-bg);
+  border-bottom: 1px solid rgba(222, 4, 51, 0.12);
+  padding: 14px 28px;
+}
+
+body.domain-bradesco_en .topbar-brand-logo {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(222, 4, 51, 0.22);
+}
+
+body.domain-bradesco_en .brand-name {
+  font-size: 1.55rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--bra-red-deep);
+}
+
+body.domain-bradesco_en .brand-accent {
+  color: var(--bra-red);
+  font-weight: 800;
+}
+
+body.domain-bradesco_en .brand-subtitle {
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: rgba(138, 6, 32, 0.55);
+}
+
+body.domain-bradesco_en .topbar-context-btn {
+  border: 1px solid transparent;
+  color: #ffffff;
+  font-weight: 700;
+  background: linear-gradient(100deg, #EC0A40 0%, #B00A45 100%);
+  box-shadow: 0 2px 10px rgba(204, 9, 47, 0.35);
+}
+
+body.domain-bradesco_en .topbar-context-btn span {
+  color: #ffffff;
+}
+
+body.domain-bradesco_en .topbar-context-btn:hover {
+  color: #ffffff;
+  background: linear-gradient(100deg, #FF2153 0%, #C20B4C 100%);
+  box-shadow: 0 5px 16px rgba(204, 9, 47, 0.48);
+  transform: translateY(-1px);
+}
+
+/* logo Redis num chip branco (como na imagem 2 de referência), NÃO invertido */
+body.domain-bradesco_en .topbar-context-btn .topbar-context-logo {
+  background: #ffffff;
+  border-radius: 6px;
+  padding: 3px;
+  box-sizing: content-box;
+}
+
+/* Faixa vermelha forte no topo com onda branca descendo pro branco (estilo app Bradesco).
+   Full-width: sem listra, sem emenda no meio. */
+body.domain-bradesco_en .shell--landing {
+  background:
+    url('/backgrounds/bradesco_bia/hero.svg') no-repeat top center / 100% 42vh,
+    linear-gradient(180deg, #FFFFFF 0%, #FFF4F7 60%, #FCE7EC 100%);
+}
+/* mata as faixas laterais (eram as listras + a emenda) */
+body.domain-bradesco_en .shell--landing::before,
+body.domain-bradesco_en .shell--landing::after {
+  content: none;
+}
+
+body.domain-bradesco_en .empty-state-title {
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: var(--bra-red-deep);
+}
+
+body.domain-bradesco_en .starter-chip {
+  border: 1px solid rgba(222, 4, 51, 0.18);
+  background: rgba(255, 255, 255, 0.65);
+  color: var(--bra-red-deep);
+}
+
+body.domain-bradesco_en .starter-chip:hover {
+  border-color: rgba(222, 4, 51, 0.45);
+  color: var(--bra-red);
+  background: #ffffff;
+}
+
+/* Golden paths no tema Bradesco: estrela + tom dourado quente, delicado. */
+body.domain-bradesco_en .starter-chip--golden {
+  border-color: rgba(193, 145, 43, 0.55);
+  background: linear-gradient(180deg, rgba(247, 224, 160, 0.32), rgba(255, 255, 255, 0.72));
+  color: var(--bra-red-deep);
+  font-weight: 600;
+}
+
+body.domain-bradesco_en .starter-chip--golden::before {
+  color: #c0871d;
+}
+
+body.domain-bradesco_en .starter-chip--golden:hover {
+  border-color: rgba(193, 145, 43, 0.9);
+  background: linear-gradient(180deg, rgba(247, 224, 160, 0.48), #ffffff);
+  color: var(--bra-red);
+}
+
+body.domain-bradesco_en .mode-toggle-option.active {
+  background: var(--bra-red);
+  color: #ffffff;
+  border-color: var(--bra-red);
+}
+
+body.domain-bradesco_en .mode-toggle-option.context.active {
+  background: linear-gradient(100deg, #EC0A40 0%, #C70A35 100%);
+  border-color: #C70A35;
+  color: #ffffff;
+}
+
+body.domain-bradesco_en .mode-toggle-option.context {
+  color: var(--bra-red-deep);
+}
+
+body.domain-bradesco_en .composer {
+  border-color: rgba(222, 4, 51, 0.20);
+}
+
+body.domain-bradesco_en .composer:focus-within {
+  border-color: var(--bra-red);
+  box-shadow: 0 0 0 3px var(--bra-red-soft);
+}
+
+body.domain-bradesco_en .activity-panel {
+  border-left: 1px solid rgba(222, 4, 51, 0.12);
+}
+
+body.domain-bradesco_en .starter-group-label {
+  color: rgba(138, 6, 32, 0.65);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+body.domain-bradesco_en .topbar-credits {
+  border-color: rgba(222, 4, 51, 0.20);
+  color: rgba(138, 6, 32, 0.65);
+}
+
+body.domain-bradesco_en .credits-name {
+  color: var(--bra-red-deep);
+}
+
+body.domain-bradesco_en .credits-link:hover {
+  color: var(--bra-red);
+  background: var(--bra-red-soft);
+}
+
+/* UserBadge "logado" */
+body.domain-bradesco_en .user-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 14px 6px 6px;
+  border-radius: 999px;
+  background: #ffffff;
+  border: 1px solid rgba(222, 4, 51, 0.16);
+  box-shadow: 0 1px 2px rgba(222, 4, 51, 0.05);
+  margin-right: 6px;
+}
+
+body.domain-bradesco_en .user-avatar-wrap {
+  position: relative;
+  display: inline-block;
+}
+
+body.domain-bradesco_en .user-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #DE0433 0%, #9F084E 100%);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.82rem;
+  letter-spacing: 0.02em;
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 0 2px #10B981;
+  overflow: hidden;
+}
+
+body.domain-bradesco_en .user-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+body.domain-bradesco_en .user-online-dot {
+  position: absolute;
+  bottom: -1px;
+  right: -1px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #10B981;
+  border: 2px solid #ffffff;
+}
+
+body.domain-bradesco_en .user-info {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+  min-width: 0;
+}
+
+body.domain-bradesco_en .user-name {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--bra-red-deep);
+  letter-spacing: -0.005em;
+}
+
+body.domain-bradesco_en .user-segment {
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--bra-red);
+}
+
+/* Markdown bold dentro de mensagens fica vermelho */
+body.domain-bradesco_en .message strong,
+body.domain-bradesco_en .markdown-message strong {
+  color: var(--bra-red);
+  font-weight: 700;
+}

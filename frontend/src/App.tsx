@@ -13,6 +13,8 @@ import { apiUrl, modeStorageKey } from "./utils";
 import { EmptyState } from "./components/EmptyState";
 import { ConversationView } from "./components/ConversationView";
 import { ActivityPanel } from "./components/ActivityPanel";
+import { BattleCard } from "./components/BattleCard";
+import { UserBadge } from "./components/UserBadge";
 
 function emptyMsg(): ChatMessage {
   return {
@@ -34,6 +36,7 @@ export default function App() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [liveScore, setLiveScore] = useState<number | null>(null);
   const [threadId, setThreadId] = useState(() => crypto.randomUUID());
 
   const [activityPanelOpen, setActivityPanelOpen] = useState(false);
@@ -80,16 +83,26 @@ export default function App() {
 
   useEffect(() => {
     if (!domain) return;
+    void refreshScore();
+  }, [domain]);
+
+  useEffect(() => {
+    if (!domain) return;
     const root = document.documentElement;
     if (domain.theme?.landing_bg) {
       root.style.setProperty("--landing-bg", domain.theme.landing_bg);
     }
     root.style.setProperty("--landing-left-img", `url('/backgrounds/${domain.id}/left.svg')`);
     root.style.setProperty("--landing-right-img", `url('/backgrounds/${domain.id}/right.svg')`);
+
+    // Classe de domínio no body — permite overrides CSS específicos por domínio
+    const domainClass = `domain-${domain.id}`;
+    document.body.classList.add(domainClass);
     return () => {
       root.style.removeProperty("--landing-bg");
       root.style.removeProperty("--landing-left-img");
       root.style.removeProperty("--landing-right-img");
+      document.body.classList.remove(domainClass);
     };
   }, [domain]);
 
@@ -105,6 +118,19 @@ export default function App() {
       autoOpenedRef.current = true;
     }
   }, [messages]);
+
+  // Mantém o badge do topo em sincronia com o score real do feature store.
+  // O score muda em runtime (recompute-on-write, aceite de proposta), então
+  // re-buscamos no load e ao fim de cada turno do chat.
+  async function refreshScore() {
+    try {
+      const response = await fetch(apiUrl("/api/identity-badge"));
+      const data = await response.json();
+      setLiveScore(typeof data?.score === "number" ? data.score : null);
+    } catch {
+      // badge é cosmético: silencioso em falha, mantém o último valor
+    }
+  }
 
   async function loadMemoryDashboard() {
     setMemoryLoading(true);
@@ -274,6 +300,18 @@ export default function App() {
                   return m;
                 case "text-delta":
                   return { ...m, content: m.content + (ev.delta ?? "") };
+                case "done":
+                  return {
+                    ...m,
+                    doneMeta: {
+                      cacheHit: ev.cacheHit === true,
+                      guardrailBlocked: ev.guardrailBlocked === true,
+                      tokensIn: ev.tokensIn,
+                      tokensOut: ev.tokensOut,
+                      tokensSavedEst: ev.tokensSavedEst,
+                      totalElapsedMs: ev.totalElapsedMs,
+                    },
+                  };
                 default:
                   return m;
               }
@@ -291,6 +329,8 @@ export default function App() {
       );
     }
     setIsLoading(false);
+    // o turno pode ter mexido no score (recompute, aceite de proposta): ressincroniza o badge
+    void refreshScore();
   }
 
   function handleSubmit(event?: FormEvent) {
@@ -326,13 +366,113 @@ export default function App() {
     <div className={`shell ${activityPanelOpen ? "panel-open" : ""} ${!hasMessages ? "shell--landing" : ""}`}>
       <header className="topbar">
         <div className="topbar-brand" onClick={handleGoHome} onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") handleGoHome(); }} role="button" tabIndex={0} style={{ cursor: "pointer" }}>
-          {domain?.logo_src && <img src={domain.logo_src} alt="" className="topbar-brand-logo" />}
+          {/* Se o app_name começa com "Redis ", a marca já é auto-explicativa — pula o logo.
+              Pro Limpa Nome IA também colorimos só "Limpa Nome" em magenta, " IA" fica natural. */}
+          {domain?.logo_src && !(domain?.app_name?.toLowerCase().startsWith("redis ")) && (
+            <img src={domain.logo_src} alt="" className="topbar-brand-logo" />
+          )}
           <div className="brand-text">
-            <span className="brand-name">{domain?.app_name ?? "Redis Iris"}</span>
+            <span className="brand-name">
+              {domain?.app_name && domain.app_name.toLowerCase().startsWith("redis ") ? (
+                <>
+                  <span className="brand-accent">Redis</span>
+                  {domain.app_name.slice(5)}
+                </>
+              ) : domain?.id === "serasa_limpa_nome" && domain?.app_name?.toLowerCase().startsWith("limpa nome") ? (
+                <>
+                  <span className="brand-accent">Limpa Nome</span>
+                  {domain.app_name.slice(10)}
+                </>
+              ) : domain?.id === "picpay_assist" && domain?.app_name?.toLowerCase().startsWith("picpay") ? (
+                <>
+                  <span className="brand-accent">PicPay</span>
+                  {domain.app_name.slice(6)}
+                </>
+              ) : domain?.id === "gabs_bank" ? (
+                <>Gabs<span className="brand-accent"> Bank</span></>
+              ) : (domain?.id === "bradesco_bia" || domain?.id === "bradesco_en" || domain?.id === "banco_inter") ? (
+                <span className="brand-accent">{domain?.app_name ?? "BIA"}</span>
+              ) : (
+                domain?.app_name ?? "Redis Iris"
+              )}
+            </span>
             <span className="brand-subtitle">{domain?.subtitle ?? "AI Assistant"}</span>
           </div>
         </div>
         <div className="topbar-actions">
+          {domain?.id === "itau_assist" ? (
+            <UserBadge
+              name="Gabriel Cerioni"
+              segment="Personnalité · Nível 5"
+              initials="GC"
+              avatarUrl="https://github.com/gacerioni.png?size=120"
+            />
+          ) : domain?.id === "serasa_limpa_nome" ? (
+            <UserBadge
+              name="Gabriel Cerioni"
+              segment="Premium Plus · Score 950"
+              initials="GC"
+              avatarUrl="https://github.com/gacerioni.png?size=120"
+            />
+          ) : domain?.id === "picpay_assist" ? (
+            <UserBadge
+              name="Gabriel Cerioni"
+              segment="@gabscerioni · Ouro"
+              initials="GC"
+              avatarUrl="https://github.com/gacerioni.png?size=120"
+            />
+          ) : domain?.id === "serasa_experian" ? (
+            <UserBadge
+              name="Gabriel Cerioni"
+              segment={`Serasa Premium · Score ${liveScore ?? 692}`}
+              initials="GC"
+              avatarUrl="https://github.com/gacerioni.png?size=120"
+            />
+          ) : domain?.id === "bradesco_bia" ? (
+            <UserBadge
+              name="Gabriel Cerioni"
+              segment="Bradesco Prime"
+              initials="GC"
+              avatarUrl="https://github.com/gacerioni.png?size=120"
+            />
+          ) : domain?.id === "bradesco_en" ? (
+            <UserBadge
+              name="Gabriel Cerioni"
+              segment="Bradesco Prime · Member since 2015"
+              initials="GC"
+              avatarUrl="https://github.com/gacerioni.png?size=120"
+            />
+          ) : domain?.id === "banco_inter" ? (
+            <UserBadge
+              name="Gabriel Cerioni"
+              segment="Inter One"
+              initials="GC"
+              avatarUrl="https://github.com/gacerioni.png?size=120"
+            />
+          ) : domain?.id === "gabs_bank" ? (
+            <UserBadge
+              name="Gabriel Cerioni"
+              segment="Gabs Bank Premier"
+              initials="GC"
+              avatarUrl="https://github.com/gacerioni.png?size=120"
+            />
+          ) : domain?.id === "bs2_adiq" ? (
+            <UserBadge
+              name="Gabriel Cerioni"
+              segment="Cerioni Sports · Adiq Pro"
+              initials="GC"
+              avatarUrl="https://github.com/gacerioni.png?size=120"
+            />
+          ) : domain?.id === "aiqfome" ? (
+            <UserBadge
+              name="Gabriel Cerioni"
+              segment="Fominha desde 2019 · clube aiqfome"
+              initials="GC"
+              avatarUrl="https://github.com/gacerioni.png?size=120"
+            />
+          ) : (
+            <BattleCard />
+          )}
           <button
             className={`topbar-context-btn ${activityPanelOpen ? "active" : ""}`}
             onClick={handleToggleRedisContext}

@@ -1,0 +1,16 @@
+<svg width="620" height="900" viewBox="0 0 620 900" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <defs>
+    <linearGradient id="sleft" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#E80070"/>
+      <stop offset="1" stop-color="#B0005A"/>
+    </linearGradient>
+    <radialGradient id="sglow" cx="0.3" cy="0.28" r="0.8">
+      <stop offset="0" stop-color="#FF2E9A" stop-opacity="0.5"/>
+      <stop offset="1" stop-color="#FF2E9A" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="620" height="900" fill="url(#sglow)"/>
+  <path fill="url(#sleft)" opacity="0.46" d="M0 0 H300 C 360 220, 180 460, 320 680 C 420 840, 240 900, 0 900 Z"/>
+  <path fill="url(#sleft)" opacity="0.33" d="M0 0 H220 C 280 240, 120 480, 240 700 C 330 860, 170 900, 0 900 Z"/>
+  <path fill="url(#sleft)" opacity="0.22" d="M0 0 H140 C 200 260, 70 500, 160 720 C 240 880, 100 900, 0 900 Z"/>
+</svg>
