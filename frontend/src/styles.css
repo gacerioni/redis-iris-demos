@@ -4162,3 +4162,97 @@ body.domain-bradesco_en .markdown-message strong {
   color: var(--bra-red);
   font-weight: 700;
 }
+
+/* ── bradesco_en landing facelift: premium hero wave ─────────────────
+   The wave is the identity; the fixes are layering and depth: title lives
+   INSIDE the red hero (white type), the composer straddles the seam on
+   purpose (floating card), and the starter chips live in a white board. */
+
+body.domain-bradesco_en .shell--landing {
+  background:
+    url('/backgrounds/bradesco_en/hero.svg') no-repeat top center / 100% 52vh,
+    linear-gradient(180deg, #FFFFFF 0%, #FFF7F9 55%, #FBEDF1 100%);
+}
+
+body.domain-bradesco_en .shell--landing .empty-state {
+  justify-content: flex-start;
+  padding-top: 7vh;
+  max-width: 860px;
+}
+
+/* glass toggle that belongs to the red zone */
+body.domain-bradesco_en .shell--landing .mode-toggle {
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.38);
+  backdrop-filter: blur(6px);
+  margin-bottom: 30px;
+}
+body.domain-bradesco_en .shell--landing .mode-toggle-option {
+  color: rgba(255, 255, 255, 0.88);
+}
+body.domain-bradesco_en .shell--landing .mode-toggle-option.active,
+body.domain-bradesco_en .shell--landing .mode-toggle-option.context.active {
+  background: #FFFFFF;
+  color: #C7082F;
+  font-weight: 700;
+  box-shadow: 0 4px 14px rgba(120, 4, 32, 0.35);
+}
+
+/* hero title: white, inside the wave */
+body.domain-bradesco_en .shell--landing .empty-state-title {
+  color: #FFFFFF;
+  text-shadow: 0 2px 18px rgba(120, 4, 32, 0.35);
+  font-size: clamp(2.2rem, 4.6vw, 3.05rem);
+  margin-bottom: 30px;
+}
+
+/* composer floats across the seam */
+body.domain-bradesco_en .shell--landing .composer.hero {
+  background: #FFFFFF;
+  border: 1px solid rgba(199, 8, 47, 0.10);
+  box-shadow: 0 24px 60px rgba(120, 4, 32, 0.22), 0 4px 14px rgba(120, 4, 32, 0.12);
+}
+body.domain-bradesco_en .shell--landing .composer.hero:focus-within {
+  border-color: rgba(199, 8, 47, 0.45);
+  box-shadow: 0 24px 60px rgba(120, 4, 32, 0.26), 0 0 0 4px rgba(227, 10, 61, 0.10);
+}
+
+/* starter chips live in a white board card */
+body.domain-bradesco_en .shell--landing .starter-strip {
+  transform: none;
+  margin-top: 34px;
+  background: #FFFFFF;
+  border: 1px solid rgba(199, 8, 47, 0.08);
+  border-radius: 22px;
+  padding: 26px 34px;
+  box-shadow: 0 18px 50px rgba(163, 6, 48, 0.10);
+}
+body.domain-bradesco_en .shell--landing .starter-group-label {
+  color: #A50630;
+  font-weight: 700;
+}
+body.domain-bradesco_en .shell--landing .starter-chip {
+  background: #FFF7F9;
+  border: 1px solid rgba(199, 8, 47, 0.14);
+  transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease;
+}
+body.domain-bradesco_en .shell--landing .starter-chip:hover {
+  transform: translateY(-1px);
+  border-color: rgba(199, 8, 47, 0.45);
+  box-shadow: 0 6px 16px rgba(163, 6, 48, 0.14);
+}
+body.domain-bradesco_en .shell--landing .starter-chip--golden {
+  background: linear-gradient(180deg, #FFF9EC 0%, #FFF2D6 100%);
+  border-color: rgba(191, 137, 0, 0.45);
+}
+
+body.domain-bradesco_en .shell--landing .send-btn {
+  background: #E30A3D;
+  color: #FFFFFF;
+}
+body.domain-bradesco_en .shell--landing .send-btn:hover {
+  background: #C7082F;
+}
+body.domain-bradesco_en .shell--landing .empty-state-title {
+  margin-bottom: 36px;
+}

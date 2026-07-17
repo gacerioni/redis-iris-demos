@@ -1,11 +1,41 @@
-<svg width="1440" height="520" viewBox="0 0 1440 520" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+<svg width="1440" height="560" viewBox="0 0 1440 560" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
   <defs>
-    <linearGradient id="bhero" x1="0" y1="0" x2="0.2" y2="1">
-      <stop offset="0" stop-color="#FF1E50"/>
-      <stop offset="0.55" stop-color="#E30A3D"/>
-      <stop offset="1" stop-color="#C7082F"/>
+    <linearGradient id="bheroMain" x1="0" y1="0" x2="0.25" y2="1">
+      <stop offset="0" stop-color="#FF2A55"/>
+      <stop offset="0.45" stop-color="#E30A3D"/>
+      <stop offset="1" stop-color="#A50630"/>
     </linearGradient>
+    <radialGradient id="bglow" cx="0.78" cy="0.12" r="0.7">
+      <stop offset="0" stop-color="#FF6E8C" stop-opacity="0.55"/>
+      <stop offset="0.5" stop-color="#FF3A60" stop-opacity="0.12"/>
+      <stop offset="1" stop-color="#FF3A60" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="bwaveBack" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFB3C2" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#FFD9E0" stop-opacity="0.9"/>
+    </linearGradient>
+    <pattern id="bdots" width="26" height="26" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1.6" fill="#FFFFFF" opacity="0.10"/>
+    </pattern>
   </defs>
-  <path fill="url(#bhero)" d="M0 0 H1440 V300 C 1150 392, 880 250, 600 300 C 360 342, 170 300, 0 338 Z"/>
-  <path fill="#FF3D67" opacity="0.30" d="M0 338 C 170 300, 360 342, 600 300 C 880 250, 1150 392, 1440 300 L1440 372 C 1150 452, 880 312, 600 360 C 360 402, 170 360, 0 398 Z"/>
+
+  <!-- main red block with organic bottom wave -->
+  <path d="M0 0 H1440 V400 C1180 500 1020 380 780 430 C540 480 320 560 0 470 Z" fill="url(#bheroMain)"/>
+  <!-- soft top-right glow -->
+  <path d="M0 0 H1440 V400 C1180 500 1020 380 780 430 C540 480 320 560 0 470 Z" fill="url(#bglow)"/>
+  <!-- dot texture, clipped by the same shape -->
+  <path d="M0 0 H1440 V400 C1180 500 1020 380 780 430 C540 480 320 560 0 470 Z" fill="url(#bdots)"/>
+
+  <!-- thin white crest following the seam -->
+  <path d="M0 470 C320 560 540 480 780 430 C1020 380 1180 500 1440 400"
+        stroke="#FFFFFF" stroke-opacity="0.65" stroke-width="3" fill="none"/>
+
+  <!-- back translucent wave for depth -->
+  <path d="M0 500 C300 585 560 505 800 455 C1050 405 1220 520 1440 435 V560 H0 Z" fill="url(#bwaveBack)"/>
+
+  <!-- floating accent circles (banking-hero jewelry) -->
+  <circle cx="1130" cy="120" r="58" stroke="#FFFFFF" stroke-opacity="0.28" stroke-width="2"/>
+  <circle cx="1235" cy="205" r="24" fill="#FFFFFF" fill-opacity="0.14"/>
+  <circle cx="205" cy="150" r="90" stroke="#FFFFFF" stroke-opacity="0.12" stroke-width="2"/>
+  <circle cx="320" cy="88" r="12" fill="#FFFFFF" fill-opacity="0.18"/>
 </svg>
