@@ -4262,11 +4262,11 @@ body.domain-bradesco_en .shell--landing .empty-state-title {
    Scoped to body.domain-leet_bank only. */
 
 body.domain-leet_bank {
-  --color-redis: #00E676;
-  --color-redis-soft: rgba(0, 230, 118, 0.10);
-  --color-redis-badge: rgba(0, 230, 118, 0.16);
-  --leet-green: #00E676;
-  --leet-green-dim: rgba(0, 230, 118, 0.55);
+  --color-redis: #00D8FF;
+  --color-redis-soft: rgba(0, 216, 255, 0.10);
+  --color-redis-badge: rgba(0, 216, 255, 0.16);
+  --leet-green: #00D8FF;
+  --leet-green-dim: rgba(0, 216, 255, 0.55);
   --leet-carbon: #0A0E12;
   --leet-panel: #11171D;
 }
@@ -4274,14 +4274,14 @@ body.domain-leet_bank {
 /* topbar: dark, green brand */
 body.domain-leet_bank .topbar {
   background: rgba(10, 14, 18, 0.96);
-  border-bottom: 1px solid rgba(0, 230, 118, 0.18);
+  border-bottom: 1px solid rgba(0, 216, 255, 0.18);
   padding: 14px 28px;
 }
 body.domain-leet_bank .topbar-brand-logo {
   width: 34px;
   height: 34px;
   border-radius: 9px;
-  box-shadow: 0 0 18px rgba(0, 230, 118, 0.35);
+  box-shadow: 0 0 18px rgba(0, 216, 255, 0.35);
 }
 body.domain-leet_bank .brand-name {
   font-size: 1.5rem;
@@ -4301,20 +4301,20 @@ body.domain-leet_bank .brand-subtitle {
   color: rgba(215, 226, 232, 0.60);
 }
 body.domain-leet_bank .topbar-context-btn {
-  border: 1px solid rgba(0, 230, 118, 0.30);
+  border: 1px solid rgba(0, 216, 255, 0.30);
   color: #FFFFFF;
-  background: rgba(0, 230, 118, 0.08);
+  background: rgba(0, 216, 255, 0.08);
 }
 body.domain-leet_bank .topbar-context-btn:hover {
   border-color: var(--leet-green);
-  background: rgba(0, 230, 118, 0.16);
+  background: rgba(0, 216, 255, 0.16);
   color: var(--leet-green);
 }
 
 /* landing: carbon + grid + green glows */
 body.domain-leet_bank .shell--landing {
   background:
-    radial-gradient(ellipse 60% 45% at 50% 0%, rgba(0, 230, 118, 0.13) 0%, rgba(0, 230, 118, 0) 65%),
+    radial-gradient(ellipse 60% 45% at 50% 0%, rgba(0, 216, 255, 0.13) 0%, rgba(0, 216, 255, 0) 65%),
     url('/backgrounds/leet_bank/left.svg') no-repeat left top / auto 100%,
     url('/backgrounds/leet_bank/right.svg') no-repeat right top / auto 100%,
     linear-gradient(180deg, #0A0E12 0%, #0C1118 55%, #0A0E12 100%);
@@ -4323,7 +4323,7 @@ body.domain-leet_bank .shell--landing {
 /* glass toggle on carbon */
 body.domain-leet_bank .shell--landing .mode-toggle {
   background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(0, 230, 118, 0.25);
+  border: 1px solid rgba(0, 216, 255, 0.25);
   backdrop-filter: blur(6px);
   margin-bottom: 30px;
 }
@@ -4333,9 +4333,9 @@ body.domain-leet_bank .shell--landing .mode-toggle-option {
 body.domain-leet_bank .shell--landing .mode-toggle-option.active,
 body.domain-leet_bank .shell--landing .mode-toggle-option.context.active {
   background: var(--leet-green);
-  color: #06110B;
+  color: #041018;
   font-weight: 800;
-  box-shadow: 0 0 22px rgba(0, 230, 118, 0.45);
+  box-shadow: 0 0 22px rgba(0, 216, 255, 0.45);
 }
 
 /* hero title: white mono-ish with a terminal cursor */
@@ -4343,7 +4343,7 @@ body.domain-leet_bank .shell--landing .empty-state-title {
   color: #FFFFFF;
   font-size: clamp(2.1rem, 4.4vw, 2.9rem);
   letter-spacing: -0.03em;
-  text-shadow: 0 0 34px rgba(0, 230, 118, 0.25);
+  text-shadow: 0 0 34px rgba(0, 216, 255, 0.25);
   margin-bottom: 34px;
 }
 body.domain-leet_bank .shell--landing .empty-state-title::after {
@@ -4357,8 +4357,8 @@ body.domain-leet_bank .shell--landing .empty-state-title::after {
 /* composer: dark glass card with green focus */
 body.domain-leet_bank .shell--landing .composer.hero {
   background: rgba(17, 23, 29, 0.92);
-  border: 1px solid rgba(0, 230, 118, 0.22);
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(0, 230, 118, 0.06);
+  border: 1px solid rgba(0, 216, 255, 0.22);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(0, 216, 255, 0.06);
   backdrop-filter: blur(8px);
 }
 body.domain-leet_bank .shell--landing .composer.hero textarea {
@@ -4370,14 +4370,14 @@ body.domain-leet_bank .shell--landing .composer.hero textarea::placeholder {
 }
 body.domain-leet_bank .shell--landing .composer.hero:focus-within {
   border-color: var(--leet-green);
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55), 0 0 0 4px rgba(0, 230, 118, 0.12);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55), 0 0 0 4px rgba(0, 216, 255, 0.12);
 }
 body.domain-leet_bank .shell--landing .send-btn {
   background: var(--leet-green);
-  color: #06110B;
+  color: #041018;
 }
 body.domain-leet_bank .shell--landing .send-btn:hover {
-  background: #3DFF9E;
+  background: #6BE8FF;
 }
 
 /* starter board: dark card */
@@ -4385,7 +4385,7 @@ body.domain-leet_bank .shell--landing .starter-strip {
   transform: none;
   margin-top: 34px;
   background: rgba(17, 23, 29, 0.85);
-  border: 1px solid rgba(0, 230, 118, 0.14);
+  border: 1px solid rgba(0, 216, 255, 0.14);
   border-radius: 22px;
   padding: 26px 34px;
   box-shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
@@ -4407,13 +4407,13 @@ body.domain-leet_bank .shell--landing .starter-chip {
 body.domain-leet_bank .shell--landing .starter-chip:hover {
   transform: translateY(-1px);
   border-color: var(--leet-green);
-  box-shadow: 0 6px 18px rgba(0, 230, 118, 0.18);
+  box-shadow: 0 6px 18px rgba(0, 216, 255, 0.18);
   color: #FFFFFF;
 }
 body.domain-leet_bank .shell--landing .starter-chip--golden {
-  background: rgba(0, 230, 118, 0.10);
-  border-color: rgba(0, 230, 118, 0.45);
-  color: #C8FFE2;
+  background: rgba(0, 216, 255, 0.10);
+  border-color: rgba(0, 216, 255, 0.45);
+  color: #C9F2FF;
 }
 
 /* user badge on dark topbar */
@@ -4423,14 +4423,14 @@ body.domain-leet_bank .user-badge {
   gap: 10px;
   padding: 6px 14px 6px 6px;
   background: rgba(17, 23, 29, 0.9);
-  border: 1px solid rgba(0, 230, 118, 0.22);
+  border: 1px solid rgba(0, 216, 255, 0.22);
   border-radius: var(--radius-pill);
 }
 body.domain-leet_bank .user-avatar-wrap { position: relative; }
 body.domain-leet_bank .user-avatar {
   width: 34px; height: 34px; border-radius: 50%;
   overflow: hidden; display: flex; align-items: center; justify-content: center;
-  background: #123324; color: var(--leet-green); font-weight: 700; font-size: 0.85rem;
+  background: #0B2733; color: var(--leet-green); font-weight: 700; font-size: 0.85rem;
 }
 body.domain-leet_bank .user-avatar-img { width: 100%; height: 100%; object-fit: cover; }
 body.domain-leet_bank .user-online-dot {
