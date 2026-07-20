@@ -4256,3 +4256,192 @@ body.domain-bradesco_en .shell--landing .send-btn:hover {
 body.domain-bradesco_en .shell--landing .empty-state-title {
   margin-bottom: 36px;
 }
+
+/* ── Leet Bank (leet_bank): the portfolio's first DARK landing ────────
+   Terminal aesthetic: carbon background, neon green accents, subtle grid.
+   Scoped to body.domain-leet_bank only. */
+
+body.domain-leet_bank {
+  --color-redis: #00E676;
+  --color-redis-soft: rgba(0, 230, 118, 0.10);
+  --color-redis-badge: rgba(0, 230, 118, 0.16);
+  --leet-green: #00E676;
+  --leet-green-dim: rgba(0, 230, 118, 0.55);
+  --leet-carbon: #0A0E12;
+  --leet-panel: #11171D;
+}
+
+/* topbar: dark, green brand */
+body.domain-leet_bank .topbar {
+  background: rgba(10, 14, 18, 0.96);
+  border-bottom: 1px solid rgba(0, 230, 118, 0.18);
+  padding: 14px 28px;
+}
+body.domain-leet_bank .topbar-brand-logo {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  box-shadow: 0 0 18px rgba(0, 230, 118, 0.35);
+}
+body.domain-leet_bank .brand-name {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #FFFFFF;
+  font-family: var(--font-mono);
+}
+body.domain-leet_bank .brand-accent {
+  color: var(--leet-green);
+}
+body.domain-leet_bank .brand-subtitle {
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: rgba(215, 226, 232, 0.60);
+}
+body.domain-leet_bank .topbar-context-btn {
+  border: 1px solid rgba(0, 230, 118, 0.30);
+  color: #FFFFFF;
+  background: rgba(0, 230, 118, 0.08);
+}
+body.domain-leet_bank .topbar-context-btn:hover {
+  border-color: var(--leet-green);
+  background: rgba(0, 230, 118, 0.16);
+  color: var(--leet-green);
+}
+
+/* landing: carbon + grid + green glows */
+body.domain-leet_bank .shell--landing {
+  background:
+    radial-gradient(ellipse 60% 45% at 50% 0%, rgba(0, 230, 118, 0.13) 0%, rgba(0, 230, 118, 0) 65%),
+    url('/backgrounds/leet_bank/left.svg') no-repeat left top / auto 100%,
+    url('/backgrounds/leet_bank/right.svg') no-repeat right top / auto 100%,
+    linear-gradient(180deg, #0A0E12 0%, #0C1118 55%, #0A0E12 100%);
+}
+
+/* glass toggle on carbon */
+body.domain-leet_bank .shell--landing .mode-toggle {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(0, 230, 118, 0.25);
+  backdrop-filter: blur(6px);
+  margin-bottom: 30px;
+}
+body.domain-leet_bank .shell--landing .mode-toggle-option {
+  color: rgba(215, 226, 232, 0.75);
+}
+body.domain-leet_bank .shell--landing .mode-toggle-option.active,
+body.domain-leet_bank .shell--landing .mode-toggle-option.context.active {
+  background: var(--leet-green);
+  color: #06110B;
+  font-weight: 800;
+  box-shadow: 0 0 22px rgba(0, 230, 118, 0.45);
+}
+
+/* hero title: white mono-ish with a terminal cursor */
+body.domain-leet_bank .shell--landing .empty-state-title {
+  color: #FFFFFF;
+  font-size: clamp(2.1rem, 4.4vw, 2.9rem);
+  letter-spacing: -0.03em;
+  text-shadow: 0 0 34px rgba(0, 230, 118, 0.25);
+  margin-bottom: 34px;
+}
+body.domain-leet_bank .shell--landing .empty-state-title::after {
+  content: "▌";
+  color: var(--leet-green);
+  margin-left: 6px;
+  animation: leet-blink 1.1s steps(1) infinite;
+}
+@keyframes leet-blink { 50% { opacity: 0; } }
+
+/* composer: dark glass card with green focus */
+body.domain-leet_bank .shell--landing .composer.hero {
+  background: rgba(17, 23, 29, 0.92);
+  border: 1px solid rgba(0, 230, 118, 0.22);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(0, 230, 118, 0.06);
+  backdrop-filter: blur(8px);
+}
+body.domain-leet_bank .shell--landing .composer.hero textarea {
+  color: #FFFFFF;
+  caret-color: var(--leet-green);
+}
+body.domain-leet_bank .shell--landing .composer.hero textarea::placeholder {
+  color: rgba(215, 226, 232, 0.45);
+}
+body.domain-leet_bank .shell--landing .composer.hero:focus-within {
+  border-color: var(--leet-green);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55), 0 0 0 4px rgba(0, 230, 118, 0.12);
+}
+body.domain-leet_bank .shell--landing .send-btn {
+  background: var(--leet-green);
+  color: #06110B;
+}
+body.domain-leet_bank .shell--landing .send-btn:hover {
+  background: #3DFF9E;
+}
+
+/* starter board: dark card */
+body.domain-leet_bank .shell--landing .starter-strip {
+  transform: none;
+  margin-top: 34px;
+  background: rgba(17, 23, 29, 0.85);
+  border: 1px solid rgba(0, 230, 118, 0.14);
+  border-radius: 22px;
+  padding: 26px 34px;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(6px);
+}
+body.domain-leet_bank .shell--landing .starter-group-label {
+  color: var(--leet-green);
+  font-weight: 700;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+}
+body.domain-leet_bank .shell--landing .starter-chip {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: #E9F2F6;
+  transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease;
+}
+body.domain-leet_bank .shell--landing .starter-chip:hover {
+  transform: translateY(-1px);
+  border-color: var(--leet-green);
+  box-shadow: 0 6px 18px rgba(0, 230, 118, 0.18);
+  color: #FFFFFF;
+}
+body.domain-leet_bank .shell--landing .starter-chip--golden {
+  background: rgba(0, 230, 118, 0.10);
+  border-color: rgba(0, 230, 118, 0.45);
+  color: #C8FFE2;
+}
+
+/* user badge on dark topbar */
+body.domain-leet_bank .user-badge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 14px 6px 6px;
+  background: rgba(17, 23, 29, 0.9);
+  border: 1px solid rgba(0, 230, 118, 0.22);
+  border-radius: var(--radius-pill);
+}
+body.domain-leet_bank .user-avatar-wrap { position: relative; }
+body.domain-leet_bank .user-avatar {
+  width: 34px; height: 34px; border-radius: 50%;
+  overflow: hidden; display: flex; align-items: center; justify-content: center;
+  background: #123324; color: var(--leet-green); font-weight: 700; font-size: 0.85rem;
+}
+body.domain-leet_bank .user-avatar-img { width: 100%; height: 100%; object-fit: cover; }
+body.domain-leet_bank .user-online-dot {
+  position: absolute; right: 0; bottom: 0; width: 9px; height: 9px;
+  border-radius: 50%; background: var(--leet-green);
+  border: 2px solid #0A0E12;
+}
+body.domain-leet_bank .user-info { display: flex; flex-direction: column; line-height: 1.2; }
+body.domain-leet_bank .user-name { font-size: 0.85rem; font-weight: 700; color: #FFFFFF; }
+body.domain-leet_bank .user-segment {
+  font-size: 0.68rem; font-weight: 700; letter-spacing: 0.05em;
+  text-transform: uppercase; color: var(--leet-green);
+  font-family: var(--font-mono);
+}

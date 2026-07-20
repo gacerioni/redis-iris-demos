@@ -390,6 +390,8 @@ export default function App() {
                 </>
               ) : domain?.id === "gabs_bank" ? (
                 <>Gabs<span className="brand-accent"> Bank</span></>
+              ) : domain?.id === "leet_bank" ? (
+                <>Leet<span className="brand-accent"> Bank</span></>
               ) : (domain?.id === "bradesco_bia" || domain?.id === "bradesco_en" || domain?.id === "banco_inter") ? (
                 <span className="brand-accent">{domain?.app_name ?? "BIA"}</span>
               ) : (
@@ -467,6 +469,13 @@ export default function App() {
             <UserBadge
               name="Gabriel Cerioni"
               segment="Fominha desde 2019 · clube aiqfome"
+              initials="GC"
+              avatarUrl="https://github.com/gacerioni.png?size=120"
+            />
+          ) : domain?.id === "leet_bank" ? (
+            <UserBadge
+              name="Gabriel Cerioni"
+              segment="Elite 1337 · desde 2016"
               initials="GC"
               avatarUrl="https://github.com/gacerioni.png?size=120"
             />
