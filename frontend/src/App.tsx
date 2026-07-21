@@ -400,6 +400,15 @@ export default function App() {
             </span>
             <span className="brand-subtitle">{domain?.subtitle ?? "AI Assistant"}</span>
           </div>
+          {domain?.id === "leet_bank" && (
+            <span className="event-seal" title="Apresentado na Febraban Tech 2026">
+              <img src="/febrabantech-symbol.png" alt="" className="event-seal-mark" />
+              <span className="event-seal-text">
+                <span className="event-seal-eyebrow">Febraban Tech</span>
+                <span className="event-seal-year">2026</span>
+              </span>
+            </span>
+          )}
         </div>
         <div className="topbar-actions">
           {domain?.id === "itau_assist" ? (

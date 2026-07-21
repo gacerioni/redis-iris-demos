@@ -43,6 +43,7 @@ ROOT = Path(__file__).resolve().parents[2]
 
 # Credito Flash pricing: 1.337% per month over a tokenized CDB collateral.
 _COLLATERAL_RATE_AM = 0.01337
+_XP_BRL_PER_XP = 0.02
 _COLLATERAL_MAX_AMOUNT = 100000.0
 _COLLATERAL_DEFAULT_TERM_MONTHS = 12
 
@@ -312,7 +313,7 @@ class LeetBankDomain:
         branding=BrandingConfig(
             app_name="Leet Bank",
             subtitle="MarIAm · Concierge Financeira",
-            hero_title="E aí Gabs, eu sou a MarIAm. Bora cuidar do teu dinheiro?",
+            hero_title="E aí Gabs, eu sou a MarIAm. O que a gente resolve hoje?",
             placeholder_text="Fala comigo: 'paga o Carlos', 'cadê minha fatura', 'me dá uma ideia'...",
             logo_path="domains/leet_bank/assets/logo.png",
             demo_steps=[
@@ -334,10 +335,11 @@ class LeetBankDomain:
                 PromptCard(eyebrow="Context", title="Raio-X do mês", prompt="Me dá um raio-X do meu mês."),
                 PromptCard(eyebrow="Context", title="Parcelados na fatura", prompt="Quais os parcelados na fatura?"),
                 PromptCard(eyebrow="Context", title="Meus XP", prompt="Cadê meus XP?"),
+                PromptCard(eyebrow="XP", title="Resgatar XP", prompt="Resgata meus XP que estão vencendo."),
                 # Smart dispute: recurrence + memory before opening a dispute.
                 PromptCard(eyebrow="Contestação", title="Cobrança suspeita", prompt="Não reconheço uma cobrança de R$ 89,90 do CLOUD DEV PRO."),
                 # Agent Memory: durable preferences and personal context.
-                PromptCard(eyebrow="Memory", title="Salvar: Palmeiras", prompt="Lembra que eu torço pro Palmeiras."),
+                PromptCard(eyebrow="Memory", title="Salvar: Raja Casablanca", prompt="Lembra que eu torço pro Raja Casablanca."),
                 PromptCard(eyebrow="Memory", title="Salvar: Rock in Rio", prompt="Anota: Rock in Rio dia 7 de setembro com a Sofia."),
                 PromptCard(eyebrow="Memory", title="Minha história", prompt="Há quanto tempo sou Elite 1337?"),
                 # KYC 360: semantic slicing of the customer-360.
@@ -564,6 +566,7 @@ class LeetBankDomain:
                         "Quantos XP eu tenho?",
                         "Como ganho mais XP?",
                         "Quero resgatar meus XP",
+                        "Resgata meus XP que estão vencendo.",
                         "Tenho XP vencendo?",
                         "Como funciona o programa de pontos?",
                         "No que eu troco meus XP?",
@@ -594,11 +597,11 @@ class LeetBankDomain:
                 GuardrailRouteConfig(
                     name="personal_context",
                     references=[
-                        "Lembra que eu torço pro Palmeiras.",
+                        "Lembra que eu torço pro Raja Casablanca.",
                         "Anota: Rock in Rio dia 7 de setembro com a Sofia.",
                         "anota essa preferência",
                         "Lembra disso pra próxima",
-                        "Anota que sou palmeirense",
+                        "Anota que sou torcedor do Raja Casablanca",
                         "Guarda essa informação",
                         "Salva que a CLOUD DEV PRO é minha assinatura",
                         "Qual time eu torço?",
@@ -731,13 +734,13 @@ class LeetBankDomain:
             ],
             blocked_message=(
                 "Eu sou a MarIAm, concierge do Leet Bank. Posso cuidar das suas contas, "
-                "cartões, Pix, investimentos e te proteger de golpe. Bora?"
+                "cartões, Pix, investimentos e te proteger de golpe. O que a gente resolve hoje?"
             ),
         ),
         seed_memories=[
             SeedMemory(
-                text="Gabriel é palmeirense.",
-                topics=["lifestyle", "torcida", "palmeiras"],
+                text="Gabriel torce pro Raja Casablanca, do Marrocos.",
+                topics=["lifestyle", "torcida", "raja_casablanca"],
             ),
             SeedMemory(
                 text=(
@@ -1004,6 +1007,26 @@ class LeetBankDomain:
                 },
             ),
             InternalToolDefinition(
+                name="redeem_xp",
+                description=(
+                    "Resgata XP do programa Leet XP como crédito na fatura (1 XP = R$ 0,02) ou "
+                    "reserva de experiência. NUNCA no mesmo turno do pedido: primeiro apresente o "
+                    "resumo (quantidade, valor do crédito, o que sobra, destaque pros XP expirando) "
+                    "e pergunte 'Confirma o resgate?'. Use APENAS quando a última mensagem for a "
+                    "confirmação explícita desse resumo, e NUNCA repita a execução por confirmação "
+                    "repetida. DEBITA os XP de verdade (prioriza os expirando), CREDITA a fatura "
+                    "aberta e atualiza cartão e ciclo (recompute-on-write)."
+                ),
+                input_schema={
+                    "type": "object",
+                    "properties": {
+                        "quantidade_xp": {"type": "integer", "description": "Quantos XP resgatar."},
+                        "destino": {"type": "string", "description": "'fatura' (crédito na fatura, default) ou 'experiencia' (reserva pra eventos parceiros).", "default": "fatura"},
+                    },
+                    "required": ["quantidade_xp"],
+                },
+            ),
+            InternalToolDefinition(
                 name="search_policies_semantic",
                 description=(
                     "Busca VETORIAL (semântica) nas políticas Leet Bank: embeda a pergunta e faz KNN "
@@ -1140,6 +1163,10 @@ class LeetBankDomain:
             return await self._aexecute_next_best_offer(arguments, settings)
         if tool_name == "simulate_collateral_credit":
             return await self._aexecute_collateral_credit(arguments, settings)
+
+        # Leet XP redemption (statement credit / experience reserve)
+        if tool_name == "redeem_xp":
+            return await self._aexecute_redeem_xp(arguments, settings)
 
         # Everything else goes through the sync path
         return self.execute_internal_tool(tool_name, arguments, settings)
@@ -2028,6 +2055,103 @@ class LeetBankDomain:
                 }
                 for d in docs
             ],
+        }
+
+    async def _aexecute_redeem_xp(self, arguments: dict[str, Any], settings: Any) -> dict[str, Any]:
+        """Redeem Leet XP: debits the rewards balance for real (expiring XP
+        first) and credits the open statement (card + billing cycle), all
+        recompute-on-write so follow-up reads show the new state."""
+        try:
+            qty = int(arguments.get("quantidade_xp", 0))
+        except (TypeError, ValueError):
+            return {"success": False, "error": "Quantidade de XP inválida"}
+        if qty <= 0:
+            return {"success": False, "error": "Quantidade de XP deve ser maior que zero"}
+        destino = str(arguments.get("destino") or "fatura").strip().lower()
+        if destino not in ("fatura", "experiencia"):
+            destino = "fatura"
+
+        identity = self.manifest.identity
+        customer_id = os.getenv(identity.id_env_var, identity.default_id)
+        client = create_redis_client(settings)
+
+        rewards_rows = [
+            (k, r) for k, r in _scan_json_records(client, ("leet_bank_rewards:*", "leet_bank_rewards_account:*"))
+            if str(_first_field(r, ("customer_id",), "")) == customer_id
+        ]
+        if not rewards_rows:
+            return {"success": False, "error": "Conta de XP do cliente não encontrada."}
+        rewards_key, rewards = rewards_rows[0]
+        saldo_xp = int(_first_field(rewards, ("saldo_xp", "xp_saldo"), 0) or 0)
+        xp_expirando = int(_first_field(rewards, ("xp_expirando",), 0) or 0)
+        if qty > saldo_xp:
+            return {"success": False,
+                    "error": f"Saldo insuficiente: você tem {saldo_xp} XP, pediu {qty}."}
+
+        credit = round(qty * _XP_BRL_PER_XP, 2)
+        today = datetime.now(timezone.utc).strftime("%Y%m%d")
+        protocol = f"XP-{today}-{''.join(random.choices(string.ascii_uppercase + string.digits, k=4))}"
+
+        # Debit the rewards balance (expiring XP first)
+        rewards = dict(rewards)
+        rewards["saldo_xp"] = saldo_xp - qty
+        rewards["xp_expirando"] = max(0, xp_expirando - qty)
+        await self._persist_entity(settings, ("RewardsAccount",), rewards_key, rewards)
+
+        fatura_nova = None
+        if destino == "fatura":
+            # Credit the primary card's open statement
+            cards = [
+                (k, c) for k, c in _scan_json_records(client, ("leet_bank_card:*",))
+                if str(_first_field(c, ("customer_id",), "")) == customer_id
+            ]
+            cards.sort(key=lambda kc: float(_first_field(kc[1], ("fatura_aberta",), 0) or 0), reverse=True)
+            if cards:
+                card_key, card = cards[0]
+                card = dict(card)
+                fatura_atual = float(_first_field(card, ("fatura_aberta",), 0) or 0)
+                fatura_nova = round(max(0.0, fatura_atual - credit), 2)
+                card["fatura_aberta"] = fatura_nova
+                limite_total = float(_first_field(card, ("limite_total",), 0) or 0)
+                if "limite_usado" in card:
+                    card["limite_usado"] = round(max(0.0, float(card.get("limite_usado", 0) or 0) - credit), 2)
+                if "limite_disponivel" in card and limite_total:
+                    card["limite_disponivel"] = round(limite_total - float(card.get("limite_usado", 0) or 0), 2)
+                if "utilizacao_pct" in card and limite_total:
+                    card["utilizacao_pct"] = round(float(card.get("limite_usado", 0) or 0) / limite_total * 100, 2)
+                await self._persist_entity(settings, ("Card",), card_key, card)
+
+                # Mirror the credit on the open billing cycle
+                card_id = str(_first_field(card, ("card_id",), ""))
+                cycles = [
+                    (k, c) for k, c in _scan_json_records(client, ("leet_bank_billing_cycle:*",))
+                    if str(_first_field(c, ("card_id",), "")) == card_id
+                    and str(_first_field(c, ("status",), "")).lower().startswith("abert")
+                ]
+                if cycles:
+                    cyc_key, cyc = cycles[0]
+                    cyc = dict(cyc)
+                    total_atual = float(_first_field(cyc, ("valor_total",), 0) or 0)
+                    minimo_atual = float(_first_field(cyc, ("pagamento_minimo",), 0) or 0)
+                    rate = (minimo_atual / total_atual) if total_atual else 0.15
+                    cyc["valor_total"] = round(max(0.0, total_atual - credit), 2)
+                    cyc["pagamento_minimo"] = round(cyc["valor_total"] * rate, 2)
+                    await self._persist_entity(settings, ("BillingCycle",), cyc_key, cyc)
+
+        return {
+            "success": True, "protocol": protocol, "destino": destino,
+            "xp_resgatados": qty, "credito": credit, "credito_formatted": _brl(credit),
+            "saldo_xp_restante": rewards["saldo_xp"],
+            "xp_expirando_restante": rewards["xp_expirando"],
+            "fatura_aberta_nova": fatura_nova,
+            "fatura_aberta_nova_formatted": _brl(fatura_nova) if fatura_nova is not None else None,
+            "conversao": "1 XP = R$ 0,02",
+            "persisted": True,
+            "instrucao_pro_agente": (
+                "Comunique o resgate com o protocolo, o crédito aplicado e o novo valor da "
+                "fatura, e destaque quantos XP expirando foram consumidos primeiro. Se o "
+                "destino foi 'experiencia', conecte com o Rock in Rio (experiências parceiras)."
+            ),
         }
 
     async def _aexecute_kyc360_slice(self, arguments: dict[str, Any], settings: Any) -> dict[str, Any]:

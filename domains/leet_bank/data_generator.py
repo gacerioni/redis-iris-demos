@@ -1061,7 +1061,7 @@ FEATURE_STORE = [
         "xp_expirando": 4200,
         "nivel": "elite_1337",
         "propensao_credito": 0.91,
-        "torce_para": "palmeiras",
+        "torce_para": "raja_casablanca",
         "evento_proximo": "rock_in_rio_2026_09_07",
         "ultima_atualizacao": ts(d(2026, 7, 17, 11, 52)),
     },

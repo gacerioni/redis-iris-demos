@@ -4314,9 +4314,7 @@ body.domain-leet_bank .topbar-context-btn:hover {
 /* landing: carbon + grid + green glows */
 body.domain-leet_bank .shell--landing {
   background:
-    radial-gradient(ellipse 60% 45% at 50% 0%, rgba(0, 216, 255, 0.13) 0%, rgba(0, 216, 255, 0) 65%),
-    url('/backgrounds/leet_bank/left.svg') no-repeat left top / auto 100%,
-    url('/backgrounds/leet_bank/right.svg') no-repeat right top / auto 100%,
+    url('/backgrounds/leet_bank/hero.svg') no-repeat top center / cover,
     linear-gradient(180deg, #0A0E12 0%, #0C1118 55%, #0A0E12 100%);
 }
 
@@ -4444,4 +4442,44 @@ body.domain-leet_bank .user-segment {
   font-size: 0.68rem; font-weight: 700; letter-spacing: 0.05em;
   text-transform: uppercase; color: var(--leet-green);
   font-family: var(--font-mono);
+}
+
+/* ── Febraban Tech 2026 seal in the Leet Bank header ─────────────────── */
+body.domain-leet_bank .event-seal {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 18px;
+  padding: 5px 12px 5px 8px;
+  border-radius: var(--radius-pill);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  background: rgba(255, 255, 255, 0.03);
+}
+body.domain-leet_bank .event-seal-mark {
+  width: 20px;
+  height: 20px;
+  opacity: 0.92;
+  filter: drop-shadow(0 0 5px rgba(0, 174, 239, 0.45));
+}
+body.domain-leet_bank .event-seal-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.05;
+}
+body.domain-leet_bank .event-seal-eyebrow {
+  font-size: 0.60rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(215, 226, 232, 0.62);
+}
+body.domain-leet_bank .event-seal-year {
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #4FC3F7;
+}
+@media (max-width: 900px) {
+  body.domain-leet_bank .event-seal-text { display: none; }
+  body.domain-leet_bank .event-seal { margin-left: 10px; padding: 5px; }
 }

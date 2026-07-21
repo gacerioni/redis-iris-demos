@@ -40,7 +40,7 @@ KYC360_DOC: dict = {
         "Gabriel Cerioni, Elite 1337 do Leet Bank desde 2016: engenheiro de plataforma, "
         "saldo de R$ 31.337, CDB de R$ 133.700 a 103,37% do CDI, cartao Leet Black com "
         "12% de utilizacao, 133.700 XP. Perfil de confianca maxima (golpe score 0,02), "
-        "pai da Sofia (PUC), palmeirense, e vai ao Rock in Rio 2026 no dia 7 de setembro."
+        "pai da Sofia (PUC), torcedor do Raja Casablanca, e vai ao Rock in Rio 2026 no dia 7 de setembro."
     ),
     "estrategia": (
         "Priorizar o Credito Flash com garantia tokenizada (CDB parado como colateral, "
@@ -114,7 +114,7 @@ KYC360_DOC: dict = {
                 },
                 {
                     "categoria": "time_do_coracao",
-                    "valor": "Palmeirense declarado.",
+                    "valor": "Torcedor declarado do Raja Casablanca (Marrocos).",
                     "indiceConfianca": 1.0,
                     "justificativa": "Preferencia registrada pelo proprio cliente no relacionamento.",
                     "origem": "memoria_relacionamento",

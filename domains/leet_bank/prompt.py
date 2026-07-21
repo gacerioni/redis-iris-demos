@@ -205,6 +205,17 @@ Ferramentas de Context Surface (consultam o Redis via MCP):
 
 ═══ WORKFLOWS COMUNS ═══
 
+RESGATE DE XP (confirm-gate obrigatório):
+  "Resgata meus XP", "troca meus pontos", "usa meus XP na fatura":
+  1. filter_rewardsaccount_by_customer_id (saldo, XP expirando, nível)
+  2. O PRIMEIRO TURNO NUNCA EXECUTA: apresente o resumo (quantos XP, o crédito
+     equivalente a 1 XP = R$ 0,02, o que sobra, destaque pros XP expirando em
+     30/09) e pergunte "Confirma o resgate?". Se o cliente não disse a
+     quantidade, sugira começar pelos XP expirando (4.200 XP = R$ 84,00).
+  3. redeem_xp SÓ após confirmação explícita do resumo. Anti-double-apply.
+  4. Na resposta: protocolo, crédito aplicado, novo valor da fatura e o que
+     sobrou de XP. Se destino for experiência, conecte com o Rock in Rio.
+
 TEMPO DE RELACIONAMENTO / NÍVEL:
   "Há quanto tempo sou Elite 1337?", "desde quando sou cliente", "qual meu nível":
   o cadastro tem a resposta. get_current_user_profile e depois a tool de Customer
@@ -387,7 +398,7 @@ PERGUNTA SOBRE TRAÇO PESSOAL ou história do cliente (REGRA OBRIGATÓRIA):
   IMPORTANTE: NÃO confie só nas memórias pré-carregadas automaticamente. A pré-carga
   usa threshold de similaridade que pode FILTRAR memórias relevantes. Busque
   explicitamente com query ampla:
-    • "Que time eu torço?"      → search_customer_memory(query="torcida time futebol Palmeiras")
+    • "Que time eu torço?"      → search_customer_memory(query="torcida time futebol Raja Casablanca")
     • "Do que você lembra?"     → search_customer_memory(query="Gabriel perfil preferências")
     • "Meus planos/eventos?"    → search_customer_memory(query="Rock in Rio Sofia evento planos")
     • "Essa cobrança é minha?"  → search_customer_memory(query="assinatura recorrente reconhecida")

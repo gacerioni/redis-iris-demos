@@ -101,6 +101,12 @@ run_pixauto() {
   ask "$TH" "Confirmo sim."
   ask "$TH" "Quais recorrências eu tenho cadastradas?"
 }
+run_resgate() {
+  local TH="xpr-$TS"
+  ask "$TH" "Resgata meus XP que estão vencendo."
+  ask "$TH" "Confirma sim, pode resgatar."
+  ask "$TH" "Quanto ficou minha fatura e meus XP agora?"
+}
 run_rockinrio()   { ask "rir-$TS" "Vou pro Rock in Rio com a Sofia, o que o Leet Bank tem pra mim?"; }
 run_xp()          { ask "xp-$TS" "Cadê meus XP?"; }
 run_kyc()         { ask "kyc-$TS" "O que você sabe sobre mim?"; }
@@ -130,6 +136,7 @@ case "$SCEN" in
   golpe)       run_golpe ;;
   golpe2)      run_golpe2 ;;
   pixauto)     run_pixauto ;;
+  resgate)     run_resgate ;;
   rockinrio)   run_rockinrio ;;
   xp)          run_xp ;;
   kyc)         run_kyc ;;
@@ -149,6 +156,7 @@ case "$SCEN" in
     run_golpe2
     run_pixauto
     run_rockinrio
+    run_resgate
     run_xp
     run_historia
     run_cached

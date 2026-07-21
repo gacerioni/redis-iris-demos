@@ -1,0 +1,68 @@
+<svg width="1600" height="900" viewBox="0 0 1600 900" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMin slice" aria-hidden="true">
+  <defs>
+    <radialGradient id="lgTop" cx="0.5" cy="0.0" r="0.75">
+      <stop offset="0" stop-color="#00D8FF" stop-opacity="0.16"/>
+      <stop offset="0.55" stop-color="#00D8FF" stop-opacity="0.03"/>
+      <stop offset="1" stop-color="#00D8FF" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="lgBase" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0B1016"/>
+      <stop offset="0.5" stop-color="#0C1219"/>
+      <stop offset="1" stop-color="#090D12"/>
+    </linearGradient>
+    <radialGradient id="lgNode" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#6BE8FF"/>
+      <stop offset="1" stop-color="#00D8FF" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="lgSoft" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="2.2"/>
+    </filter>
+    <linearGradient id="lgEdge" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#00D8FF" stop-opacity="0"/>
+      <stop offset="0.5" stop-color="#00D8FF" stop-opacity="0.5"/>
+      <stop offset="1" stop-color="#00D8FF" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1600" height="900" fill="url(#lgBase)"/>
+  <rect width="1600" height="900" fill="url(#lgTop)"/>
+
+  <!-- network edges (thin, faint) -->
+  <g stroke="url(#lgEdge)" stroke-width="1">
+    <line x1="150" y1="120" x2="360" y2="240"/>
+    <line x1="360" y1="240" x2="250" y2="470"/>
+    <line x1="360" y1="240" x2="600" y2="180"/>
+    <line x1="1450" y1="150" x2="1240" y2="300"/>
+    <line x1="1240" y1="300" x2="1380" y2="520"/>
+    <line x1="1240" y1="300" x2="1000" y2="230"/>
+    <line x1="150" y1="700" x2="330" y2="620"/>
+    <line x1="1470" y1="680" x2="1300" y2="600"/>
+    <line x1="250" y1="470" x2="150" y2="700"/>
+  </g>
+
+  <!-- nodes: bright core + soft halo, thinning toward the center where the UI sits -->
+  <g>
+    <circle cx="150" cy="120" r="22" fill="url(#lgNode)" filter="url(#lgSoft)"/>
+    <circle cx="150" cy="120" r="3" fill="#9CF0FF"/>
+    <circle cx="360" cy="240" r="30" fill="url(#lgNode)" filter="url(#lgSoft)"/>
+    <circle cx="360" cy="240" r="3.5" fill="#9CF0FF"/>
+    <circle cx="250" cy="470" r="18" fill="url(#lgNode)" filter="url(#lgSoft)"/>
+    <circle cx="250" cy="470" r="2.5" fill="#9CF0FF"/>
+    <circle cx="600" cy="180" r="14" fill="url(#lgNode)" filter="url(#lgSoft)"/>
+    <circle cx="150" cy="700" r="26" fill="url(#lgNode)" filter="url(#lgSoft)"/>
+    <circle cx="150" cy="700" r="3" fill="#9CF0FF"/>
+    <circle cx="330" cy="620" r="12" fill="url(#lgNode)" filter="url(#lgSoft)"/>
+    <circle cx="1450" cy="150" r="24" fill="url(#lgNode)" filter="url(#lgSoft)"/>
+    <circle cx="1450" cy="150" r="3" fill="#9CF0FF"/>
+    <circle cx="1240" cy="300" r="30" fill="url(#lgNode)" filter="url(#lgSoft)"/>
+    <circle cx="1240" cy="300" r="3.5" fill="#9CF0FF"/>
+    <circle cx="1380" cy="520" r="16" fill="url(#lgNode)" filter="url(#lgSoft)"/>
+    <circle cx="1000" cy="230" r="13" fill="url(#lgNode)" filter="url(#lgSoft)"/>
+    <circle cx="1470" cy="680" r="22" fill="url(#lgNode)" filter="url(#lgSoft)"/>
+    <circle cx="1470" cy="680" r="3" fill="#9CF0FF"/>
+    <circle cx="1300" cy="600" r="12" fill="url(#lgNode)" filter="url(#lgSoft)"/>
+  </g>
+
+  <!-- faint scanline glow near the very top edge -->
+  <rect x="0" y="0" width="1600" height="2" fill="#00D8FF" opacity="0.18"/>
+</svg>
