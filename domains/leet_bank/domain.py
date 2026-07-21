@@ -1274,9 +1274,10 @@ class LeetBankDomain:
         if amount <= 0:
             return {"success": False, "error": "Valor do Pix deve ser maior que zero"}
 
-        recipient_name = str(arguments.get("recipient_name", "")).strip()
-        recipient_key = str(arguments.get("recipient_key", "")).strip()
-        description = str(arguments.get("description", "")).strip() or None
+        # `or ""` also covers an explicit null from the model (str(None) == "None")
+        recipient_name = str(arguments.get("recipient_name") or "").strip()
+        recipient_key = str(arguments.get("recipient_key") or "").strip()
+        description = str(arguments.get("description") or "").strip() or None
         contexto = str(arguments.get("contexto", "")).strip() or None
         verified_raw = arguments.get("verified_by_customer", False)
         verified = verified_raw is True or str(verified_raw).strip().lower() in {"true", "1", "sim", "yes"}
